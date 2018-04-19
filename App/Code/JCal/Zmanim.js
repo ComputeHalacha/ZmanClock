@@ -181,7 +181,7 @@ export default class Zmanim {
         let hour = Utils.toInt(time);
         const minFloat = (time - hour) * 60 + 0.5,
             min = Utils.toInt(minFloat),
-            sec = Utils.toInt(Math.round(60.0 * (minFloat - min))),
+            sec = Math.round(60.0 * (minFloat - min)),
             inCurrTZ = location.UTCOffset === Utils.currUtcOffset();
 
         if (inCurrTZ && Utils.isDateDST(date)) {
