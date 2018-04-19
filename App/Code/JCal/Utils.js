@@ -130,16 +130,23 @@ export default class Utils {
     /**
      * Makes sure hour is between 0 and 23 and minute is between 0 and 59.
      * Overlaps get added/subtracted.
-     * The argument needs to be an object in the format {hour : 12, minute :42 }
-     * @param {{hour:Number, minute:Number}} hm
+     * The argument needs to be an object in the format {hour : 12, minute : 42, second : 18}
+     * @param {{hour:Number, minute:Number, second:Number}} time
      */
-    static fixHourMinute(hm) {
+    static fixTime(time) {
         //make a copy - javascript sends object parameters by reference
-        const result = { hour: hm.hour, minute: hm.minute };
+        const result = { hour: time.hour, minute: time.minute, second: time.second };
+        while (result.second >= 60) {
+            result.minute += 1;
+            result.second -= 60;
+        }
+        while (result.second < 0) {
+            result.minute -= 1;
+            result.second += 60;
+        }
         while (result.minute < 0) {
             result.minute += 60;
             result.hour--;
-
         }
         while (result.minute >= 60) {
             result.minute -= 60;
@@ -156,54 +163,98 @@ export default class Utils {
 
     /**
     * Add the given number of minutes to the given time.
-    * The argument needs to be an object in the format {hour : 12, minute :42 }
+    * The argument needs to be an object in the format {hour : 12, minute : 42, second : 18 }
     *
-    * @param {{hour:Number, minute:Number}} hm
+    * @param {{hour:Number, minute:Number, second:Number}} time
     * @param {Number} minutes
     */
-    static addMinutes(hm, minutes) {
-        return Utils.fixHourMinute({ hour: hm.hour, minute: hm.minute + minutes });
+    static addMinutes(time, minutes) {
+        return Utils.fixTime(
+            {
+                hour: time.hour,
+                minute: time.minute + minutes,
+                second: time.second
+            });
+    }
+
+    /**
+    * Add the given number of seconds to the given time.
+    * The argument needs to be an object in the format {hour : 12, minute :42, second : 18}
+    *
+    * @param {{hour:Number, minute:Number, second:Number}} time
+    * @param {Number} seconds
+    */
+    static addSeconds(time, seconds) {
+        return Utils.fixTime(
+            {
+                hour: time.hour,
+                minute: time.minute,
+                second: time.second + seconds
+            });
     }
 
     /**
      * Gets the time difference between two times of day.
-     * Both arguments need to be an object in the format {hour : 12, minute :42 }
-     * @param {{hour:Number, minute:Number}} time1
-     * @param {{hour:Number, minute:Number}} time2
+     * Assumes that the earlier time is always before the later time.
+     * So, if laterTime is less than earlierTime, the returned diff is until the next day.
+     * Both arguments need to be an object in the format {hour : 12, minute : 42, second : 18 }
+     * @param {{hour:Number, minute:Number, second:Number}} earlierTime
+     * @param {{hour:Number, minute:Number, second:Number}} laterTime
+     * @returns{{hour:Number, minute:Number, second:Number}}
      */
-    static timeDiff(time1, time2) {
-        return Utils.fixHourMinute(Utils.addMinutes(time1, Utils.totalMinutes(time2)));
+    static timeDiff(earlierTime, laterTime) {
+        const earlySec = Utils.totalSeconds(earlierTime),
+            laterSec = Utils.totalSeconds(laterTime);
+        return Utils.fixTime({
+            hour: 0,
+            minute: 0,
+            second: earlySec <= laterSec
+                ? laterSec - earlySec
+                : (86400 - earlySec) + laterSec
+        });
     }
 
     /**
      * Gets the total number of minutes in the given time.
-     * @param {{hour:Number, minute:Number}} time An object in the format {hour : 12, minute :42 }
+     * @param {{hour:Number, minute:Number, second:Number}} time An object in the format {hour : 12, minute :42, second : 18}
      */
     static totalMinutes(time) {
         return (time.hour * 60) + time.minute;
     }
 
     /**
-     * Returns the given time in a formatted string.     *
-     * @param {{hour:Number, minute:Number}} hm An object in the format {hour : 23, minute :42 }
-     * @param {Boolean} army If falsey, the returned string will be: 11:42 PM otherwise it will be 23:42
-     * @param {Boolean} roundUp If falsey, the numbers will converted to a whole number by rounding down, otherwise, up.
+     * Gets the total number of seconds in the given time.
+     * @param {{hour:Number, minute:Number, second:Number}} time An object in the format {hour : 12, minute :42, second : 18}
      */
-    static getTimeString(hm, army, roundUp) {
-        const round = roundUp ? Math.ceil : Math.floor;
-        hm = { hour: round(hm.hour), minute: round(hm.minute) };
-        if (army) {
-            return (hm.hour.toString() + ':' +
-                (hm.minute < 10 ? '0' + hm.minute.toString() : hm.minute.toString()));
-        }
-        else {
-            return (hm.hour <= 12 ? (hm.hour == 0 ? 12 : hm.hour) : hm.hour - 12).toString() +
-                ':' +
-                (hm.minute < 10 ? '0' + hm.minute.toString() : hm.minute.toString()) +
-                (hm.hour < 12 ? ' AM' : ' PM');
-        }
+    static totalSeconds(time) {
+        return (Utils.totalMinutes(time) * 60) + time.second;
     }
 
+    /**
+     * Returns the given time in a formatted string.
+     * @param {{hour:Number, minute:Number,second:Number}} time An object in the format {hour : 23, minute :42 }
+     * @param {Boolean} [army] If falsey, the returned string will be: 11:42:18 PM otherwise it will be 23:42:18
+     * @param {Boolean} [roundUp] If falsey, the numbers will converted to a whole number by rounding down, otherwise, up.
+     */
+    static getTimeString(time, army, roundUp) {
+        const round = roundUp ? Math.ceil : Math.floor;
+        time = { hour: round(time.hour), minute: round(time.minute), second: round(time.second) };
+        if (army) {
+            return (time.hour.toString() +
+                ':' +
+                (time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()) +
+                ':' +
+                (time.second < 10 ? '0' + time.second.toString() : time.second.toString()));
+        }
+        else {
+            return (time.hour <= 12 ? (time.hour == 0 ? 12 : time.hour) : time.hour - 12).toString() +
+                ':' +
+                (time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()) +
+                ':' +
+                (time.second < 10 ? '0' + time.second.toString() : time.second.toString()) +
+                (time.hour < 12 ? ' AM' : ' PM');
+        }
+    }
 
     /**
      * Gets the UTC offset in whole hours for the users time zone.

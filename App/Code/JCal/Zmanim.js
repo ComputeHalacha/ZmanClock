@@ -1,6 +1,7 @@
 import Utils from './Utils.js';
 import jDate from './jDate.js';
 import { isValidDate } from '../GeneralUtils';
+import Location from './Location';
 
 /**
  * Computes the daily Zmanim for any single date at any location.
@@ -12,7 +13,7 @@ export default class Zmanim {
      * Gets sunrise and sunset time for given date and Location.
      * Accepts a javascript Date object, a string for creating a javascript date object or a jDate object.
      * Location object is required.
-     * @returns {{sunrise:{hour:Number, minute:Number},sunset:{hour:Number, minute:Number}}
+     * @returns {{sunrise:{hour:Number, minute:Number, second:Number},sunset:{hour:Number, minute:Number, second:Number}}}
      * @param {Date | jDate} date A Javascript Date or Jewish Date for which to calculate the sun times.
      * @param {Location} location Where on the globe to calculate the sun times for.
      * @param {Boolean} considerElevation
@@ -107,12 +108,8 @@ export default class Zmanim {
         if (isNaN(rise.hour) || isNaN(set.hour)) {
             return { hour: NaN, minute: NaN };
         }
-
-        const riseMinutes = (rise.hour * 60) + rise.minute,
-            setMinutes = (set.hour * 60) + set.minute,
-            chatz = Utils.toInt((setMinutes - riseMinutes) / 2);
-
-        return Utils.addMinutes(rise, chatz);
+        const chatz = Utils.toInt((Utils.totalSeconds(set) - Utils.totalSeconds(rise)) / 2);
+        return Utils.addSeconds(rise, chatz);
     }
 
     static getShaaZmanis(date, location, offset) {
@@ -178,23 +175,23 @@ export default class Zmanim {
     }
 
     static timeAdj(time, date, location) {
-        let hour, min;
-
         if (time < 0) {
             time += 24;
         }
-        hour = Utils.toInt(time);
-        min = Utils.toInt((time - hour) * 60 + 0.5);
+        let hour = Utils.toInt(time);
+        const minFloat = (time - hour) * 60 + 0.5,
+            min = Utils.toInt(minFloat),
+            sec = Utils.toInt(Math.round(60.0 * (minFloat - min))),
+            inCurrTZ = location.UTCOffset === Utils.currUtcOffset();
 
-        const inCurrTZ = location.UTCOffset === Utils.currUtcOffset();
         if (inCurrTZ && Utils.isDateDST(date)) {
             hour++;
         }
         else if ((!inCurrTZ) &&
-            ((location.Israel && Utils.isIsrael_DST(date)) || Utils.isUSA_DST(date, hour))) {
+            ((location.Israel && Utils.isIsrael_DST(date)) || Utils.isUSA_DST(date))) {
             hour++;
         }
 
-        return Utils.fixHourMinute({ hour: hour, minute: min });
+        return Utils.fixTime({ hour: hour, minute: min, second: sec });
     }
 }

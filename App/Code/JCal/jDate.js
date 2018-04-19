@@ -34,7 +34,7 @@ export default class jDate {
     *  new jDate(absoluteDate) - The number of days elapsed since the theoretical date Sunday, December 31, 0001 BCE
     *  new jDate(jewishYear, jewishMonth, jewishDay, absoluteDate) - Most efficient constructor. Needs no calculations at all.
     *  new jDate( { year: 5776, month: 4, day: 5, abs: 122548708 } ) - same as new jDate(jewishYear, jewishMonth, jewishDay, absoluteDate)
-    * @param {Number | Date |String | {year:Number,month:Number,day:Number} | [Number, Number, Number, Number]} arg The full Jewish year number OR Javascript Date object or string OR object or array of year, month, day
+    * @param {Number | Date | String | {year:Number,month:Number,day:Number} | [Number, Number, Number, Number]} [arg] The full Jewish year number OR Javascript Date object or string OR object or array of year, month, day
     * @param {Number} [month] The month of the Jewish date. Nissan is 1.
     * @param {Number} [day] The day of the month
     * @param {Number} [abs] The number of days that have passed since 12/31/0001
