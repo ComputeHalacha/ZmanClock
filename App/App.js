@@ -16,46 +16,25 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         const sd = new Date(),
-            now = { hour: sd.getHours(), minute: sd.getMinutes(), second: sd.getSeconds() },
-            jd = new jDate(sd);
-        let zmanTime = Zmanim.getSunTimes(sd, Location.getJerusalem(), false).sunrise;
-        if (Utils.totalSeconds(zmanTime) < Utils.totalSeconds(now)) {
-            zmanTime = Zmanim.getSunTimes(new Date(sd.getTime() + 8.64E7), Location.getJerusalem(), false).sunrise;
-        }
-        this.state = {
-            sd,
-            now,
-            jd,
-            zmanToShow: { name: 'netzMishor', eng: 'Sunrise', heb: 'נץ החמה' },
-            zmanTime
-        };
+            nowTime = { hour: sd.getHours(), minute: sd.getMinutes(), second: sd.getSeconds() },
+            jd = new jDate(sd),
+            zmanTime = Zmanim.getSunTimes(sd, Location.getJerusalem(), false).sunrise;
+        this.state = { sd, nowTime, jd, zmanTime };
+        this.zmanToShow = { name: 'netzMishor', eng: 'Sunrise', heb: 'נץ החמה' };
         KeepAwake.activate();
     }
     componentDidMount() {
         setInterval(() => {
             const sd = new Date(),
-                now = { hour: sd.getHours(), minute: sd.getMinutes(), second: sd.getSeconds() };
+                nowTime = { hour: sd.getHours(), minute: sd.getMinutes(), second: sd.getSeconds() };
             if (sd.getDate() !== this.state.sd.getDate()) {
-                const jd = new jDate(sd);
-                let zmanTime = Zmanim.getSunTimes(sd, Location.getJerusalem(), false).sunrise;
-                if (Utils.totalSeconds(zmanTime) < Utils.totalSeconds(now)) {
-                    zmanTime = Zmanim.getSunTimes(new Date(sd.getDate() + 1), Location.getJerusalem(), false).sunrise;
-                }
-                this.setState({
-                    sd,
-                    now,
-                    jd,
-                    zmanToShow: { name: 'netzMishor', eng: 'Sunrise', heb: 'נץ החמה' },
-                    zmanTime
-                });
+                const jd = new jDate(sd),
+                    zmanTime = Zmanim.getSunTimes(sd, Location.getJerusalem(), false).sunrise;
+                this.setState({ sd, nowTime, jd, zmanTime });
                 console.log('Refreshed all stuff');
             }
             else {
-                this.setState({
-                    sd,
-                    now
-                });
-                console.log('Only refreshed current time');
+                this.setState({ sd, nowTime });
             }
         }, 1000);
     }
@@ -71,19 +50,19 @@ export default class App extends Component {
                         השעה עכשיו:
                     </Text>
                     <Text style={styles.timeText1}>
-                        {Utils.getTimeString(this.state.now, true)}
+                        {Utils.getTimeString(this.state.nowTime, true)}
                     </Text>
                     <Text style={styles.label2}>
-                        {`\n\n${this.state.zmanToShow.heb}:`}
+                        {`\n\n${this.zmanToShow.heb}:`}
                     </Text>
                     <Text style={styles.timeText2}>
                         {Utils.getTimeString(this.state.zmanTime, true)}
                     </Text>
                     <Text style={styles.label1}>
-                        {`\n\n${this.state.zmanToShow.heb} בעוד:`}
+                        {`\n\n${this.zmanToShow.heb} בעוד:`}
                     </Text>
                     <Text style={styles.timeText1}>
-                        {Utils.getTimeString(Utils.timeDiff(this.state.now, this.state.zmanTime), true)}
+                        {Utils.getTimeString(Utils.timeDiff(this.state.nowTime, this.state.zmanTime, true), true)}
                     </Text>
                 </View>
             </View>

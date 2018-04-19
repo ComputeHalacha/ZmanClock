@@ -195,23 +195,29 @@ export default class Utils {
 
     /**
      * Gets the time difference between two times of day.
-     * Assumes that the earlier time is always before the later time.
+     * If showNegative is falsey, assumes that the earlier time is always before the later time.
      * So, if laterTime is less than earlierTime, the returned diff is until the next day.
      * Both arguments need to be an object in the format {hour : 12, minute : 42, second : 18 }
      * @param {{hour:Number, minute:Number, second:Number}} earlierTime
      * @param {{hour:Number, minute:Number, second:Number}} laterTime
-     * @returns{{hour:Number, minute:Number, second:Number}}
+     * @param {Boolean} [showNegative] show negative values or assume second value is next day?
+     * @returns{{hour:Number, minute:Number, second:Number, sign:1|-1}}
      */
-    static timeDiff(earlierTime, laterTime) {
+    static timeDiff(earlierTime, laterTime, showNegative = false) {
         const earlySec = Utils.totalSeconds(earlierTime),
-            laterSec = Utils.totalSeconds(laterTime);
-        return Utils.fixTime({
-            hour: 0,
-            minute: 0,
-            second: earlySec <= laterSec
-                ? laterSec - earlySec
-                : (86400 - earlySec) + laterSec
-        });
+            laterSec = Utils.totalSeconds(laterTime),
+            time = Utils.fixTime({
+                hour: 0,
+                minute: 0,
+                second: earlySec <= laterSec
+                    ? laterSec - earlySec
+                    : showNegative ? (earlySec - laterSec) : ((86400 - earlySec) + laterSec)
+            });
+
+        return {
+            ...time,
+            sign: (earlySec <= laterSec || !showNegative) ? 1 : -1
+        };
     }
 
     /**
@@ -232,7 +238,7 @@ export default class Utils {
 
     /**
      * Returns the given time in a formatted string.
-     * @param {{hour:Number, minute:Number,second:Number}} time An object in the format {hour : 23, minute :42 }
+     * @param {{hour:Number, minute:Number,second:Number,sign?: 1 | -1}} time An object in the format {hour : 23, minute :42 }
      * @param {Boolean} [army] If falsey, the returned string will be: 11:42:18 PM otherwise it will be 23:42:18
      * @param {Boolean} [roundUp] If falsey, the numbers will converted to a whole number by rounding down, otherwise, up.
      */
@@ -240,14 +246,16 @@ export default class Utils {
         const round = roundUp ? Math.ceil : Math.floor;
         time = { hour: round(time.hour), minute: round(time.minute), second: round(time.second) };
         if (army) {
-            return (time.hour.toString() +
-                ':' +
-                (time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()) +
-                ':' +
-                (time.second < 10 ? '0' + time.second.toString() : time.second.toString()));
+            return (time.sign && time.sign < 0 ? '-' : '') +
+                (time.hour.toString() +
+                    ':' +
+                    (time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()) +
+                    ':' +
+                    (time.second < 10 ? '0' + time.second.toString() : time.second.toString()));
         }
         else {
-            return (time.hour <= 12 ? (time.hour == 0 ? 12 : time.hour) : time.hour - 12).toString() +
+            return (time.sign && time.sign < 0 ? '-' : '') +
+                (time.hour <= 12 ? (time.hour == 0 ? 12 : time.hour) : time.hour - 12).toString() +
                 ':' +
                 (time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()) +
                 ':' +
