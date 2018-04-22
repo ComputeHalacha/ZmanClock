@@ -31,7 +31,7 @@ export default class App extends Component {
 
     }
     componentDidMount() {
-        setInterval(() => {
+        this.timer = setInterval(() => {
             const sd = new Date(),
                 nowTime = Utils.timeFromDate(sd);
             if (sd.getDate() !== this.state.sd.getDate()) {
@@ -45,6 +45,11 @@ export default class App extends Component {
                 this.setState({ sd, nowTime });
             }
         }, 1000);
+    }
+    componentWillUnmount() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
     }
     toggleDrawer() {
         if (this.state.openDrawer) {
