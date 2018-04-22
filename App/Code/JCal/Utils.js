@@ -1,5 +1,6 @@
 import Zmanim from './Zmanim';
 import jDate from './jDate';
+import Location from './Location';
 
 export default class Utils {
     static jMonthsEng = ['', 'Nissan', 'Iyar', 'Sivan', 'Tamuz', 'Av', 'Ellul', 'Tishrei', 'Cheshvan', 'Kislev', 'Teves', 'Shvat', 'Adar', 'Adar Sheini'];
@@ -237,8 +238,21 @@ export default class Utils {
     }
 
     /**
+     * Returns the time of the given javascript date as an object in the format of {hour : 23, minute :42, second: 18 }
+     * @param {Date} sdate
+     * @returns {{hour : Number, minute :Number, second: Number }}
+     */
+    static timeFromDate(sdate) {
+        return {
+            hour: sdate.getHours(),
+            minute: sdate.getMinutes(),
+            second: sdate.getSeconds()
+        };
+    }
+
+    /**
      * Returns the given time in a formatted string.
-     * @param {{hour:Number, minute:Number,second:Number,sign?: 1 | -1}} time An object in the format {hour : 23, minute :42 }
+     * @param {{hour:Number, minute:Number,second:Number,sign?: 1 | -1}} time An object in the format {hour : 23, minute :42, second: 18 }
      * @param {Boolean} [army] If falsey, the returned string will be: 11:42:18 PM otherwise it will be 23:42:18
      * @param {Boolean} [roundUp] If falsey, the numbers will converted to a whole number by rounding down, otherwise, up.
      */

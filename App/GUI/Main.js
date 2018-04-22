@@ -16,27 +16,62 @@ export default class Main extends Component {
         this.openSettings = props.openSettings;
         this.closeSettings = props.closeSettings;
 
-        const sd = new Date(),
-            nowTime = { hour: sd.getHours(), minute: sd.getMinutes(), second: sd.getSeconds() },
-            jd = new jDate(sd),
-            zmanTime = Zmanim.getSunTimes(sd, Location.getJerusalem(), false).sunrise;
-        this.state = { sd, nowTime, jd, zmanTime };
         this.zmanToShow = { name: 'netzMishor', eng: 'Sunrise', heb: 'נץ החמה' };
+
+        const sd = new Date(),
+            nowTime = Utils.timeFromDate(sd),
+            jd = new jDate(sd),
+            { zmanTime, isTommorrow } = Main.getCorrectZmanTime(
+                sd, nowTime, Location.getJerusalem(), this.zmanToShow);
+        this.state = { sd, nowTime, jd, zmanTime, isTommorrow };
+
     }
     componentDidMount() {
         setInterval(() => {
             const sd = new Date(),
-                nowTime = { hour: sd.getHours(), minute: sd.getMinutes(), second: sd.getSeconds() };
+                nowTime = Utils.timeFromDate(sd);
             if (sd.getDate() !== this.state.sd.getDate()) {
                 const jd = new jDate(sd),
-                    zmanTime = Zmanim.getSunTimes(sd, Location.getJerusalem(), false).sunrise;
-                this.setState({ sd, nowTime, jd, zmanTime });
+                    { zmanTime, isTommorrow } = Main.getCorrectZmanTime(
+                        sd, nowTime, Location.getJerusalem(), this.zmanToShow);
+                this.setState({ sd, nowTime, jd, zmanTime, isTommorrow });
                 console.log('Refreshed all stuff');
             }
             else {
                 this.setState({ sd, nowTime });
             }
         }, 1000);
+    }
+    /**
+     * Returns the date corrected time of the given zman on the given date at the given location
+     * If the zman is after or within an hour of the given time, this days zman is returned, othwise tomorrows zman is returned.
+     * @param {Date} sdate
+     * @param {{hour : Number, minute :Number, second: Number }} time
+     * @param {Location} location
+     * @param {{ name: String, eng: String, heb: String }} zmanToShow
+     * @returns {{zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}}
+     */
+    static getCorrectZmanTime(sdate, time, location, zmanToShow) {
+        let zmanTime = Main.getZmanTime(sdate, location, zmanToShow),
+            isTommorrow = false,
+            diff = Utils.timeDiff(time, zmanTime, true);
+        if (diff.sign < 1 && Utils.totalMinutes(diff) >= 60) {
+            zmanTime = Main.getZmanTime(new Date(sdate.valueOf() + 8.64E7), location, zmanToShow);
+            isTommorrow = true;
+        }
+        return { zmanTime, isTommorrow };
+    }
+    /**
+     * Returns the time of the given zman on the given date at the given location
+     * @param {Date} sdate
+     * @param {Location} location
+     * @param {{ name: String, eng: String, heb: String }} zmanToShow
+     */
+    static getZmanTime(sdate, location, zmanToShow) {
+        switch (zmanToShow.name) {
+            case 'netzMishor':
+                return Zmanim.getSunTimes(sdate, location, false).sunrise
+        }
     }
     render() {
         return (
@@ -61,7 +96,10 @@ export default class Main extends Component {
                         {`\n\n${this.zmanToShow.heb} בעוד:`}
                     </Text>
                     <Text style={styles.timeText1}>
-                        {Utils.getTimeString(Utils.timeDiff(this.state.nowTime, this.state.zmanTime, true), true)}
+                        {Utils.getTimeString(Utils.timeDiff(
+                            this.state.nowTime,
+                            this.state.zmanTime,
+                            !this.state.isTommorrow), true)}
                     </Text>
                 </View>
             </View>
