@@ -3,8 +3,7 @@ import {
     ToolbarAndroid,
     StatusBar,
     DrawerLayoutAndroid,
-    StyleSheet,
-    Text
+    StyleSheet
 } from 'react-native';
 import KeepAwake from 'react-native-keep-awake';
 import jDate from './Code/JCal/jDate';
@@ -23,10 +22,10 @@ export default class App extends Component {
 
         const sd = new Date(),
             nowTime = Utils.timeFromDate(sd),
-            jd = new jDate(sd),
+            jdate = new jDate(sd),
             { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(
                 sd, nowTime, Location.getJerusalem(), this.zmanToShow);
-        this.state = { openDrawer: false, sd, nowTime, jd, zmanTime, isTommorrow };
+        this.state = { openDrawer: false, sd, nowTime, jdate, zmanTime, isTommorrow };
         this.toggleDrawer = this.toggleDrawer.bind(this);
 
     }
@@ -35,10 +34,10 @@ export default class App extends Component {
             const sd = new Date(),
                 nowTime = Utils.timeFromDate(sd);
             if (sd.getDate() !== this.state.sd.getDate()) {
-                const jd = new jDate(sd),
+                const jdate = new jDate(sd),
                     { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(
                         sd, nowTime, Location.getJerusalem(), this.zmanToShow);
-                this.setState({ sd, nowTime, jd, zmanTime, isTommorrow });
+                this.setState({ sd, nowTime, jdate, zmanTime, isTommorrow });
                 console.log('Refreshed all stuff');
             }
             else {
@@ -73,10 +72,9 @@ export default class App extends Component {
                     rtl={true}
                     style={styles.toolbarAndroid}
                     navIcon={require('./Images/menu.png')}
-                    onIconClicked={() => this.toggleDrawer()}>
-                    <Text style={styles.dateText}>{this.state.jd.toStringHeb()}</Text>
-                </ToolbarAndroid>
+                    onIconClicked={() => this.toggleDrawer()} />
                 <Main
+                    jdate={this.state.jdate}
                     zmanToShow={this.zmanToShow}
                     nowTime={this.state.nowTime}
                     zmanTime={this.state.zmanTime}
@@ -90,9 +88,5 @@ const styles = StyleSheet.create({
     toolbarAndroid: {
         height: 40,
         backgroundColor: '#000'
-    },
-    dateText: {
-        color: '#999',
-        fontSize: 20
     },
 });
