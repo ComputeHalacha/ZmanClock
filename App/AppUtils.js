@@ -1,6 +1,7 @@
 import Utils from './Code/JCal/Utils';
 import Zmanim from './Code/JCal/Zmanim';
 import Location from './Code/JCal/Location';
+import { ZmanTypes } from './Code/ZmanTypes';
 
 export default class AppUtils {
     /**
@@ -9,7 +10,7 @@ export default class AppUtils {
          * @param {Date} sdate
          * @param {{hour : Number, minute :Number, second: Number }} time
          * @param {Location} location
-         * @param {{ name: String, eng: String, heb: String }} zmanToShow
+         * @param {{ decs: String, eng: String, heb: String }} zmanToShow
          * @returns {{zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}}
          */
     static getCorrectZmanTime(sdate, time, location, zmanToShow) {
@@ -27,11 +28,11 @@ export default class AppUtils {
      * Returns the time of the given zman on the given date at the given location
      * @param {Date} sdate
      * @param {Location} location
-     * @param {{ name: String, eng: String, heb: String }} zmanToShow
+     * @param {{ decs: String, eng: String, heb: String }} zmanToShow
      */
     static getZmanTime(sdate, location, zmanToShow) {
-        switch (zmanToShow.name) {
-            case 'netzMishor':
+        switch (zmanToShow) {
+            case ZmanTypes.netzMishor:
                 return Zmanim.getSunTimes(sdate, location, false).sunrise;
         }
     }

@@ -12,23 +12,37 @@ import Location from './Code/JCal/Location';
 import Main from './GUI/Main';
 import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './AppUtils';
+import Settings from './Code/Settings';
 
 export default class App extends Component {
     constructor(props) {
         super(props);
         KeepAwake.activate();
 
-        this.zmanToShow = { name: 'netzMishor', eng: 'Sunrise', heb: 'נץ החמה' };
-
-        const sd = new Date(),
-            nowTime = Utils.timeFromDate(sd),
-            jdate = new jDate(sd),
-            { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(
-                sd, nowTime, Location.getJerusalem(), this.zmanToShow);
-        this.state = { openDrawer: false, sd, nowTime, jdate, zmanTime, isTommorrow };
+        this.setInitialData = this.setInitialData.bind(this);
+        this.getStorageData = this.getStorageData.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
 
+        this.setInitialData();
+        this.getStorageData();
     }
+
+    setInitialData() {
+        const settings = new Settings(), sd = new Date(), nowTime = Utils.timeFromDate(sd), jdate = new jDate(sd), { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(sd, nowTime, settings.location, settings.zmanimToShow[0]);
+        this.zmanToShow = this.settings.zmanimToShow[0];
+        this.location = this.settings.location;
+        this.state = { openDrawer: false, settings: settings, sd, nowTime, jdate, zmanTime, isTommorrow };
+    }
+
+    async getStorageData() {
+        const settings = await Settings.GetSettings();
+        this.settings = settings;
+        this.zmanToShow = this.settings.zmanimToShow[0];
+        this.location = this.settings.location;
+        const sd = new Date(), nowTime = Utils.timeFromDate(sd), jdate = new jDate(sd), { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(sd, nowTime, this.location, this.zmanToShow);
+        this.setState({ openDrawer: false, settings, sd, nowTime, jdate, zmanTime, isTommorrow });
+    }
+
     componentDidMount() {
         this.timer = setInterval(() => {
             const sd = new Date(),
@@ -36,7 +50,7 @@ export default class App extends Component {
             if (sd.getDate() !== this.state.sd.getDate()) {
                 const jdate = new jDate(sd),
                     { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(
-                        sd, nowTime, Location.getJerusalem(), this.zmanToShow);
+                        sd, nowTime, this.location, this.zmanToShow);
                 this.setState({ sd, nowTime, jdate, zmanTime, isTommorrow });
                 console.log('Refreshed all stuff');
             }
@@ -65,7 +79,8 @@ export default class App extends Component {
             <DrawerLayoutAndroid
                 drawerWidth={300}
                 drawerPosition={DrawerLayoutAndroid.positions.Right}
-                renderNavigationView={() => <SettingsDrawer />}
+                renderNavigationView={() =>
+                    <SettingsDrawer close={this.toggleDrawer} settings={this.state.settings} />}
                 ref={(drawer) => this.drawer = drawer}>
                 <StatusBar hidden={true} />
                 <ToolbarAndroid
