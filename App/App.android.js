@@ -29,16 +29,15 @@ export default class App extends Component {
 
     setInitialData() {
         const settings = new Settings(), sd = new Date(), nowTime = Utils.timeFromDate(sd), jdate = new jDate(sd), { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(sd, nowTime, settings.location, settings.zmanimToShow[0]);
-        this.zmanToShow = this.settings.zmanimToShow[0];
-        this.location = this.settings.location;
+        this.zmanToShow = settings.zmanimToShow[0];
+        this.location = settings.location;
         this.state = { openDrawer: false, settings: settings, sd, nowTime, jdate, zmanTime, isTommorrow };
     }
 
     async getStorageData() {
         const settings = await Settings.GetSettings();
-        this.settings = settings;
-        this.zmanToShow = this.settings.zmanimToShow[0];
-        this.location = this.settings.location;
+        this.zmanToShow = settings.zmanimToShow[0];
+        this.location = settings.location;
         const sd = new Date(), nowTime = Utils.timeFromDate(sd), jdate = new jDate(sd), { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(sd, nowTime, this.location, this.zmanToShow);
         this.setState({ openDrawer: false, settings, sd, nowTime, jdate, zmanTime, isTommorrow });
     }
@@ -64,10 +63,13 @@ export default class App extends Component {
             clearInterval(this.timer);
         }
     }
-    toggleDrawer() {
+    toggleDrawer(settings) {
         if (this.state.openDrawer) {
+            if (!settings) {
+                settings = this.state.settings;
+            }
             this.drawer.closeDrawer();
-            this.setState({ openDrawer: false });
+            this.setState({ openDrawer: false, settings });
         }
         else {
             this.drawer.openDrawer();
