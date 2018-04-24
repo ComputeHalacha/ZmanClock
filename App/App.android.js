@@ -36,7 +36,7 @@ export default class App extends Component {
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
             zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
 
-        this.state = { openDrawer: false, zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate };
+        this.state = { openDrawer: false, settings, zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate };
     }
 
     async getStorageData() {
@@ -48,7 +48,7 @@ export default class App extends Component {
             zmanimToShow = settings.zmanimToShow,
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
             zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
-        this.setState({ zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate });
+        this.setState({ settings, zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate });
     }
 
     componentDidMount() {
@@ -79,7 +79,12 @@ export default class App extends Component {
             }
             settings.save();
             this.drawer.closeDrawer();
-            this.setState({ openDrawer: false, settings });
+
+            const zmanimToShow = settings.zmanimToShow,
+            location = settings.location,
+                zmanTimes = AppUtils.getCorrectZmanTimes(this.state.sd, this.state.nowTime, location, zmanimToShow),
+                zmanToShow = AppUtils.getNextZmanToShow(this.state.nowTime, zmanTimes);
+            this.setState({ openDrawer: false, settings: new Settings(zmanimToShow, location), zmanimToShow, zmanToShow, zmanTimes });
         }
         else {
             this.drawer.openDrawer();

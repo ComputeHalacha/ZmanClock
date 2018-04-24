@@ -13,8 +13,8 @@ export default class AppUtils {
     * @param {Date} sdate
     * @param {{hour : Number, minute :Number, second: Number }} time
     * @param {Location} location
-    * @param {[{ decs: String, eng: String, heb: String }]} zmanTypes
-    * @returns {[{zmanType:{ decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]}
+    * @param {[{name:String, decs: String, eng: String, heb: String }]} zmanTypes
+    * @returns {[{zmanType:{name:String, decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]}
     */
     static getCorrectZmanTimes(sdate, time, location, zmanTypes) {
         const correctedTimes = [],
@@ -37,8 +37,8 @@ export default class AppUtils {
     /**
      *
      * @param {{hour : Number, minute :Number, second: Number }} time
-     * @param {[{zmanType:{ decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]} zmanTimes
-     * @returns {{zmanType:{ decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}}
+     * @param {[{zmanType:{name:String, decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]} zmanTimes
+     * @returns {{zmanType:{name:String, decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}}
      */
     static getNextZmanToShow(time, zmanTimes) {
         let next = zmanTimes.find(zt => !zt.isTommorrow && Utils.totalSeconds(zt.zmanTime) > Utils.totalSeconds(time));
@@ -94,116 +94,116 @@ export default class AppUtils {
             AppUtils.zmanTimesCache.push({ date, location, sunrise, sunset, suntimesMishor, sunriseMishor, sunsetMishor, candles, mishorNeg90, chatzos, shaaZmanis, shaaZmanis90 });
         }
         for (let zmanType of zmanTypes) {
-            switch (zmanType) {
-                case ZmanTypes.alos90:
+            switch (zmanType.name) {
+                case 'alos90':
                     zmanTimes.push({
                         zmanType,
                         time: mishorNeg90
                     });
                     break;
-                case ZmanTypes.alos72:
+                case 'alos72':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunriseMishor, -72)
                     });
                     break;
-                case ZmanTypes.netzElevation:
+                case 'netzElevation':
                     zmanTimes.push({
                         zmanType,
                         time: sunrise
                     });
                     break;
-                case ZmanTypes.netzMishor:
+                case 'netzMishor':
                     zmanTimes.push({
                         zmanType,
                         time: sunriseMishor
                     });
                     break;
-                case ZmanTypes.szksMga:
+                case 'szksMga':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(mishorNeg90, Math.floor(shaaZmanis90 * 3))
                     });
                     break;
-                case ZmanTypes.szksGra:
+                case 'szksGra':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunriseMishor, Math.floor(shaaZmanis * 3))
                     });
                     break;
-                case ZmanTypes.sztMga:
+                case 'sztMga':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(mishorNeg90, Math.floor(shaaZmanis90 * 4))
                     });
                     break;
-                case ZmanTypes.sztGra:
+                case 'sztGra':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunriseMishor, Math.floor(shaaZmanis * 4))
                     });
                     break;
-                case ZmanTypes.chatzos:
+                case 'chatzos':
                     zmanTimes.push({
                         zmanType,
                         time: chatzos
                     });
                     break;
-                case ZmanTypes.minGed:
+                case 'minGed':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(chatzos, (shaaZmanis * 0.5))
                     });
                     break;
-                case ZmanTypes.minKet:
+                case 'minKet':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunriseMishor, (shaaZmanis * 9.5))
                     });
                     break;
-                case ZmanTypes.plag:
+                case 'plag':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunriseMishor, (shaaZmanis * 10.75))
                     });
                     break;
-                case zmanTypes.candles:
+                case 'candles':
                     zmanTimes.push({
                         zmanType,
                         time: candles
                     });
                     break;
-                case ZmanTypes.shkiaMishor:
+                case 'shkiaMishor':
                     zmanTimes.push({
                         zmanType,
                         time: sunsetMishor
                     });
                     break;
-                case ZmanTypes.shkiaElevation:
+                case 'shkiaElevation':
                     zmanTimes.push({
                         zmanType,
                         time: sunset
                     });
                     break;
-                case ZmanTypes.tzais45:
+                case 'tzais45':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunset, 45)
                     });
                     break;
-                case ZmanTypes.tzais72:
+                case 'tzais72':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunset, 72)
                     });
                     break;
-                case ZmanTypes.tzais72Zmaniot:
+                case 'tzais72Zmaniot':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunset, (shaaZmanis * 1.2))
                     });
                     break;
-                case ZmanTypes.tzais72ZmaniotMA:
+                case 'tzais72ZmaniotMA':
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(sunset, (shaaZmanis90 * 1.2))

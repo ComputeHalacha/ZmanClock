@@ -26,7 +26,7 @@ export default class Main extends Component {
                         {`\n\n${this.props.zmanToShow.zmanType.heb}:`}
                     </Text>
                     <Text style={styles.timeText2}>
-                        {Utils.getTimeString(this.props.zmanToShow.zmanTime, true)}
+                        {Utils.getTimeString(this.props.zmanToShow.time, true)}
                     </Text>
                     <Text style={styles.label1}>
                         {`\n\n${this.props.zmanToShow.zmanType.heb} בעוד:`}
@@ -34,7 +34,7 @@ export default class Main extends Component {
                     <Text style={styles.timeText3}>
                         {Utils.getTimeString(Utils.timeDiff(
                             this.props.nowTime,
-                            this.props.zmanToShow.zmanTime,
+                            this.props.zmanToShow.time,
                             !this.props.zmanToShow.isTommorrow), true)}
                     </Text>
                 </View>
