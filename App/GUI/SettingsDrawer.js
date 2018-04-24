@@ -5,9 +5,11 @@ import {
     View,
     StatusBar,
     TouchableOpacity,
-    Picker
+    Picker,
+    ScrollView,
 } from 'react-native';
 import { Locations } from '../Code/Locations';
+import { ZmanTypes } from '../Code/ZmanTypes';
 
 export default class SettingsDrawer extends Component {
     constructor(props) {
@@ -40,6 +42,10 @@ export default class SettingsDrawer extends Component {
 
                             }
                         </Picker>
+                        <ScrollView>
+                            {ZmanTypes.map((zt, i) => <View key={i}>
+                            </View>)}
+                        </ScrollView>
                     </View>
                     <Text style={styles.close} onPress={() => this.close(this.state.settings)}>סגור X</Text>
                 </View>
@@ -85,9 +91,9 @@ const styles = StyleSheet.create({
     label: {
         color: '#999'
     },
-    picker:{
-        height:30,
-        width:'100%',
-        backgroundColor:'#555'
+    picker: {
+        height: 30,
+        width: '100%',
+        backgroundColor: '#555'
     }
 });

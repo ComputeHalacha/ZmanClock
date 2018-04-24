@@ -9,8 +9,9 @@ export const ZmanTypes = Object.freeze({
     sztGra: { decs: 'סז"ת הגר"א', eng: 'Tefilla - GR"A', heb: 'סז"ת הגר"א' },
     chatzos: { decs: 'חצות היום והלילה', eng: 'Chatzos - day & Night', heb: 'חצות היום והלילה' },
     minGed: { decs: 'מנחה גדולה', eng: 'Mincha Gedola', heb: 'מנחה גדולה' },
-    minKit: { decs: 'מנחה קטנה', eng: 'Mincha Ketana', heb: 'מנחה קטנה' },
+    minKet: { decs: 'מנחה קטנה', eng: 'Mincha Ketana', heb: 'מנחה קטנה' },
     plag: { decs: 'פלג המנחה', eng: 'Plag HaMincha', heb: 'פלג המנחה' },
+    candles: { decs: 'הדלקת נרות', eng: 'Candle Lighting', heb: 'הדלקת נרות' },
     shkiaMishor: { decs: 'שקיעת החמה מגובה פני הים', eng: 'Sunset', heb: 'שקיעת החמה' },
     shkiaElevation: { decs: 'שקיעת החמה מגובה המיקום', eng: 'Sunset', heb: 'שקיעת החמה' },
     tzais45: { decs: '45 דקות אחרי שקיעה', eng: 'Nightfall', heb: 'צאת הכוכבים' },
@@ -18,3 +19,24 @@ export const ZmanTypes = Object.freeze({
     tzais72Zmaniot: { decs: '72 דקות זמניות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' },
     tzais72ZmaniotMA: { decs: '72 דקות זמניות אחרי שקיעה - מג"א', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' }
 });
+export const ZmanTypesList = [
+    ZmanTypes.alos90,
+    ZmanTypes.alos72,
+    ZmanTypes.netzElevation,
+    ZmanTypes.netzMishor,
+    ZmanTypes.szksMga,
+    ZmanTypes.szksGra,
+    ZmanTypes.sztMga,
+    ZmanTypes.sztGra,
+    ZmanTypes.chatzos,
+    ZmanTypes.minGed,
+    ZmanTypes.minKet,
+    ZmanTypes.plag,
+    ZmanTypes.candles,
+    ZmanTypes.shkiaMishor,
+    ZmanTypes.shkiaElevation,
+    ZmanTypes.tzais45,
+    ZmanTypes.tzais72,
+    ZmanTypes.tzais72Zmaniot,
+    ZmanTypes.tzais72ZmaniotMA
+];

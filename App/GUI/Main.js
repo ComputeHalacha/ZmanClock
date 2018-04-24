@@ -23,19 +23,19 @@ export default class Main extends Component {
 
                 <View style={styles.container}>
                     <Text style={styles.label2}>
-                        {`\n\n${this.props.zmanToShow.heb}:`}
+                        {`\n\n${this.props.zmanToShow.zmanType.heb}:`}
                     </Text>
                     <Text style={styles.timeText2}>
-                        {Utils.getTimeString(this.props.zmanTime, true)}
+                        {Utils.getTimeString(this.props.zmanToShow.zmanTime, true)}
                     </Text>
                     <Text style={styles.label1}>
-                        {`\n\n${this.props.zmanToShow.heb} בעוד:`}
+                        {`\n\n${this.props.zmanToShow.zmanType.heb} בעוד:`}
                     </Text>
                     <Text style={styles.timeText3}>
                         {Utils.getTimeString(Utils.timeDiff(
                             this.props.nowTime,
-                            this.props.zmanTime,
-                            !this.props.isTommorrow), true)}
+                            this.props.zmanToShow.zmanTime,
+                            !this.props.zmanToShow.isTommorrow), true)}
                     </Text>
                 </View>
             </View>
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     dateText: {
         color: '#b88',
         fontSize: 25,
-        marginBottom:25
+        marginBottom: 25
     },
     timeText1: {
         color: '#999',

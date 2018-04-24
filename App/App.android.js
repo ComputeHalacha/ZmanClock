@@ -8,7 +8,6 @@ import {
 import KeepAwake from 'react-native-keep-awake';
 import jDate from './Code/JCal/jDate';
 import Utils from './Code/JCal/Utils';
-import Location from './Code/JCal/Location';
 import Main from './GUI/Main';
 import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './AppUtils';
@@ -28,18 +27,28 @@ export default class App extends Component {
     }
 
     setInitialData() {
-        const settings = new Settings(), sd = new Date(), nowTime = Utils.timeFromDate(sd), jdate = new jDate(sd), { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(sd, nowTime, settings.location, settings.zmanimToShow[0]);
-        this.zmanToShow = settings.zmanimToShow[0];
-        this.location = settings.location;
-        this.state = { openDrawer: false, settings: settings, sd, nowTime, jdate, zmanTime, isTommorrow };
+        const settings = new Settings(),
+            sd = new Date(),
+            nowTime = Utils.timeFromDate(sd),
+            jdate = new jDate(sd),
+            location = settings.location,
+            zmanimToShow = settings.zmanimToShow,
+            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
+            zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
+
+        this.state = { openDrawer: false, zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate };
     }
 
     async getStorageData() {
-        const settings = await Settings.GetSettings();
-        this.zmanToShow = settings.zmanimToShow[0];
-        this.location = settings.location;
-        const sd = new Date(), nowTime = Utils.timeFromDate(sd), jdate = new jDate(sd), { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(sd, nowTime, this.location, this.zmanToShow);
-        this.setState({ openDrawer: false, settings, sd, nowTime, jdate, zmanTime, isTommorrow });
+        const settings = await Settings.GetSettings(),
+            sd = new Date(),
+            nowTime = Utils.timeFromDate(sd),
+            jdate = new jDate(sd),
+            location = settings.location,
+            zmanimToShow = settings.zmanimToShow,
+            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
+            zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
+        this.setState({ zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate });
     }
 
     componentDidMount() {
@@ -48,9 +57,9 @@ export default class App extends Component {
                 nowTime = Utils.timeFromDate(sd);
             if (sd.getDate() !== this.state.sd.getDate()) {
                 const jdate = new jDate(sd),
-                    { zmanTime, isTommorrow } = AppUtils.getCorrectZmanTime(
-                        sd, nowTime, this.location, this.zmanToShow);
-                this.setState({ sd, nowTime, jdate, zmanTime, isTommorrow });
+                    zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.location, this.state.zmanimToShow),
+                    zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
+                this.setState({ zmanToShow, zmanTimes, sd, nowTime, jdate });
                 console.log('Refreshed all stuff');
             }
             else {
@@ -68,6 +77,7 @@ export default class App extends Component {
             if (!settings) {
                 settings = this.state.settings;
             }
+            settings.save();
             this.drawer.closeDrawer();
             this.setState({ openDrawer: false, settings });
         }
@@ -92,10 +102,8 @@ export default class App extends Component {
                     onIconClicked={() => this.toggleDrawer()} />
                 <Main
                     jdate={this.state.jdate}
-                    zmanToShow={this.zmanToShow}
-                    nowTime={this.state.nowTime}
-                    zmanTime={this.state.zmanTime}
-                    isTommorrow={this.state.isTommorrow} />
+                    zmanToShow={this.state.zmanToShow}
+                    nowTime={this.state.nowTime} />
             </DrawerLayoutAndroid>
         );
     }

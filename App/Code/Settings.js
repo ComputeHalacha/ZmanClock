@@ -4,7 +4,13 @@ import { AsyncStorage } from 'react-native';
 
 export default class Settings {
     constructor() {
+        /**
+         * @property {[ZmanTypes]} zmanimToShow
+         */
         this.zmanimToShow = [ZmanTypes.netzMishor];
+        /**
+         * @property {Location} location
+         */
         this.location = Location.getJerusalem();
     }
     async save() {
