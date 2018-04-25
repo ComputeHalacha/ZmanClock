@@ -18,14 +18,15 @@ export default class Settings {
          */
         this.location = location || Location.getJerusalem();
     }
-    async save() {
-        await AsyncStorage.setItem('ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow));
-        await AsyncStorage.setItem('LOCATION', JSON.stringify(this.location));
+    save() {
+        AsyncStorage.multiSet([
+            ['ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow)],
+            ['LOCATION', JSON.stringify(this.location)]]);
     }
-    static async GetSettings() {
-        const settings = new Settings(),
-            zmanimToShow = await AsyncStorage.getItem('ZMANIM_TO_SHOW'),
-            location = await AsyncStorage.getItem('LOCATION');
+    static async getSettings() {
+        const [zmanimToShow, location] = await AsyncStorage.multiGet(['ZMANIM_TO_SHOW', 'LOCATION']),
+        settings = new Settings();
+        console.log('got settings');
 
         if (zmanimToShow) {
             settings.zmanimToShow = JSON.parse(zmanimToShow);

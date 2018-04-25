@@ -23,7 +23,6 @@ export default class App extends Component {
         this.toggleDrawer = this.toggleDrawer.bind(this);
 
         this.setInitialData();
-        this.getStorageData();
     }
 
     setInitialData() {
@@ -40,7 +39,7 @@ export default class App extends Component {
     }
 
     async getStorageData() {
-        const settings = await Settings.GetSettings(),
+        const settings = await Settings.getSettings(),
             sd = new Date(),
             nowTime = Utils.timeFromDate(sd),
             jdate = new jDate(sd),
@@ -52,6 +51,7 @@ export default class App extends Component {
     }
 
     componentDidMount() {
+        this.getStorageData();
         this.timer = setInterval(() => {
             const sd = new Date(),
                 nowTime = Utils.timeFromDate(sd);
