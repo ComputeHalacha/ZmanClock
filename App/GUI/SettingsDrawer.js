@@ -5,6 +5,7 @@ import {
     View,
     StatusBar,
     TouchableOpacity,
+    Switch,
     Picker,
     ScrollView,
 } from 'react-native';
@@ -30,6 +31,7 @@ export default class SettingsDrawer extends Component {
                         <Text style={styles.label}>בחר מיקום</Text>
                         <Picker
                             style={styles.picker}
+                            itemStyle={styles.pickerItem}
                             selectedValue={this.state.settings.location}
                             onValueChange={(location) => {
                                 const settings = this.state.settings;
@@ -43,7 +45,23 @@ export default class SettingsDrawer extends Component {
                             }
                         </Picker>
                         <ScrollView>
-                            {ZmanTypes.map((zt, i) => <View key={i}>
+                            {ZmanTypes.map((zt, i) => <View style={styles.ztView} key={i}>
+                                <Switch
+                                    value={Boolean(this.state.settings.zmanimToShow.find(z => z.name === zt.name))}
+                                    onValueChange={v => {
+                                        const settings = this.state.settings;
+                                        if (v) {
+                                            if (settings.zmanimToShow.length > 1) {
+                                                settings.zmanimToShow.splice(
+                                                    settings.zmanimToShow.findIndex(z => z.name === zt.name), 1);
+                                            }
+                                        }
+                                        else {
+                                            settings.zmanimToShow.push(zt);
+                                        }
+                                        this.setState({ settings });
+                                    }} />
+                                <Text style={styles.label}>{zt.decs}</Text>
                             </View>)}
                         </ScrollView>
                     </View>
@@ -95,5 +113,12 @@ const styles = StyleSheet.create({
         height: 30,
         width: '100%',
         backgroundColor: '#555'
+    },
+    pickerItem: {
+        backgroundColor: '#000',
+        color: '#999'
+    },
+    ztView: {
+        flexDirection: 'row-reverse',
     }
 });

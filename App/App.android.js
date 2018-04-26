@@ -38,16 +38,13 @@ export default class App extends Component {
         this.state = { openDrawer: false, settings, zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate };
     }
 
-    async getStorageData() {
-        const settings = await Settings.getSettings(),
-            sd = new Date(),
-            nowTime = Utils.timeFromDate(sd),
-            jdate = new jDate(sd),
-            location = settings.location,
-            zmanimToShow = settings.zmanimToShow,
-            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
-            zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
-        this.setState({ settings, zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate });
+    getStorageData() {
+        Settings.getSettings().then(settings => {
+            const location = settings.location,
+                zmanimToShow = settings.zmanimToShow;
+            //Setting the state sd to null causes a full refresh on the next ietration of the timer.
+            this.setState({ settings, zmanimToShow, location, sd: null });
+        });
     }
 
     componentDidMount() {
@@ -55,7 +52,7 @@ export default class App extends Component {
         this.timer = setInterval(() => {
             const sd = new Date(),
                 nowTime = Utils.timeFromDate(sd);
-            if (sd.getDate() !== this.state.sd.getDate()) {
+            if ((!this.state.sd) || sd.getDate() !== this.state.sd.getDate()) {
                 const jdate = new jDate(sd),
                     zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.location, this.state.zmanimToShow),
                     zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
@@ -81,7 +78,7 @@ export default class App extends Component {
             this.drawer.closeDrawer();
 
             const zmanimToShow = settings.zmanimToShow,
-            location = settings.location,
+                location = settings.location,
                 zmanTimes = AppUtils.getCorrectZmanTimes(this.state.sd, this.state.nowTime, location, zmanimToShow),
                 zmanToShow = AppUtils.getNextZmanToShow(this.state.nowTime, zmanTimes);
             this.setState({ openDrawer: false, settings: new Settings(zmanimToShow, location), zmanimToShow, zmanToShow, zmanTimes });

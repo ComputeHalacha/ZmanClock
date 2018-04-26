@@ -5,8 +5,8 @@ import { AsyncStorage } from 'react-native';
 export default class Settings {
     /**
      *
-     * @param {[{name:String, decs: String, eng: String, heb: String }]} zmanimToShow
-     * @param {Location} location
+     * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow]
+     * @param {Location} [location]
      */
     constructor(zmanimToShow, location) {
         /**
@@ -26,16 +26,12 @@ export default class Settings {
     static async getSettings() {
         const [zmanimToShow, location] = await AsyncStorage.multiGet(['ZMANIM_TO_SHOW', 'LOCATION']),
         settings = new Settings();
-        console.log('got settings');
 
         if (zmanimToShow) {
-            settings.zmanimToShow = JSON.parse(zmanimToShow);
+            settings.zmanimToShow = JSON.parse(zmanimToShow[1]);
         }
         if (location) {
-            settings.location = JSON.parse(location);
-        }
-        if ((!zmanimToShow) || (!location)) {
-            await settings.save();
+            settings.location = JSON.parse(location[1]);
         }
 
         return settings;
