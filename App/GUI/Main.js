@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
     StyleSheet,
     Text,
-    View
+    View,
+    ScrollView
 } from 'react-native';
 import Utils from '../Code/JCal/Utils';
 
@@ -11,37 +12,36 @@ export default class Main extends Component {
         super(props);
     }
     render() {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.dateText}>{this.props.jdate.toStringHeb()}</Text>
-                <Text style={styles.label1}>
-                    השעה עכשיו:
-                </Text>
-                <Text style={styles.timeText1}>
-                    {Utils.getTimeString(this.props.nowTime, true)}
-                </Text>
-
-                <View style={styles.container}>
-                    <Text style={styles.label2}>
-                        {`\n\n${this.props.zmanToShow.zmanType.heb}:`}
-                    </Text>
-                    <Text style={styles.timeText2}>
-                        {Utils.getTimeString(this.props.zmanToShow.time, true)}
-                    </Text>
-                    <Text style={styles.label1}>
-                        {`\n\n${this.props.zmanToShow.zmanType.heb} בעוד:`}
-                    </Text>
-                    <Text style={styles.timeText3}>
-                        {Utils.getTimeString(Utils.timeDiff(
-                            this.props.nowTime,
-                            this.props.zmanToShow.time,
-                            !this.props.zmanToShow.isTommorrow), true)}
-                    </Text>
-                </View>
-            </View>
-        );
+        return <View style={styles.container}>
+            <Text style={styles.dateText}>{this.props.jdate.toStringHeb()}</Text>
+            <Text style={styles.timeNowText}>השעה עכשיו:</Text>
+            <Text style={styles.timeText1}>
+                {Utils.getTimeString(this.props.nowTime, true)}
+            </Text>
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+                {this.props.zmanTimes.map((zt, i) =>
+                    <View key={i} style={styles.singleZman}>
+                        <Text style={styles.timeRemainingLabel}>
+                            {`${zt.zmanType.heb} בעוד:`}
+                        </Text>
+                        <Text style={styles.timeRemainingText}>
+                            {Utils.getTimeString(Utils.timeDiff(
+                                this.props.nowTime,
+                                zt.time,
+                                !zt.isTommorrow), true)}
+                        </Text>
+                        <Text style={styles.zmanTypeNameText}>
+                            {'בשעה: '}
+                            <Text style={styles.zmanTimeText}>
+                                {Utils.getTimeString(zt.time, true)}
+                            </Text>
+                        </Text>
+                    </View>)}
+            </ScrollView>
+        </View>;
     }
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -49,6 +49,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    scrollView:{flex: 1},
+    scrollContent: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#000'
+    },
+    singleZman: {
+        backgroundColor: '#000',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#333',
+        borderTopWidth: 1,
+        padding: 10
     },
     dateText: {
         color: '#b88',
@@ -59,22 +73,25 @@ const styles = StyleSheet.create({
         color: '#999',
         fontSize: 60,
     },
-    timeText2: {
-        color: '#999',
-        fontSize: 30,
-    },
-    timeText3: {
-        color: '#a99',
-        fontSize: 50,
-    },
-    label1: {
+    timeNowText: {
         color: '#99f',
         fontSize: 18,
         fontWeight: 'bold'
     },
-    label2: {
+    zmanTimeText: {
+        color: '#9b9'
+    },
+    timeRemainingText: {
+        color: '#a99',
+        fontSize: 50,
+    },
+    timeRemainingLabel: {
         color: '#99f',
-        fontSize: 12,
+        fontSize: 18,
         fontWeight: 'bold'
+    },
+    zmanTypeNameText: {
+        color: '#99f',
+        fontSize: 14
     },
 });

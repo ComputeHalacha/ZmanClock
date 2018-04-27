@@ -1,5 +1,5 @@
 import Location from './JCal/Location';
-import { ZmanTypes } from './ZmanTypes';
+import { ZmanTypes, getZmanType } from './ZmanTypes';
 import { AsyncStorage } from 'react-native';
 
 export default class Settings {
@@ -12,7 +12,7 @@ export default class Settings {
         /**
          * @property {[ZmanTypes]} zmanimToShow
          */
-        this.zmanimToShow = zmanimToShow || [ZmanTypes.find(zt => zt.name === 'netzMishor')];
+        this.zmanimToShow = zmanimToShow || [getZmanType('netzMishor'), getZmanType('szksMga'), getZmanType('shkiaElevation'), getZmanType('tzais72')];
         /**
          * @property {Location} location
          */

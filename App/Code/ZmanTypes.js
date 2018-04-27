@@ -19,3 +19,13 @@ export const ZmanTypes = [
     { name: 'tzais72Zmaniot', decs: '72 דקות זמניות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' },
     { name: 'tzais72ZmaniotMA', decs: '72 דקות זמניות אחרי שקיעה - מג"א', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' }
 ];
+
+/**
+ * Get the ZmanType with the given name.
+ * @param {String} name
+ * @returns {{name:String, decs: String, eng: String, heb: String }}
+ */
+export function getZmanType(name) {
+    return ZmanTypes.find(zt =>
+        zt.name.toLowerCase() === name.toLowerCase());
+}

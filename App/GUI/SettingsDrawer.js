@@ -3,8 +3,6 @@ import {
     StyleSheet,
     Text,
     View,
-    StatusBar,
-    TouchableOpacity,
     Switch,
     Picker,
     ScrollView,
@@ -27,7 +25,6 @@ export default class SettingsDrawer extends Component {
                 <View style={styles.container}>
                     <Text style={styles.header}>שעון זמנים - הגדרות</Text>
                     <View style={styles.inContainer}>
-                        <Text style={styles.label}>{this.state.settings.zmanimToShow[0].decs}</Text>
                         <Text style={styles.label}>בחר מיקום</Text>
                         <Picker
                             style={styles.picker}
@@ -44,7 +41,8 @@ export default class SettingsDrawer extends Component {
 
                             }
                         </Picker>
-                        <ScrollView>
+                        <Text style={styles.label}>בחר זמנים</Text>
+                        <ScrollView style={styles.scrollView}>
                             {ZmanTypes.map((zt, i) => <View style={styles.ztView} key={i}>
                                 <Switch
                                     value={Boolean(this.state.settings.zmanimToShow.find(z => z.name === zt.name))}
@@ -61,7 +59,7 @@ export default class SettingsDrawer extends Component {
                                         }
                                         this.setState({ settings });
                                     }} />
-                                <Text style={styles.label}>{zt.decs}</Text>
+                                <Text style={styles.labelZman}>{zt.decs}</Text>
                             </View>)}
                         </ScrollView>
                     </View>
@@ -107,7 +105,11 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     label: {
-        color: '#999'
+        color: '#99f',
+        textAlign: 'center',
+        width:'100%',
+        fontWeight: 'bold'
+
     },
     picker: {
         height: 30,
@@ -120,5 +122,9 @@ const styles = StyleSheet.create({
     },
     ztView: {
         flexDirection: 'row-reverse',
-    }
+    },
+    scrollView: {
+        flex: 1
+    },
+    labelZman: { color: '#777' }
 });

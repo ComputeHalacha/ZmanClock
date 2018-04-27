@@ -32,18 +32,15 @@ export default class App extends Component {
             jdate = new jDate(sd),
             location = settings.location,
             zmanimToShow = settings.zmanimToShow,
-            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
-            zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
+            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow);
 
-        this.state = { openDrawer: false, settings, zmanimToShow, location, zmanToShow, zmanTimes, sd, nowTime, jdate };
+        this.state = { openDrawer: false, settings, zmanTimes, sd, nowTime, jdate };
     }
 
     getStorageData() {
         Settings.getSettings().then(settings => {
-            const location = settings.location,
-                zmanimToShow = settings.zmanimToShow;
             //Setting the state sd to null causes a full refresh on the next ietration of the timer.
-            this.setState({ settings, zmanimToShow, location, sd: null });
+            this.setState({ settings, sd: null });
         });
     }
 
@@ -54,9 +51,8 @@ export default class App extends Component {
                 nowTime = Utils.timeFromDate(sd);
             if ((!this.state.sd) || sd.getDate() !== this.state.sd.getDate()) {
                 const jdate = new jDate(sd),
-                    zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.location, this.state.zmanimToShow),
-                    zmanToShow = AppUtils.getNextZmanToShow(nowTime, zmanTimes);
-                this.setState({ zmanToShow, zmanTimes, sd, nowTime, jdate });
+                    zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings.location, this.state.settings.zmanimToShow);
+                this.setState({ zmanTimes, sd, nowTime, jdate });
                 console.log('Refreshed all stuff');
             }
             else {
@@ -79,9 +75,8 @@ export default class App extends Component {
 
             const zmanimToShow = settings.zmanimToShow,
                 location = settings.location,
-                zmanTimes = AppUtils.getCorrectZmanTimes(this.state.sd, this.state.nowTime, location, zmanimToShow),
-                zmanToShow = AppUtils.getNextZmanToShow(this.state.nowTime, zmanTimes);
-            this.setState({ openDrawer: false, settings: new Settings(zmanimToShow, location), zmanimToShow, zmanToShow, zmanTimes });
+                zmanTimes = AppUtils.getCorrectZmanTimes(this.state.sd, this.state.nowTime, location, zmanimToShow);
+            this.setState({ openDrawer: false, settings: new Settings(zmanimToShow, location), zmanTimes });
         }
         else {
             this.drawer.openDrawer();
@@ -104,7 +99,7 @@ export default class App extends Component {
                     onIconClicked={() => this.toggleDrawer()} />
                 <Main
                     jdate={this.state.jdate}
-                    zmanToShow={this.state.zmanToShow}
+                    zmanTimes={this.state.zmanTimes}
                     nowTime={this.state.nowTime} />
             </DrawerLayoutAndroid>
         );

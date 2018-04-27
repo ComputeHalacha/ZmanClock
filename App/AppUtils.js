@@ -1,7 +1,6 @@
 import Utils from './Code/JCal/Utils';
 import Zmanim from './Code/JCal/Zmanim';
 import Location from './Code/JCal/Location';
-import { ZmanTypes } from './Code/ZmanTypes';
 import jDate from './Code/JCal/jDate';
 
 export default class AppUtils {
@@ -9,54 +8,39 @@ export default class AppUtils {
 
     /**
     * Returns the date corrected time of the given zmanim on the given date at the given location
-    * If the zman is after or within an hour of the given time, this days zman is returned, othwise tomorrows zman is returned.
+    * If the zman is after or within 30 minutes of the given time, this days zman is returned, othwise tomorrows zman is returned.
     * @param {Date} sdate
     * @param {{hour : Number, minute :Number, second: Number }} time
     * @param {Location} location
     * @param {[{name:String, decs: String, eng: String, heb: String }]} zmanTypes
-    * @returns {[{zmanType:{name:String, decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]}
+    * @returns {[{zmanType:{name:String, decs: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]}
     */
     static getCorrectZmanTimes(sdate, time, location, zmanTypes) {
         const correctedTimes = [],
             zmanTimes = AppUtils.getZmanTimes(zmanTypes, sdate, location),
             tommorowTimes = AppUtils.getZmanTimes(zmanTypes, new Date(sdate.valueOf() + 8.64E7), location);
 
-        for (let zmanTime of zmanTimes) {
-            let oTime = zmanTime.time,
+        for (let zt of zmanTimes) {
+            let oTime = zt.time,
                 isTommorrow = false,
                 diff = Utils.timeDiff(time, oTime, true);
-            if (diff.sign < 1 && Utils.totalMinutes(diff) >= 60) {
-                oTime = tommorowTimes.find(t => t.zmanType === zmanTime.zmanType).time;
+            if (diff.sign < 1 && Utils.totalMinutes(diff) >= 30) {
+                oTime = tommorowTimes.find(t => t.zmanType === zt.zmanType).time;
                 isTommorrow = true;
             }
-            correctedTimes.push({ zmanType: zmanTime.zmanType, time: oTime, isTommorrow });
+            correctedTimes.push({ zmanType: zt.zmanType, time: oTime, isTommorrow });
         }
-        return correctedTimes;
-    }
-
-    /**
-     *
-     * @param {{hour : Number, minute :Number, second: Number }} time
-     * @param {[{zmanType:{name:String, decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]} zmanTimes
-     * @returns {{zmanType:{name:String, decs: String, eng: String, heb: String },zmanTime:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}}
-     */
-    static getNextZmanToShow(time, zmanTimes) {
-        let next = zmanTimes.find(zt => !zt.isTommorrow && Utils.totalSeconds(zt.zmanTime) > Utils.totalSeconds(time));
-        if (!next) {
-            const toms = zmanTimes.filter(zt => zt.isTommorrow);
-            toms.sort((a, b) =>
-                Utils.totalSeconds(a.zmanTime) - Utils.totalSeconds(b.zmanTime));
-            next = toms[0];
-        }
-        return next;
+        return correctedTimes.sort((a, b) =>
+            (a.isTommorrow ? 1 : -1) - (b.isTommorrow ? 1 : -1) ||
+            Utils.totalSeconds(a.time) - Utils.totalSeconds(b.time));
     }
 
     /**
      * Gets the zmanim for all the types in the given list.
-     * @param {[{decs:String,eng:String,heb:String}]} zmanTypes An array of ZmanTypes to get the zman for.
+     * @param {[{name:String,decs:String,eng:String,heb:String}]} zmanTypes An array of ZmanTypes to get the zman for.
      * @param {Date} date The secular date to get the zmanim for
      * @param {Location} location The location for which to get the zmanim
-     * @returns{[{zmanType:{decs:String,eng:String,heb:String },time:{hour:Number,minute:Number,second:Number}}]}
+     * @returns{[{zmanType:{name:String,decs:String,eng:String,heb:String },time:{hour:Number,minute:Number,second:Number}}]}
      */
     static getZmanTimes(zmanTypes, date, location) {
         const mem = AppUtils.zmanTimesCache.find(z => Utils.isSameSdate(z.date, date) && z.location.Name === location.Name),
