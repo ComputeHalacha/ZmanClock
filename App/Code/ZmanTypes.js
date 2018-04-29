@@ -7,7 +7,7 @@ export const ZmanTypes = [
     { name: 'szksGra', decs: 'סזק"ש הגר"א', eng: 'Krias Shma - GR"A', heb: 'סזק"ש הגר"א' },
     { name: 'sztMga', decs: 'סז"ת מג"א', eng: 'Tefilla - MG"A', heb: 'סז"ת מג"א' },
     { name: 'sztGra', decs: 'סז"ת הגר"א', eng: 'Tefilla - GR"A', heb: 'סז"ת הגר"א' },
-    { name: 'chatzos', decs: 'חצות היום והלילה', eng: 'Chatzos - day & Night', heb: 'חצות היום והלילה' },
+    { name: 'chatzos', decs: 'חצות היום', eng: 'Midday', heb: 'חצות היום' },
     { name: 'minGed', decs: 'מנחה גדולה', eng: 'Mincha Gedola', heb: 'מנחה גדולה' },
     { name: 'minKet', decs: 'מנחה קטנה', eng: 'Mincha Ketana', heb: 'מנחה קטנה' },
     { name: 'plag', decs: 'פלג המנחה', eng: 'Plag HaMincha', heb: 'פלג המנחה' },

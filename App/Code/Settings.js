@@ -13,7 +13,7 @@ export default class Settings {
         /**
          * @property {[ZmanTypes]} zmanimToShow
          */
-        this.zmanimToShow = zmanimToShow || [getZmanType('netzMishor'), getZmanType('szksMga'), getZmanType('shkiaElevation'), getZmanType('tzais72')];
+        this.zmanimToShow = zmanimToShow || [];
         /**
          * @property {Location} location
          */

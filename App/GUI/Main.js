@@ -18,7 +18,10 @@ export default class Main extends Component {
             <Text style={styles.timeText1}>
                 {Utils.getTimeString(this.props.nowTime, true)}
             </Text>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+            <ScrollView style={styles.scrollView}
+                contentContainerStyle={this.props.zmanTimes.length > 2
+                    ? styles.scrollContent
+                    : styles.container}>
                 {this.props.zmanTimes.map((zt, i) =>
                     <View key={i} style={styles.singleZman}>
                         <Text style={styles.timeRemainingLabel}>
@@ -50,23 +53,20 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     scrollView: {
-        width: '90%'
+        width: '90%',
+        flex: 1
     },
     scrollContent: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        justifyContent: 'center'
     },
     singleZman: {
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: '#333',
-        borderWidth: 1,
         borderRadius: 7,
         padding: 20,
         width: '100%',
         marginBottom: 5,
-        backgroundColor: '#444'
+        backgroundColor: '#252525'
     },
     dateText: {
         color: '#b88',

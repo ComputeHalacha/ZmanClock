@@ -3,7 +3,9 @@ import {
     ToolbarAndroid,
     StatusBar,
     DrawerLayoutAndroid,
-    StyleSheet
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import KeepAwake from 'react-native-keep-awake';
 import jDate from './Code/JCal/jDate';
@@ -108,7 +110,14 @@ export default class App extends Component {
                     rtl={true}
                     style={styles.toolbarAndroid}
                     navIcon={require('./Images/menu.png')}
-                    onIconClicked={() => this.toggleDrawer()} />
+                    onIconClicked={() => this.toggleDrawer()}>
+                    <View style={styles.headerView}>
+                        <Text style={styles.headerTextName}
+                            onPress={() => this.toggleDrawer()}>
+                            {this.state.location.Name}
+                        </Text>
+                    </View>
+                </ToolbarAndroid>
                 <Main
                     jdate={this.state.jdate}
                     zmanTimes={this.state.zmanTimes}
@@ -119,8 +128,20 @@ export default class App extends Component {
 }
 
 const styles = StyleSheet.create({
+    headerView: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#000'
+    },
+    headerTextName: {
+        fontSize: 13,
+        color: '#557'
+    },
     toolbarAndroid: {
         height: 40,
-        backgroundColor: '#000'
+        backgroundColor: '#000',
+        flex: 0
     },
 });

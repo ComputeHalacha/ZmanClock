@@ -105,13 +105,13 @@ const styles = StyleSheet.create({
         color: '#99f',
         textAlign: 'center',
         width: '100%',
-        fontWeight: 'bold'
-
+        fontWeight: 'bold',
+        margin:10
     },
     picker: {
         height: 30,
         width: '100%',
-        backgroundColor: '#555'
+        backgroundColor: '#444',
     },
     pickerItem: {
         backgroundColor: '#000',
@@ -123,5 +123,7 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1
     },
-    labelZman: { color: '#777', margin: 5 }
+    labelZman: {
+        color: '#777',
+        margin: 5 }
 });
