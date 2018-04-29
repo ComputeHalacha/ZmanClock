@@ -3,9 +3,9 @@ import {
     StyleSheet,
     Text,
     View,
-    Switch,
     Picker,
     ScrollView,
+    CheckBox
 } from 'react-native';
 import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
@@ -46,7 +46,7 @@ export default class SettingsDrawer extends Component {
                         <Text style={styles.label}>בחר זמנים</Text>
                         <ScrollView style={styles.scrollView}>
                             {ZmanTypes.map((zt, i) => <View style={styles.ztView} key={i}>
-                                <Switch
+                                <CheckBox
                                     value={Boolean(this.props.zmanimToShow.find(z => z.name === zt.name))}
                                     onValueChange={selected => {
                                         const zmanimToShow = this.props.zmanimToShow.filter(zts =>
@@ -123,5 +123,5 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1
     },
-    labelZman: { color: '#777' }
+    labelZman: { color: '#777', margin: 5 }
 });
