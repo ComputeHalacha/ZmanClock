@@ -1,6 +1,7 @@
 import Location from './JCal/Location';
 import { ZmanTypes, getZmanType } from './ZmanTypes';
 import { AsyncStorage } from 'react-native';
+import { findLocation } from './Locations';
 
 export default class Settings {
     /**
@@ -16,24 +17,40 @@ export default class Settings {
         /**
          * @property {Location} location
          */
-        this.location = location || Location.getJerusalem();
+        this.location = location || findLocation('ירושלים');
     }
-    save() {
-        AsyncStorage.multiSet([
-            ['ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow)],
-            ['LOCATION', JSON.stringify(this.location)]]);
+    /**
+     * Saves the given zmanimToShow to AsyncStorage.
+     * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow]
+     */
+    static async saveZmanim(zmanimToShow) {
+        await AsyncStorage.setItem('ZMANIM_TO_SHOW',
+            JSON.stringify(zmanimToShow),
+            error => error && console.error(error));
+    }
+    /**
+     * Saves the given Location to AsyncStorage.
+     * @param {Location} location
+     */
+    static async saveLocation(location) {
+        await AsyncStorage.setItem('LOCATION_NAME',
+            location.Name,
+            error => error && console.error(error));
     }
     static async getSettings() {
-        const [zmanimToShow, location] = await AsyncStorage.multiGet(['ZMANIM_TO_SHOW', 'LOCATION']),
-        settings = new Settings();
-
-        if (zmanimToShow) {
-            settings.zmanimToShow = JSON.parse(zmanimToShow[1]);
+        let zmanimToShow, location;
+        const allKeys = await AsyncStorage.getAllKeys();
+        console.log('all storage keys', allKeys);
+        if (allKeys.includes('ZMANIM_TO_SHOW')) {
+            const zts = await AsyncStorage.getItem('ZMANIM_TO_SHOW');
+            zmanimToShow = JSON.parse(zts);
+            console.log('Zmanim to show from storage data', zts);
         }
-        if (location) {
-            settings.location = JSON.parse(location[1]);
+        if (allKeys.includes('LOCATION_NAME')) {
+            const locationName = await AsyncStorage.getItem('LOCATION_NAME');
+            location = findLocation(locationName);
+            console.log('Location from storage data', locationName);
         }
-
-        return settings;
+        return { zmanimToShow, location };
     }
 }

@@ -9,15 +9,24 @@ import {
 } from 'react-native';
 import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
+import Settings from '../Code/Settings';
 
 export default class SettingsDrawer extends Component {
     constructor(props) {
         super(props);
-        this.close = props.close;
-        this.state = { settings: props.settings };
+        this.onChangeSettings = this.onChangeSettings.bind(this);
     }
-    componentDidMount() {
+    onChangeSettings(zmanimToShow, location) {
+        if (zmanimToShow) {
+            Settings.saveZmanim(zmanimToShow);
+        }
+        if (location) {
+            Settings.saveLocation(location);
+        }
 
+        this.props.changeSettings(
+            zmanimToShow || this.props.zmanimToShow,
+            location || this.props.location);
     }
     render() {
         return (
@@ -29,41 +38,29 @@ export default class SettingsDrawer extends Component {
                         <Picker
                             style={styles.picker}
                             itemStyle={styles.pickerItem}
-                            selectedValue={this.state.settings.location}
-                            onValueChange={(location) => {
-                                const settings = this.state.settings;
-                                settings.location = location;
-                                this.setState(settings);
-                            }}>
-                            {
-                                Locations.map((location, i) =>
-                                    <Picker.Item key={i} value={location} label={location.Name} />)
-
-                            }
+                            selectedValue={this.props.location}
+                            onValueChange={location => this.onChangeSettings(null, location)}>
+                            {Locations.map((location, i) =>
+                                <Picker.Item key={i} value={location} label={location.Name} />)}
                         </Picker>
                         <Text style={styles.label}>בחר זמנים</Text>
                         <ScrollView style={styles.scrollView}>
                             {ZmanTypes.map((zt, i) => <View style={styles.ztView} key={i}>
                                 <Switch
-                                    value={Boolean(this.state.settings.zmanimToShow.find(z => z.name === zt.name))}
-                                    onValueChange={v => {
-                                        const settings = this.state.settings;
-                                        if (v) {
-                                            if (settings.zmanimToShow.length > 1) {
-                                                settings.zmanimToShow.splice(
-                                                    settings.zmanimToShow.findIndex(z => z.name === zt.name), 1);
-                                            }
+                                    value={Boolean(this.props.zmanimToShow.find(z => z.name === zt.name))}
+                                    onValueChange={selected => {
+                                        const zmanimToShow = this.props.zmanimToShow.filter(zts =>
+                                            zts.name !== zt.name);
+                                        if (selected) {
+                                            zmanimToShow.push(zt);
                                         }
-                                        else {
-                                            settings.zmanimToShow.push(zt);
-                                        }
-                                        this.setState({ settings });
+                                        this.onChangeSettings(zmanimToShow);
                                     }} />
                                 <Text style={styles.labelZman}>{zt.decs}</Text>
                             </View>)}
                         </ScrollView>
                     </View>
-                    <Text style={styles.close} onPress={() => this.close(this.state.settings)}>סגור X</Text>
+                    <Text style={styles.close} onPress={() => this.props.close()}>סגור X</Text>
                 </View>
             </View>
         );
@@ -107,7 +104,7 @@ const styles = StyleSheet.create({
     label: {
         color: '#99f',
         textAlign: 'center',
-        width:'100%',
+        width: '100%',
         fontWeight: 'bold'
 
     },

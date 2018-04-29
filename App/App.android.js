@@ -20,9 +20,20 @@ export default class App extends Component {
 
         this.setInitialData = this.setInitialData.bind(this);
         this.getStorageData = this.getStorageData.bind(this);
+        this.refresh = this.refresh.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
+        this.changeSettings = this.changeSettings.bind(this);
 
         this.setInitialData();
+    }
+    componentDidMount() {
+        this.getStorageData();
+        this.timer = setInterval(this.refresh, 1000);
+    }
+    componentWillUnmount() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
     }
 
     setInitialData() {
@@ -33,55 +44,52 @@ export default class App extends Component {
             location = settings.location,
             zmanimToShow = settings.zmanimToShow,
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow);
-
-        this.state = { openDrawer: false, settings, zmanTimes, sd, nowTime, jdate };
+        console.log('Settings in constructor:', settings);
+        this.state = { openDrawer: false, zmanimToShow, location, zmanTimes, sd, nowTime, jdate };
     }
 
-    getStorageData() {
-        Settings.getSettings().then(settings => {
-            //Setting the state sd to null causes a full refresh on the next ietration of the timer.
-            this.setState({ settings, sd: null });
-        });
+    async getStorageData() {
+        let { zmanimToShow, location } = await Settings.getSettings();
+        if (!zmanimToShow) {
+            zmanimToShow = this.state.zmanimToShow;
+        }
+        if (!location) {
+            location = this.state.location;
+        }
+        //Setting the state sd to null causes a full refresh on the next iteration of the timer.
+        this.setState({ zmanimToShow, location, sd: null });
     }
-
-    componentDidMount() {
-        this.getStorageData();
-        this.timer = setInterval(() => {
-            const sd = new Date(),
-                nowTime = Utils.timeFromDate(sd);
-            if ((!this.state.sd) || sd.getDate() !== this.state.sd.getDate()) {
-                const jdate = new jDate(sd),
-                    zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings.location, this.state.settings.zmanimToShow);
-                this.setState({ zmanTimes, sd, nowTime, jdate });
-                console.log('Refreshed all stuff');
-            }
-            else {
-                this.setState({ sd, nowTime });
-            }
-        }, 1000);
-    }
-    componentWillUnmount() {
-        if (this.timer) {
-            clearInterval(this.timer);
+    refresh() {
+        const sd = new Date(),
+            nowTime = Utils.timeFromDate(sd);
+        if (this.state.sd && sd.getDate() === this.state.sd.getDate()) {
+            this.setState({ sd, nowTime });
+        }
+        else {
+            const jdate = new jDate(sd),
+                zmanTimes = AppUtils.getCorrectZmanTimes(
+                    sd,
+                    nowTime,
+                    this.state.location,
+                    this.state.zmanimToShow);
+            this.setState({ zmanTimes, sd, nowTime, jdate });
+            console.log('Refreshed everything');
         }
     }
-    toggleDrawer(settings) {
+    toggleDrawer() {
         if (this.state.openDrawer) {
-            if (!settings) {
-                settings = this.state.settings;
-            }
-            settings.save();
+            this.setState({ openDrawer: false });
             this.drawer.closeDrawer();
-
-            const zmanimToShow = settings.zmanimToShow,
-                location = settings.location,
-                zmanTimes = AppUtils.getCorrectZmanTimes(this.state.sd, this.state.nowTime, location, zmanimToShow);
-            this.setState({ openDrawer: false, settings: new Settings(zmanimToShow, location), zmanTimes });
         }
         else {
             this.drawer.openDrawer();
             this.setState({ openDrawer: true });
         }
+    }
+    changeSettings(zmanimToShow, location) {
+        console.log('changed settings:', zmanimToShow, location);
+        //Setting the state sd to null causes a full refresh on the next iteration of the timer.
+        this.setState({ zmanimToShow, location, sd: null });
     }
     render() {
         return (
@@ -89,7 +97,11 @@ export default class App extends Component {
                 drawerWidth={300}
                 drawerPosition={DrawerLayoutAndroid.positions.Right}
                 renderNavigationView={() =>
-                    <SettingsDrawer close={this.toggleDrawer} settings={this.state.settings} />}
+                    <SettingsDrawer
+                        close={this.toggleDrawer}
+                        changeSettings={this.changeSettings}
+                        zmanimToShow={this.state.zmanimToShow}
+                        location={this.state.location} />}
                 ref={(drawer) => this.drawer = drawer}>
                 <StatusBar hidden={true} />
                 <ToolbarAndroid

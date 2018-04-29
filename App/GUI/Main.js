@@ -42,27 +42,31 @@ export default class Main extends Component {
     }
 }
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#000',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
-    scrollView:{flex: 1},
+    scrollView: {
+        width: '90%'
+    },
     scrollContent: {
+        flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000'
+        alignItems: 'center'
     },
     singleZman: {
-        backgroundColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
         borderColor: '#333',
-        borderTopWidth: 1,
-        padding: 10
+        borderWidth: 1,
+        borderRadius: 7,
+        padding: 20,
+        width: '100%',
+        marginBottom: 5,
+        backgroundColor: '#444'
     },
     dateText: {
         color: '#b88',
