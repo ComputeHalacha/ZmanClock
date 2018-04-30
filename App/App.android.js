@@ -14,6 +14,7 @@ import Main from './GUI/Main';
 import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './AppUtils';
 import Settings from './Code/Settings';
+import { log } from './Code/GeneralUtils';
 
 export default class App extends Component {
     constructor(props) {
@@ -46,7 +47,7 @@ export default class App extends Component {
             location = settings.location,
             zmanimToShow = settings.zmanimToShow,
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow);
-        console.log('Settings in constructor:', settings);
+        log('Settings in constructor:', settings);
         this.state = { openDrawer: false, zmanimToShow, location, zmanTimes, sd, nowTime, jdate };
     }
 
@@ -75,7 +76,7 @@ export default class App extends Component {
                     this.state.location,
                     this.state.zmanimToShow);
             this.setState({ zmanTimes, sd, nowTime, jdate });
-            console.log('Refreshed everything');
+            log('Refreshed everything');
         }
     }
     toggleDrawer() {
@@ -89,7 +90,7 @@ export default class App extends Component {
         }
     }
     changeSettings(zmanimToShow, location) {
-        console.log('changed settings:', zmanimToShow, location);
+        log('changed settings:', zmanimToShow, location);
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
         this.setState({ zmanimToShow, location, sd: null });
     }

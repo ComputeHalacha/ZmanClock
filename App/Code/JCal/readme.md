@@ -19,7 +19,7 @@ To print out today's Jewish date, you would write:
 import jDate from 'JCal/jDate';
 
 const jewishDate = new jDate();
-console.write(jewishDate.toString())
+console.log(jewishDate.toString())
 ```
 The code above would return:
 ```

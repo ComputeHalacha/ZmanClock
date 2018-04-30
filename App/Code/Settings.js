@@ -2,6 +2,7 @@ import Location from './JCal/Location';
 import { ZmanTypes, getZmanType } from './ZmanTypes';
 import { AsyncStorage } from 'react-native';
 import { findLocation } from './Locations';
+import { log, error } from './GeneralUtils';
 
 export default class Settings {
     /**
@@ -26,7 +27,7 @@ export default class Settings {
     static async saveZmanim(zmanimToShow) {
         await AsyncStorage.setItem('ZMANIM_TO_SHOW',
             JSON.stringify(zmanimToShow),
-            error => error && console.error(error));
+            err => err && error(err));
     }
     /**
      * Saves the given Location to AsyncStorage.
@@ -35,21 +36,21 @@ export default class Settings {
     static async saveLocation(location) {
         await AsyncStorage.setItem('LOCATION_NAME',
             location.Name,
-            error => error && console.error(error));
+            err => err && error(err));
     }
     static async getSettings() {
         let zmanimToShow, location;
         const allKeys = await AsyncStorage.getAllKeys();
-        console.log('all storage keys', allKeys);
+        log('all storage keys', allKeys);
         if (allKeys.includes('ZMANIM_TO_SHOW')) {
             const zts = await AsyncStorage.getItem('ZMANIM_TO_SHOW');
             zmanimToShow = JSON.parse(zts);
-            console.log('Zmanim to show from storage data', zts);
+            log('Zmanim to show from storage data', zts);
         }
         if (allKeys.includes('LOCATION_NAME')) {
             const locationName = await AsyncStorage.getItem('LOCATION_NAME');
             location = findLocation(locationName);
-            console.log('Location from storage data', locationName);
+            log('Location from storage data', locationName);
         }
         return { zmanimToShow, location };
     }

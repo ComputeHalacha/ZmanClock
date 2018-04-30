@@ -98,27 +98,27 @@ export function range(start, end) {
  * Log message to console
  * @param {*} txt
  */
-export function log(txt) {
+export function log(txt, ...optionalItems) {
     if (__DEV__) {
-        console.log(txt);
+        console.log(txt, ...optionalItems);
     }
 }
 /**
  * Warn message to console
  * @param {*} txt
  */
-export function warn(txt) {
+export function warn(txt, ...optionalItems) {
     if (__DEV__) {
-        console.warn(txt);
+        console.warn(txt, ...optionalItems);
     }
 }
 /**
  * Error message to console
  * @param {*} txt
  */
-export function error(txt) {
+export function error(txt, ...optionalItems) {
     if (__DEV__) {
-        console.error(txt);
+        console.error(txt, ...optionalItems);
     }
 }
 /**
