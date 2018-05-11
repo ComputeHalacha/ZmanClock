@@ -71,7 +71,8 @@ const styles = StyleSheet.create({
     dateText: {
         color: '#b88',
         fontSize: 25,
-        marginBottom: 25
+        marginBottom: 25,
+        textAlign: 'center'
     },
     timeText1: {
         color: '#999',

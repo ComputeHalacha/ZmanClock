@@ -30,11 +30,14 @@ export default class Zmanim {
             throw 'Zmanim.getSunTimes: supplied date parameter cannot be converted to a Date';
         }
 
-        let sunrise, sunset, day = Zmanim.dayOfYear(date),
+        let sunrise, sunset,
             zeninthDeg = 90, zenithMin = 50, lonHour = 0, longitude = 0, latitude = 0,
             cosLat = 0, sinLat = 0, cosZen = 0, sinDec = 0, cosDec = 0,
             xmRise = 0, xmSet = 0, xlRise = 0, xlSet = 0, aRise = 0, aSet = 0, ahrRise = 0, ahrSet = 0,
-            hRise = 0, hSet = 0, tRise = 0, tSet = 0, utRise = 0, utSet = 0, earthRadius = 6356900,
+            hRise = 0, hSet = 0, tRise = 0, tSet = 0, utRise = 0, utSet = 0;
+
+            const day = Zmanim.dayOfYear(date),
+            earthRadius = 6356900,
             zenithAtElevation = Zmanim.degToDec(zeninthDeg, zenithMin) +
                 Zmanim.radToDeg(Math.acos(earthRadius / (earthRadius +
                     (considerElevation ? location.Elevation : 0))));
