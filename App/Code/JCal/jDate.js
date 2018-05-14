@@ -113,11 +113,15 @@ export default class jDate {
     getDate() {
         return jDate.sdFromAbs(this.Abs);
     }
-    /**The day of the week for the current Jewish date. Sunday is 0 and Shabbos is 6.*/
+    /**
+     * @returns {Number} The day of the week for the current Jewish date. Sunday is 0 and Shabbos is 6.
+     */
     getDayOfWeek() {
         return Math.abs(this.Abs % 7);
     }
-    /**The day of the week for the current Jewish date. Sunday is 0 and Shabbos is 6.*/
+    /**
+     * @returns {Number} The day of the week for the current Jewish date. Sunday is 0 and Shabbos is 6
+     */
     get DayOfWeek() {
         return this.getDayOfWeek();
     }

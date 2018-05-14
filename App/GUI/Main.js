@@ -14,6 +14,13 @@ export default class Main extends Component {
     render() {
         return <View style={styles.container}>
             <Text style={styles.dateText}>{this.props.jdate.toStringHeb()}</Text>
+            <View style={styles.notificationsView}>
+                {this.props.notifications && this.props.notifications.map((n, i) =>
+                    <Text key={i} style={styles.notificationsText}>
+                        {n}
+                    </Text>
+                )}
+            </View>
             <Text style={styles.timeNowText}>השעה עכשיו:</Text>
             <Text style={styles.timeText1}>
                 {Utils.getTimeString(this.props.nowTime, true)}
@@ -59,6 +66,18 @@ const styles = StyleSheet.create({
     scrollContent: {
         justifyContent: 'center'
     },
+    notificationsView: {
+        marginTop: 10,
+        marginBottom: 20,
+        justifyContent: 'space-around',
+        flexDirection: 'row',
+        width: '100%'
+    },
+    notificationsText: {
+        color: '#899',
+        fontWeight: 'bold',
+        fontSize: 11
+    },
     singleZman: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -71,7 +90,6 @@ const styles = StyleSheet.create({
     dateText: {
         color: '#b88',
         fontSize: 25,
-        marginBottom: 25,
         textAlign: 'center'
     },
     timeText1: {

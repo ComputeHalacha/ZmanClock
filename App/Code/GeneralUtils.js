@@ -121,15 +121,3 @@ export function error(txt, ...optionalItems) {
         console.error(txt, ...optionalItems);
     }
 }
-/**
- * Gets the proper Jewish Date at the current time at the current location
- * @param {AppData} appData
- */
-export function getTodayJdate(appData) {
-    if (appData && appData.Settings && !appData.Settings.navigateBySecularDate) {
-        return Utils.nowAtLocation(appData.Settings.location);
-    }
-    else {
-        return new jDate();
-    }
-}

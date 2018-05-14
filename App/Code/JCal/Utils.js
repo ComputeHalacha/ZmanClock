@@ -430,9 +430,9 @@ export default class Utils {
      */
     static isAfterSunset(sdate, location) {
         const sunriseSunset = Zmanim.getSunTimes(sdate, location),
-            nowMinutes = (sdate.getHours() * 60) + sdate.getMinutes(),
-            shkiaMinutes = Utils.totalMinutes(sunriseSunset.sunset);
-        return nowMinutes >= shkiaMinutes;
+            nowSeconds = (sdate.getHours() * 60) + sdate.getSeconds(),
+            shkiaSeconds = Utils.totalSeconds(sunriseSunset.sunset);
+        return nowSeconds >= shkiaSeconds;
     }
     /**
      * Gets the current Jewish Date at the given Location

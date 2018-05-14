@@ -10,11 +10,12 @@ import {
 import KeepAwake from 'react-native-keep-awake';
 import jDate from './Code/JCal/jDate';
 import Utils from './Code/JCal/Utils';
+import Zmanim from './Code/JCal/Zmanim';
 import Main from './GUI/Main';
 import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './AppUtils';
 import Settings from './Code/Settings';
-import { log } from './Code/GeneralUtils';
+import { log, setDefault } from './Code/GeneralUtils';
 
 export default class App extends Component {
     constructor(props) {
@@ -38,44 +39,60 @@ export default class App extends Component {
             clearInterval(this.timer);
         }
     }
-
     setInitialData() {
         const settings = new Settings(),
             sd = new Date(),
             nowTime = Utils.timeFromDate(sd),
-            jdate = new jDate(sd),
             location = settings.location,
+            sunset = Zmanim.getSunTimes(sd, location).sunset,
+            jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
+                ? new jDate(sd)
+                : new jDate(new Date(sd.getDate() + 1)),
             zmanimToShow = settings.zmanimToShow,
-            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow);
+            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
+            showNotifications = settings.showNotifications;
         log('Settings in constructor:', settings);
-        this.state = { openDrawer: false, zmanimToShow, location, zmanTimes, sd, nowTime, jdate };
+        this.state = { openDrawer: false, zmanimToShow, location, zmanTimes, sd, nowTime, sunset, jdate, showNotifications };
     }
 
     async getStorageData() {
-        let { zmanimToShow, location } = await Settings.getSettings();
+        let { zmanimToShow, location, showNotifications } = await Settings.getSettings();
         if (!zmanimToShow) {
             zmanimToShow = this.state.zmanimToShow;
         }
         if (!location) {
             location = this.state.location;
         }
+        showNotifications = setDefault(showNotifications, this.state.showNotifications);
+
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
-        this.setState({ zmanimToShow, location, sd: null });
+        this.setState({ zmanimToShow, location, sd: null, showNotifications });
     }
     refresh() {
         const sd = new Date(),
             nowTime = Utils.timeFromDate(sd);
         if (this.state.sd && sd.getDate() === this.state.sd.getDate()) {
-            this.setState({ sd, nowTime });
+            let { jdate } = this.state;
+            if (Utils.isSameSdate(jdate.getDate(), sd) &&
+                Utils.timeDiff(nowTime, this.state.sunset, true).sign === -1) {
+                jdate = jdate.addDays(1);
+            }
+            this.setState({ sd, nowTime, jdate });
         }
         else {
-            const jdate = new jDate(sd),
+            const sunset = Zmanim.getSunTimes(sd, this.state.location).sunset,
+                jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
+                    ? new jDate(sd)
+                    : new jDate(new Date(sd.getDate() + 1)),
                 zmanTimes = AppUtils.getCorrectZmanTimes(
                     sd,
                     nowTime,
                     this.state.location,
-                    this.state.zmanimToShow);
-            this.setState({ zmanTimes, sd, nowTime, jdate });
+                    this.state.zmanimToShow),
+                notifications = this.state.showNotifications &&
+                    AppUtils.getNotifications(jdate, sd, nowTime, this.state.location);
+
+            this.setState({ zmanTimes, sd, nowTime, sunset, jdate, notifications });
             log('Refreshed everything');
         }
     }
@@ -89,10 +106,10 @@ export default class App extends Component {
             this.setState({ openDrawer: true });
         }
     }
-    changeSettings(zmanimToShow, location) {
-        log('changed settings:', zmanimToShow, location);
+    changeSettings(zmanimToShow, location, showNotifications) {
+        log('changed settings:', zmanimToShow, location, showNotifications);
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
-        this.setState({ zmanimToShow, location, sd: null });
+        this.setState({ zmanimToShow, location, sd: null, showNotifications });
     }
     render() {
         return (
@@ -122,7 +139,8 @@ export default class App extends Component {
                 <Main
                     jdate={this.state.jdate}
                     zmanTimes={this.state.zmanTimes}
-                    nowTime={this.state.nowTime} />
+                    nowTime={this.state.nowTime}
+                    notifications={this.state.notifications} />
             </DrawerLayoutAndroid>
         );
     }

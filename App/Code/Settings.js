@@ -2,15 +2,16 @@ import Location from './JCal/Location';
 import { ZmanTypes, getZmanType } from './ZmanTypes';
 import { AsyncStorage } from 'react-native';
 import { findLocation } from './Locations';
-import { log, error } from './GeneralUtils';
+import { log, error, setDefault } from './GeneralUtils';
 
 export default class Settings {
     /**
      *
      * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow]
      * @param {Location} [location]
+     * @param {boolean} [showNotifications]
      */
-    constructor(zmanimToShow, location) {
+    constructor(zmanimToShow, location, showNotifications = true) {
         /**
          * @property {[ZmanTypes]} zmanimToShow
          */
@@ -19,6 +20,10 @@ export default class Settings {
          * @property {Location} location
          */
         this.location = location || findLocation('ירושלים');
+        /**
+         * @property {boolean} showNotifications
+         */
+        this.showNotifications = setDefault(showNotifications, true);
     }
     /**
      * Saves the given zmanimToShow to AsyncStorage.
@@ -38,8 +43,17 @@ export default class Settings {
             location.Name,
             err => err && error(err));
     }
+    /**
+     * Saves the showNotifications to AsyncStorage.
+     * @param {boolean} showNotifications
+     */
+    static async saveShowNotifications(showNotifications) {
+        await AsyncStorage.setItem('NOTIFICATIONS',
+            JSON.stringify(showNotifications),
+            err => err && error(err));
+    }
     static async getSettings() {
-        let zmanimToShow, location;
+        let zmanimToShow, location, showNotifications;
         const allKeys = await AsyncStorage.getAllKeys();
         log('all storage keys', allKeys);
         if (allKeys.includes('ZMANIM_TO_SHOW')) {
@@ -52,6 +66,11 @@ export default class Settings {
             location = findLocation(locationName);
             log('Location from storage data', locationName);
         }
-        return { zmanimToShow, location };
+        if (allKeys.includes('NOTIFICATIONS')) {
+            const sn = await AsyncStorage.getItem('NOTIFICATIONS');
+            showNotifications = JSON.parse(sn);
+            log('showNotifications from storage data', sn);
+        }
+        return { zmanimToShow, location, showNotifications };
     }
 }
