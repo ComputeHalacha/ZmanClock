@@ -29,16 +29,27 @@ export default class Main extends Component {
                 contentContainerStyle={this.props.zmanTimes.length > 2
                     ? styles.scrollContent
                     : styles.container}>
-                {this.props.zmanTimes.map((zt, i) =>
-                    <View key={i} style={styles.singleZman}>
-                        <Text style={styles.timeRemainingLabel}>
-                            {`${zt.zmanType.heb} בעוד:`}
+                {this.props.zmanTimes.map((zt, i) => {
+                    const timeDiff = Utils.timeDiff(this.props.nowTime, zt.time, !zt.isTommorrow),
+                        was = timeDiff.sign === -1;
+                    return <View key={i} style={[styles.singleZman, {
+                        backgroundColor: was
+                            ? '#311'
+                            : '#112'
+                    }]}>
+                        <Text style={[styles.timeRemainingLabel, {
+                            color: was
+                                ? '#aa6'
+                                : '#99f'
+                        }]}>
+                            {`${zt.zmanType.heb} ${was ? 'עבר לפני' : 'בעוד'}:`}
                         </Text>
-                        <Text style={styles.timeRemainingText}>
-                            {Utils.getTimeString(Utils.timeDiff(
-                                this.props.nowTime,
-                                zt.time,
-                                !zt.isTommorrow), true)}
+                        <Text style={[styles.timeRemainingText, {
+                            color: was
+                                ? '#f99'
+                                : '#a99'
+                        }]}>
+                            {Utils.getTimeString(timeDiff, true)}
                         </Text>
                         <Text style={styles.zmanTypeNameText}>
                             {'בשעה: '}
@@ -46,7 +57,8 @@ export default class Main extends Component {
                                 {Utils.getTimeString(zt.time, true)}
                             </Text>
                         </Text>
-                    </View>)}
+                    </View>;
+                })}
             </ScrollView>
         </View>;
     }
@@ -84,8 +96,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         padding: 20,
         width: '100%',
-        marginBottom: 5,
-        backgroundColor: '#252525'
+        marginBottom: 5
     },
     dateText: {
         color: '#b88',
@@ -105,11 +116,9 @@ const styles = StyleSheet.create({
         color: '#9b9'
     },
     timeRemainingText: {
-        color: '#a99',
         fontSize: 50,
     },
     timeRemainingLabel: {
-        color: '#99f',
         fontSize: 18,
         fontWeight: 'bold'
     },
