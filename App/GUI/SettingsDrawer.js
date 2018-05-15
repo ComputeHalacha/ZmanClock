@@ -10,23 +10,29 @@ import {
 import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
 import Settings from '../Code/Settings';
+import { setDefault } from '../Code/GeneralUtils';
 
 export default class SettingsDrawer extends Component {
     constructor(props) {
         super(props);
         this.onChangeSettings = this.onChangeSettings.bind(this);
     }
-    onChangeSettings(zmanimToShow, location) {
+    onChangeSettings(zmanimToShow, location, showNotifications) {
         if (zmanimToShow) {
             Settings.saveZmanim(zmanimToShow);
         }
         if (location) {
             Settings.saveLocation(location);
         }
+        if (typeof showNotifications !== 'undefined') {
+            Settings.saveShowNotifications(showNotifications);
+        }
 
         this.props.changeSettings(
             zmanimToShow || this.props.zmanimToShow,
-            location || this.props.location);
+            location || this.props.location,
+            setDefault(showNotifications, this.props.showNotifications)
+        );
     }
     render() {
         return (
@@ -59,6 +65,15 @@ export default class SettingsDrawer extends Component {
                                 <Text style={styles.labelZman}>{zt.decs}</Text>
                             </View>)}
                         </ScrollView>
+                        <Text style={styles.label}>העדפות</Text>
+                        <View style={styles.ztView}>
+                            <CheckBox
+                                value={Boolean(this.props.showNotifications)}
+                                onValueChange={selected =>
+                                    this.onChangeSettings(null, null, selected)
+                                } />
+                            <Text style={styles.labelZman}>הצג מידע יומית</Text>
+                        </View>
                     </View>
                     <Text style={styles.close} onPress={() => this.props.close()}>סגור X</Text>
                 </View>
@@ -106,7 +121,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         width: '100%',
         fontWeight: 'bold',
-        margin:10
+        margin: 10
     },
     picker: {
         height: 30,
@@ -125,5 +140,6 @@ const styles = StyleSheet.create({
     },
     labelZman: {
         color: '#777',
-        margin: 5 }
+        margin: 5
+    }
 });
