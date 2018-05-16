@@ -8,6 +8,7 @@ import {
     View
 } from 'react-native';
 import KeepAwake from 'react-native-keep-awake';
+import NavigationBarAndroid from './Code/NavigationBar';
 import jDate from './Code/JCal/jDate';
 import Utils from './Code/JCal/Utils';
 import Zmanim from './Code/JCal/Zmanim';
@@ -39,6 +40,9 @@ export default class App extends Component {
             clearInterval(this.timer);
         }
     }
+    componentDidUpdate() {
+        NavigationBarAndroid.hide();
+    }
     setInitialData() {
         const settings = new Settings(),
             sd = new Date(),
@@ -47,7 +51,7 @@ export default class App extends Component {
             sunset = Zmanim.getSunTimes(sd, location).sunset,
             jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
                 ? new jDate(sd)
-                : new jDate(new Date(sd.getDate() + 1)),
+                : new jDate(new Date(sd.getTime() + 864e5)),
             zmanimToShow = settings.zmanimToShow,
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
             showNotifications = settings.showNotifications;
