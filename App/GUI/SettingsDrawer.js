@@ -58,7 +58,7 @@ export default class SettingsDrawer extends Component {
                                         if (selected) {
                                             zmanimToShowList.push(zt);
                                         }
-                                        this.onChangeSettings({ zmanimToShowList });
+                                        this.onChangeSettings({ zmanimToShow: zmanimToShowList });
                                     }}
                                     style={styles.checkbox} />
                                 <Text style={styles.labelCheckbox}>{zt.decs}</Text>
