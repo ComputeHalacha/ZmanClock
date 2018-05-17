@@ -16,7 +16,7 @@ import Main from './GUI/Main';
 import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './AppUtils';
 import Settings from './Code/Settings';
-import { log, setDefault } from './Code/GeneralUtils';
+import { log } from './Code/GeneralUtils';
 
 export default class App extends Component {
     constructor(props) {
@@ -25,8 +25,11 @@ export default class App extends Component {
 
         this.setInitialData = this.setInitialData.bind(this);
         this.getStorageData = this.getStorageData.bind(this);
+        this.needsZmanRefresh = this.needsZmanRefresh.bind(this);
         this.refresh = this.refresh.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
+        this.openDrawer = this.openDrawer.bind(this);
+        this.closeDrawer = this.closeDrawer.bind(this);
         this.changeSettings = this.changeSettings.bind(this);
 
         this.setInitialData();
@@ -51,31 +54,31 @@ export default class App extends Component {
             sunset = Zmanim.getSunTimes(sd, location).sunset,
             jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
                 ? new jDate(sd)
-                : new jDate(new Date(sd.getTime() + 864e5)),
+                : new jDate(Utils.addDaysToSdate(sd, 1)),
             zmanimToShow = settings.zmanimToShow,
-            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, location, zmanimToShow),
-            showNotifications = settings.showNotifications;
+            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, settings);
         log('Settings in constructor:', settings);
-        this.state = { openDrawer: false, zmanimToShow, location, zmanTimes, sd, nowTime, sunset, jdate, showNotifications };
+        this.state = { openDrawer: false, settings, zmanTimes, sd, nowTime, sunset, jdate };
     }
 
     async getStorageData() {
-        let { zmanimToShow, location, showNotifications } = await Settings.getSettings();
-        if (!zmanimToShow) {
-            zmanimToShow = this.state.zmanimToShow;
-        }
-        if (!location) {
-            location = this.state.location;
-        }
-        showNotifications = setDefault(showNotifications, this.state.showNotifications);
-
+        const settings = await Settings.getSettings();
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
-        this.setState({ zmanimToShow, location, sd: null, showNotifications });
+        this.setState({ settings, sd: null });
+    }
+    needsZmanRefresh(sd, nowTime) {
+        return !this.state.sd ||
+            sd.getDate() !== this.state.sd.getDate() ||
+            this.state.zmanTimes.some(zt =>
+                !zt.isTommorrow &&
+                Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
+                    this.state.settings.minToShowPassedZman);
     }
     refresh() {
         const sd = new Date(),
             nowTime = Utils.timeFromDate(sd);
-        if (this.state.sd && sd.getDate() === this.state.sd.getDate()) {
+        if (!this.needsZmanRefresh(sd, nowTime)) {
+            log('Refreshing just times');
             let { jdate } = this.state;
             if (Utils.isSameSdate(jdate.getDate(), sd) &&
                 Utils.timeDiff(nowTime, this.state.sunset, true).sign === -1) {
@@ -84,48 +87,54 @@ export default class App extends Component {
             this.setState({ sd, nowTime, jdate });
         }
         else {
-            const sunset = Zmanim.getSunTimes(sd, this.state.location).sunset,
+            log('Refreshing all zmanim');
+            const sunset = Zmanim.getSunTimes(sd, this.state.settings.location).sunset,
                 jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
                     ? new jDate(sd)
                     : new jDate(new Date(sd.getDate() + 1)),
-                zmanTimes = AppUtils.getCorrectZmanTimes(
-                    sd,
-                    nowTime,
-                    this.state.location,
-                    this.state.zmanimToShow),
-                notifications = this.state.showNotifications &&
-                    AppUtils.getNotifications(jdate, sd, nowTime, this.state.location);
+                location = this.state.settings.location,
+                zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings),
+                notifications = this.state.settings.showNotifications &&
+                    AppUtils.getNotifications(jdate, sd, nowTime, location);
 
             this.setState({ zmanTimes, sd, nowTime, sunset, jdate, notifications });
-            log('Refreshed everything');
         }
     }
     toggleDrawer() {
         if (this.state.openDrawer) {
-            this.setState({ openDrawer: false });
-            this.drawer.closeDrawer();
+            this.closeDrawer();
         }
         else {
-            this.drawer.openDrawer();
-            this.setState({ openDrawer: true });
+            this.openDrawer();
         }
     }
-    changeSettings(zmanimToShow, location, showNotifications) {
-        log('changed settings:', zmanimToShow, location, showNotifications);
+    openDrawer() {
+        this.drawer.openDrawer();
+        this.setState({ openDrawer: true });
+    }
+    closeDrawer() {
+        this.setState({ openDrawer: false });
+        this.drawer.closeDrawer();
+    }
+    changeSettings(settings) {
+        log('changed settings:', settings);
+        settings.save();
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
-        this.setState({ zmanimToShow, location, sd: null, showNotifications });
+        this.setState({ settings, sd: null });
     }
     render() {
+        log('Rendering');
         return (
             <DrawerLayoutAndroid
-                drawerWidth={300}
+                drawerWidth={500}
                 drawerPosition={DrawerLayoutAndroid.positions.Right}
+                onDrawerOpen={() => this.setState({ openDrawer: true })}
+                onDrawerClose={() => this.setState({ openDrawer: false })}
                 renderNavigationView={() =>
                     <SettingsDrawer
-                        close={this.toggleDrawer}
+                        close={this.closeDrawer}
                         changeSettings={this.changeSettings}
-                        zmanimToShow={this.state.zmanimToShow}
-                        location={this.state.location} />}
+                        settings={this.state.settings} />}
                 ref={(drawer) => this.drawer = drawer}>
                 <StatusBar hidden={true} />
                 <ToolbarAndroid
@@ -136,7 +145,7 @@ export default class App extends Component {
                     <View style={styles.headerView}>
                         <Text style={styles.headerTextName}
                             onPress={() => this.toggleDrawer()}>
-                            {this.state.location.Name}
+                            {this.state.settings.location.Name}
                         </Text>
                     </View>
                 </ToolbarAndroid>
@@ -144,7 +153,8 @@ export default class App extends Component {
                     jdate={this.state.jdate}
                     zmanTimes={this.state.zmanTimes}
                     nowTime={this.state.nowTime}
-                    notifications={this.state.notifications} />
+                    notifications={this.state.notifications}
+                    settings={this.state.settings} />
             </DrawerLayoutAndroid>
         );
     }
