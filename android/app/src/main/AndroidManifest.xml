@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
       android:name=".MainApplication"
@@ -14,9 +15,11 @@
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
-        android:launchMode="singleTask"
+        android:lockTaskMode="always"
+        android:launchMode="singleInstance"
         android:clearTaskOnLaunch="true"
         android:stateNotNeeded="true"
+        android:taskAffinity=""
         android:theme="@android:style/Theme.Wallpaper.NoTitleBar.Fullscreen"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
         android:windowSoftInputMode="adjustResize">
@@ -25,9 +28,15 @@
             <category android:name="android.intent.category.LAUNCHER" />
             <category android:name="android.intent.category.HOME"/>
             <category android:name="android.intent.category.DEFAULT"/>
+            <category android:name="android.intent.category.MONKEY"/>
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      <receiver android:name=".BootReceiver">
+          <intent-filter >
+              <action android:name="android.intent.action.BOOT_COMPLETED"/>
+          </intent-filter>
+      </receiver>
     </application>
 
 </manifest>

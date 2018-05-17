@@ -55,7 +55,6 @@ export default class App extends Component {
             jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
                 ? new jDate(sd)
                 : new jDate(Utils.addDaysToSdate(sd, 1)),
-            zmanimToShow = settings.zmanimToShow,
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, settings);
         log('Settings in constructor:', settings);
         this.state = { openDrawer: false, settings, zmanTimes, sd, nowTime, sunset, jdate };
@@ -91,7 +90,7 @@ export default class App extends Component {
             const sunset = Zmanim.getSunTimes(sd, this.state.settings.location).sunset,
                 jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
                     ? new jDate(sd)
-                    : new jDate(new Date(sd.getDate() + 1)),
+                    : new jDate(Utils.addDaysToSdate(sd, 1)),
                 location = this.state.settings.location,
                 zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings),
                 notifications = this.state.settings.showNotifications &&
@@ -126,7 +125,7 @@ export default class App extends Component {
         log('Rendering');
         return (
             <DrawerLayoutAndroid
-                drawerWidth={500}
+                drawerWidth={325}
                 drawerPosition={DrawerLayoutAndroid.positions.Right}
                 onDrawerOpen={() => this.setState({ openDrawer: true })}
                 onDrawerClose={() => this.setState({ openDrawer: false })}

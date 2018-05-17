@@ -1,4 +1,4 @@
-package com.yourapp.navbar;
+package com.zmanclock.navbar;
 
 import android.app.Activity;
 import android.view.View;

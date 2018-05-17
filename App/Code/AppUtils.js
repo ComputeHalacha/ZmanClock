@@ -1,8 +1,8 @@
-import Utils from './Code/JCal/Utils';
-import Zmanim from './Code/JCal/Zmanim';
-import Location from './Code/JCal/Location';
-import Settings from './Code/Settings';
-import jDate from './Code/JCal/jDate';
+import Utils from './JCal/Utils';
+import Zmanim from './JCal/Zmanim';
+import Location from './JCal/Location';
+import Settings from './Settings';
+import jDate from './JCal/jDate';
 
 export default class AppUtils {
     static zmanTimesCache = [];

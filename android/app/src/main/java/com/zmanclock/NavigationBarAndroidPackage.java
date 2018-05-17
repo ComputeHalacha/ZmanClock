@@ -1,4 +1,4 @@
-package com.yourapp.navbar;
+package com.zmanclock.navbar;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -16,7 +16,7 @@ public class NavigationBarAndroidPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 
-        modules.add(new com.yourapp.navbar.NavigationBarAndroid(reactContext));
+        modules.add(new NavigationBarAndroid(reactContext));
 
         return modules;
     }
