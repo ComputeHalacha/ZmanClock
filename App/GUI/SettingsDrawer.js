@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
-import AppUtils from '../AppUtils';
 import { range } from '../Code/GeneralUtils';
 
 export default class SettingsDrawer extends Component {

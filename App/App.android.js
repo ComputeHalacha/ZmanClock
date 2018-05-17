@@ -14,7 +14,7 @@ import Utils from './Code/JCal/Utils';
 import Zmanim from './Code/JCal/Zmanim';
 import Main from './GUI/Main';
 import SettingsDrawer from './GUI/SettingsDrawer';
-import AppUtils from './AppUtils';
+import AppUtils from './Code/AppUtils';
 import Settings from './Code/Settings';
 import { log } from './Code/GeneralUtils';
 
