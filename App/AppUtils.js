@@ -1,6 +1,7 @@
 import Utils from './Code/JCal/Utils';
 import Zmanim from './Code/JCal/Zmanim';
 import Location from './Code/JCal/Location';
+import Settings from './Code/Settings';
 import jDate from './Code/JCal/jDate';
 
 export default class AppUtils {
@@ -11,20 +12,21 @@ export default class AppUtils {
     * If the zman is after or within 30 minutes of the given time, this days zman is returned, othwise tomorrows zman is returned.
     * @param {Date} sdate
     * @param {{hour : Number, minute :Number, second: Number }} time
-    * @param {Location} location
-    * @param {[{name:String, decs: String, eng: String, heb: String }]} zmanTypes
+    * @param {Settings} settings
     * @returns {[{zmanType:{name:String, decs: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]}
     */
-    static getCorrectZmanTimes(sdate, time, location, zmanTypes) {
+    static getCorrectZmanTimes(sdate, time, settings) {
         const correctedTimes = [],
+            zmanTypes = settings.zmanimToShow,
+            location = settings.location,
             zmanTimes = AppUtils.getZmanTimes(zmanTypes, sdate, location),
-            tommorowTimes = AppUtils.getZmanTimes(zmanTypes, new Date(sdate.valueOf() + 8.64E7), location);
+            tommorowTimes = AppUtils.getZmanTimes(zmanTypes, Utils.addDaysToSdate(sdate, 1), location);
 
         for (let zt of zmanTimes) {
             let oTime = zt.time,
                 isTommorrow = false,
                 diff = Utils.timeDiff(time, oTime, true);
-            if (diff.sign < 1 && Utils.totalMinutes(diff) >= 30) {
+            if (diff.sign < 1 && Utils.totalMinutes(diff) >= settings.minToShowPassedZman) {
                 oTime = tommorowTimes.find(t => t.zmanType === zt.zmanType).time;
                 isTommorrow = true;
             }
@@ -59,10 +61,10 @@ export default class AppUtils {
             shaaZmanis90 = mem.shaaZmanis90;
         }
         else {
-            const suntimes = Zmanim.getSunTimes(date, location, false);
+            const suntimes = Zmanim.getSunTimes(date, location, true);
             sunrise = suntimes.sunrise;
             sunset = suntimes.sunset;
-            suntimesMishor = Zmanim.getSunTimes(date, location, true);
+            suntimesMishor = Zmanim.getSunTimes(date, location, false);
             sunriseMishor = suntimesMishor.sunrise;
             sunsetMishor = suntimesMishor.sunset;
             candles = jDate.toJDate(date).hasCandleLighting() &&

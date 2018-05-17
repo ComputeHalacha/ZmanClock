@@ -9,32 +9,36 @@ import {
 } from 'react-native';
 import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
-import Settings from '../Code/Settings';
-import { setDefault } from '../Code/GeneralUtils';
+import AppUtils from '../AppUtils';
+import { range } from '../Code/GeneralUtils';
 
 export default class SettingsDrawer extends Component {
     constructor(props) {
         super(props);
         this.onChangeSettings = this.onChangeSettings.bind(this);
     }
-    onChangeSettings(zmanimToShow, location, showNotifications) {
+    onChangeSettings(zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman) {
+        const settings = this.props.settings.clone();
         if (zmanimToShow) {
-            Settings.saveZmanim(zmanimToShow);
+            settings.zmanimToShow = zmanimToShow;
         }
         if (location) {
-            Settings.saveLocation(location);
+            settings.location = location;
         }
         if (typeof showNotifications !== 'undefined') {
-            Settings.saveShowNotifications(showNotifications);
+            settings.showNotifications = showNotifications;
+        }
+        if (typeof numberOfItemsToShow !== 'undefined') {
+            settings.numberOfItemsToShow = numberOfItemsToShow;
+        }
+        if (typeof minToShowPassedZman !== 'undefined') {
+            settings.minToShowPassedZman = minToShowPassedZman;
         }
 
-        this.props.changeSettings(
-            zmanimToShow || this.props.zmanimToShow,
-            location || this.props.location,
-            setDefault(showNotifications, this.props.showNotifications)
-        );
+        this.props.changeSettings(settings);
     }
     render() {
+        const { zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = this.props.settings;
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
@@ -44,35 +48,59 @@ export default class SettingsDrawer extends Component {
                         <Picker
                             style={styles.picker}
                             itemStyle={styles.pickerItem}
-                            selectedValue={this.props.location}
+                            selectedValue={location}
                             onValueChange={location => this.onChangeSettings(null, location)}>
                             {Locations.map((location, i) =>
                                 <Picker.Item key={i} value={location} label={location.Name} />)}
                         </Picker>
-                        <Text style={styles.label}>בחר זמנים</Text>
-                        <ScrollView style={styles.scrollView}>
-                            {ZmanTypes.map((zt, i) => <View style={styles.ztView} key={i}>
+                        <Text style={styles.label}>בחר איזה זמנים להציג</Text>
+                        <ScrollView style={styles.scrollView} scrollEnabled>
+                            {ZmanTypes.map((zt, i) => <View style={styles.checkboxView} key={i}>
                                 <CheckBox
-                                    value={Boolean(this.props.zmanimToShow.find(z => z.name === zt.name))}
+                                    value={Boolean(zmanimToShow.find(z => z.name === zt.name))}
                                     onValueChange={selected => {
-                                        const zmanimToShow = this.props.zmanimToShow.filter(zts =>
+                                        const zmanimToShowList = zmanimToShow.filter(zts =>
                                             zts.name !== zt.name);
                                         if (selected) {
-                                            zmanimToShow.push(zt);
+                                            zmanimToShowList.push(zt);
                                         }
-                                        this.onChangeSettings(zmanimToShow);
-                                    }} />
-                                <Text style={styles.labelZman}>{zt.decs}</Text>
+                                        this.onChangeSettings(zmanimToShowList);
+                                    }}
+                                    style={styles.checkbox} />
+                                <Text style={styles.labelCheckbox}>{zt.decs}</Text>
                             </View>)}
                         </ScrollView>
-                        <Text style={styles.label}>העדפות</Text>
-                        <View style={styles.ztView}>
+                        <Text style={styles.label}>העדפות כלליות</Text>
+                        <View style={styles.checkboxView}>
                             <CheckBox
-                                value={Boolean(this.props.showNotifications)}
+                                value={Boolean(showNotifications)}
                                 onValueChange={selected =>
                                     this.onChangeSettings(null, null, selected)
-                                } />
-                            <Text style={styles.labelZman}>הצג מידע יומית</Text>
+                                }
+                                style={styles.checkbox} />
+                            <Text style={styles.labelCheckbox}>הצג מידע יומית</Text>
+                        </View>
+                        <View style={styles.checkboxView}>
+                            <Text style={styles.labelCheckbox}>מקסימום פרטים להציג במסך</Text>
+                            <Picker
+                                style={styles.numberPicker}
+                                itemStyle={styles.pickerItem}
+                                selectedValue={numberOfItemsToShow}
+                                onValueChange={numberOfItemsToShow => this.onChangeSettings(null, null, null, numberOfItemsToShow)}>
+                                {range(1, 10).map(num =>
+                                    <Picker.Item key={num} value={num} label={num.toString()} />)}
+                            </Picker>
+                        </View>
+                        <View style={styles.checkboxView}>
+                            <Text style={styles.labelCheckbox}>מספר דקות להציג זמנים שעברו</Text>
+                            <Picker
+                                style={styles.numberPicker}
+                                itemStyle={styles.pickerItem}
+                                selectedValue={minToShowPassedZman}
+                                onValueChange={minToShowPassedZman => this.onChangeSettings(null, null, null, null, minToShowPassedZman)}>
+                                {range(0, 60).map(num =>
+                                    <Picker.Item key={num} value={num} label={num.toString()} />)}
+                            </Picker>
                         </View>
                     </View>
                     <Text style={styles.close} onPress={() => this.props.close()}>סגור X</Text>
@@ -118,10 +146,13 @@ const styles = StyleSheet.create({
     },
     label: {
         color: '#99f',
-        textAlign: 'center',
         width: '100%',
         fontWeight: 'bold',
         margin: 10
+    },
+    checkbox: {
+        minWidth: 20,
+        marginBottom: 5
     },
     picker: {
         height: 30,
@@ -132,13 +163,24 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
         color: '#999'
     },
-    ztView: {
+    numberPicker: {
+        height: 30,
+        width: 40,
+        backgroundColor: '#444',
+        marginBottom: 5
+    },
+    checkboxView: {
         flexDirection: 'row-reverse',
     },
     scrollView: {
-        flex: 1
+        flex: 1,
+        borderRadius: 5,
+        backgroundColor: '#333',
+        width: '90%',
+        marginRight:10,
+        padding: 5
     },
-    labelZman: {
+    labelCheckbox: {
         color: '#777',
         margin: 5
     }

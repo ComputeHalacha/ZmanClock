@@ -385,9 +385,7 @@ export default class Utils {
      * @param {Number} days
      */
     static addDaysToSdate(sdate, days) {
-        const dat = new Date(sdate.valueOf());
-        dat.setDate(dat.getDate() + days);
-        return dat;
+        return new Date(sdate.valueOf() + (8.64E7 * days));
     }
     /**
      * Compares two js dates to se if they both refer to the same day - time is ignored.

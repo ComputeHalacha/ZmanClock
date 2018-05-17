@@ -30,6 +30,8 @@ export default class Main extends Component {
                     ? styles.scrollContent
                     : styles.container}>
                 {this.props.zmanTimes.map((zt, i) => {
+                    if (i >= this.props.settings.numberOfItemsToShow)
+                        return null;
                     const timeDiff = Utils.timeDiff(this.props.nowTime, zt.time, !zt.isTommorrow),
                         was = timeDiff.sign === -1;
                     return <View key={i} style={[styles.singleZman, {
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
     notificationsText: {
         color: '#899',
         fontWeight: 'bold',
-        fontSize: 11
+        fontSize: 13
     },
     singleZman: {
         justifyContent: 'center',
