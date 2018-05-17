@@ -10,12 +10,16 @@ export default class Settings {
      * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow]
      * @param {Location} [location]
      * @param {boolean} [showNotifications]
+     * @param {number} [numberOfItemsToShow]
+     * @param {number} [minToShowPassedZman]
      */
-    constructor(zmanimToShow, location, showNotifications = true) {
+    constructor(zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman) {
         /**
          * @property {[ZmanTypes]} zmanimToShow
          */
-        this.zmanimToShow = zmanimToShow || [];
+        this.zmanimToShow = zmanimToShow || [
+            getZmanType('netzMishor'),
+            getZmanType('shkiaElevation')];
         /**
          * @property {Location} location
          */
@@ -24,53 +28,71 @@ export default class Settings {
          * @property {boolean} showNotifications
          */
         this.showNotifications = setDefault(showNotifications, true);
+        /**
+         * @property {number} numberOfItemsToShow
+         */
+        this.numberOfItemsToShow = setDefault(numberOfItemsToShow, 2);
+        /**
+         * @property {number} minToShowPassedZman
+         */
+        this.minToShowPassedZman = setDefault(minToShowPassedZman, 30);
+    }
+    clone() {
+        return new Settings(
+            this.zmanimToShow,
+            this.location,
+            this.showNotifications,
+            this.numberOfItemsToShow,
+            this.minToShowPassedZman);
     }
     /**
-     * Saves the given zmanimToShow to AsyncStorage.
-     * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow]
+     * Saves the current settings to AsyncStorage.
      */
-    static async saveZmanim(zmanimToShow) {
-        await AsyncStorage.setItem('ZMANIM_TO_SHOW',
-            JSON.stringify(zmanimToShow),
-            err => err && error(err));
+    async save() {
+        log('started save Settings');
+        await AsyncStorage.multiSet([
+            ['ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow)],
+            ['LOCATION_NAME', this.location.Name],
+            ['NOTIFICATIONS', JSON.stringify(Number(this.showNotifications))],
+            ['NUMBER_OF_ITEMS_TO_SHOW', JSON.stringify(this.numberOfItemsToShow)],
+            ['MINUTES_PASSED_ZMAN', JSON.stringify(this.minToShowPassedZman)]
+        ],
+            errors => errors && error('Error during AsyncStorage.multiSet for settings', errors));
+        log('Saved settings', this);
     }
     /**
-     * Saves the given Location to AsyncStorage.
-     * @param {Location} location
+     * Gets saved settings from the local storage
      */
-    static async saveLocation(location) {
-        await AsyncStorage.setItem('LOCATION_NAME',
-            location.Name,
-            err => err && error(err));
-    }
-    /**
-     * Saves the showNotifications to AsyncStorage.
-     * @param {boolean} showNotifications
-     */
-    static async saveShowNotifications(showNotifications) {
-        await AsyncStorage.setItem('NOTIFICATIONS',
-            JSON.stringify(showNotifications),
-            err => err && error(err));
-    }
     static async getSettings() {
-        let zmanimToShow, location, showNotifications;
-        const allKeys = await AsyncStorage.getAllKeys();
+        log('started getSettings');
+        const settings = new Settings(),
+            allKeys = await AsyncStorage.getAllKeys();
         log('all storage keys', allKeys);
         if (allKeys.includes('ZMANIM_TO_SHOW')) {
             const zts = await AsyncStorage.getItem('ZMANIM_TO_SHOW');
-            zmanimToShow = JSON.parse(zts);
-            log('Zmanim to show from storage data', zts);
+            settings.zmanimToShow = JSON.parse(zts);
+            log('zmanimToShow to show from storage data', zts);
         }
         if (allKeys.includes('LOCATION_NAME')) {
             const locationName = await AsyncStorage.getItem('LOCATION_NAME');
-            location = findLocation(locationName);
-            log('Location from storage data', locationName);
+            settings.location = findLocation(locationName);
+            log('location from storage data', locationName);
         }
         if (allKeys.includes('NOTIFICATIONS')) {
             const sn = await AsyncStorage.getItem('NOTIFICATIONS');
-            showNotifications = JSON.parse(sn);
+            settings.showNotifications = Boolean(JSON.parse(sn));
             log('showNotifications from storage data', sn);
         }
-        return { zmanimToShow, location, showNotifications };
+        if (allKeys.includes('NUMBER_OF_ITEMS_TO_SHOW')) {
+            const ni = await AsyncStorage.getItem('NUMBER_OF_ITEMS_TO_SHOW');
+            settings.numberOfItemsToShow = JSON.parse(ni);
+            log('numberOfItemsToShow from storage data', ni);
+        }
+        if (allKeys.includes('MINUTES_PASSED_ZMAN')) {
+            const mpz = await AsyncStorage.getItem('MINUTES_PASSED_ZMAN');
+            settings.minToShowPassedZman = JSON.parse(mpz);
+            log('minToShowPassedZman from storage data', mpz);
+        }
+        return settings;
     }
 }
