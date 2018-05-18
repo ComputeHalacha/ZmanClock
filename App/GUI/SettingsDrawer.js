@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent  } from 'react';
 import {
     StyleSheet,
     Text,
@@ -11,7 +11,7 @@ import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
 import { range, setDefault } from '../Code/GeneralUtils';
 
-export default class SettingsDrawer extends Component {
+export default class SettingsDrawer extends PureComponent  {
     constructor(props) {
         super(props);
         this.onChangeSettings = this.onChangeSettings.bind(this);

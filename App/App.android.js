@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
     ToolbarAndroid,
     StatusBar,
     DrawerLayoutAndroid,
     StyleSheet,
     Text,
-    View
+    View,
+    Image
 } from 'react-native';
 import KeepAwake from 'react-native-keep-awake';
 import NavigationBarAndroid from './Code/NavigationBar';
@@ -18,10 +19,12 @@ import AppUtils from './Code/AppUtils';
 import Settings from './Code/Settings';
 import { log } from './Code/GeneralUtils';
 
-export default class App extends Component {
+export default class App extends PureComponent {
     constructor(props) {
         super(props);
         KeepAwake.activate();
+
+        this.hamburger = { uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAScwAAEnMBjCK5BwAAABl0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC4yMfEgaZUAAADXSURBVDhPzdOxigIxEIDh8dDO9hCfxicRrCwWVrPJJNnJui4iFlaW4mOJWCsi4sEJFmohQm62tzIKF/jaYcKfgCGaU5bfaTD0QbL8iiYdgdT2hpb8Owg0FzBuMEabrtC6dQhl3ZKyYQzdxaJGRA3nXDMETSbfRVF8wf8/PYmFkPonVKL0oS+xw5XT87Nir1Da/kKi7ZRtRaAEzSZRpgdcphpFUf0dPlPZe18pt2wFKmfwuApINDl/mX1fheEOO6F0u3w2p2fFXhELeQSeOuNCPhTf8iHQxn+Uve7z9rX0GAAAAABJRU5ErkJggg==' };
 
         this.setInitialData = this.setInitialData.bind(this);
         this.getStorageData = this.getStorageData.bind(this);
@@ -71,7 +74,7 @@ export default class App extends Component {
             this.state.zmanTimes.some(zt =>
                 !zt.isTommorrow &&
                 Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
-                    this.state.settings.minToShowPassedZman);
+                this.state.settings.minToShowPassedZman);
     }
     refresh() {
         const sd = new Date(),
@@ -139,13 +142,12 @@ export default class App extends Component {
                 <ToolbarAndroid
                     rtl={true}
                     style={styles.toolbarAndroid}
-                    navIcon={require('./Images/menu.png')}
-                    onIconClicked={() => this.toggleDrawer()}>
+                    onTouchStart={() => this.toggleDrawer()}>
                     <View style={styles.headerView}>
-                        <Text style={styles.headerTextName}
-                            onPress={() => this.toggleDrawer()}>
+                        <Text style={styles.headerTextName}>
                             {this.state.settings.location.Name}
                         </Text>
+                        <Image style={styles.hamburger} source={this.hamburger} />
                     </View>
                 </ToolbarAndroid>
                 <Main
@@ -164,12 +166,17 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#000'
     },
     headerTextName: {
+        flex: 1,
+        textAlign: 'center',
         fontSize: 13,
         color: '#557'
+    },
+    hamburger: {
+        width: 20,
+        height: 15
     },
     toolbarAndroid: {
         height: 40,
