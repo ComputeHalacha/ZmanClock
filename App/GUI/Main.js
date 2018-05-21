@@ -10,6 +10,58 @@ import Utils from '../Code/JCal/Utils';
 export default class Main extends PureComponent {
     constructor(props) {
         super(props);
+        this.displaySingleZman = this.displaySingleZman.bind(this);
+    }
+    displaySingleZman(zt, index) {
+        if (index >= this.props.settings.numberOfItemsToShow)
+            return null;
+        const timeDiff = Utils.timeDiff(this.props.nowTime, zt.time, !zt.isTommorrow),
+            was = (timeDiff.sign === -1),
+            minutes = timeDiff.minute,
+            minutesFrom10 = (10 - minutes),
+            isWithin10 = (!was && !zt.isTommorrow) && (minutes < 10);
+        return <View key={index} style={[
+            styles.singleZman,
+            was
+                ? styles.singleZmanWas
+                : (isWithin10
+                    ? styles.singleZman10
+                    : styles.singleZmanReg)]}>
+            <Text style={[styles.timeRemainingLabel, {
+                color: was ? '#550' : '#99f',
+                fontSize: was ? 15 : (isWithin10 ? 20 + minutesFrom10 : 18)
+            }]}>
+                {`${zt.zmanType.heb} ${was ? 'עבר לפני' : 'בעוד'}:`}
+            </Text>
+            <Text style={[styles.timeRemainingText, {
+                color: was
+                    ? '#844'
+                    : (isWithin10
+                        ? `rgb(${200 + (minutesFrom10 * 5)},
+                            ${150 + (minutesFrom10 * 5)},
+                            100)` :
+                        '#a99'),
+                fontSize: was
+                    ? 20
+                    : (isWithin10
+                        ? 50 + (minutesFrom10 * 3)
+                        : 50)
+            }]}>
+                {Utils.getTimeString(timeDiff, true)}
+            </Text>
+            <Text style={
+                was
+                    ? styles.zmanTypeNameTextWas :
+                    (isWithin10
+                        ? styles.zmanTypeNameText10
+                        : styles.zmanTypeNameText)}>
+                {'בשעה: '}
+                <Text style={[styles.zmanTimeText, isWithin10
+                    ? { fontSize: 22 } : null]}>
+                    {Utils.getTimeString(zt.time, true)}
+                </Text>
+            </Text>
+        </View>;
     }
     render() {
         return <View style={styles.container}>
@@ -26,43 +78,13 @@ export default class Main extends PureComponent {
                 {Utils.getTimeString(this.props.nowTime, true)}
             </Text>
             <ScrollView style={styles.scrollView}
-                contentContainerStyle={this.props.zmanTimes.length > 2
-                    ? styles.scrollContent
-                    : styles.container}>
-                {this.props.zmanTimes.map((zt, i) => {
-                    if (i >= this.props.settings.numberOfItemsToShow)
-                        return null;
-                    const timeDiff = Utils.timeDiff(this.props.nowTime, zt.time, !zt.isTommorrow),
-                        was = timeDiff.sign === -1;
-                    return <View key={i} style={[styles.singleZman, {
-                        backgroundColor: was
-                            ? '#311'
-                            : '#112'
-                    }]}>
-                        <Text style={[styles.timeRemainingLabel, {
-                            color: was
-                                ? '#aa6'
-                                : '#99f'
-                        }]}>
-                            {`${zt.zmanType.heb} ${was ? 'עבר לפני' : 'בעוד'}:`}
-                        </Text>
-                        <Text style={[styles.timeRemainingText, {
-                            color: was
-                                ? '#f99'
-                                : '#a99'
-                        }]}>
-                            {Utils.getTimeString(timeDiff, true)}
-                        </Text>
-                        <Text style={styles.zmanTypeNameText}>
-                            {'בשעה: '}
-                            <Text style={styles.zmanTimeText}>
-                                {Utils.getTimeString(zt.time, true)}
-                            </Text>
-                        </Text>
-                    </View>;
-                })}
+                contentContainerStyle={
+                    this.props.zmanTimes.length > 3 && this.props.settings.numberOfItemsToShow > 3
+                        ? styles.scrollContent
+                        : styles.container}>
+                {this.props.zmanTimes.map((zt, i) => this.displaySingleZman(zt, i))}
             </ScrollView>
-        </View>;
+        </View >;
     }
 }
 
@@ -78,6 +100,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     scrollContent: {
+        backgroundColor: '#000',
         justifyContent: 'center'
     },
     notificationsView: {
@@ -99,6 +122,16 @@ const styles = StyleSheet.create({
         padding: 20,
         width: '100%',
         marginBottom: 5
+    },
+    singleZmanReg: {
+        backgroundColor: '#112'
+    },
+    singleZman10: {
+        backgroundColor: '#334',
+        height: 300
+    },
+    singleZmanWas: {
+        backgroundColor: '#111',
     },
     dateText: {
         color: '#b88',
@@ -127,5 +160,13 @@ const styles = StyleSheet.create({
     zmanTypeNameText: {
         color: '#99f',
         fontSize: 14
+    },
+    zmanTypeNameTextWas: {
+        color: '#558',
+        fontSize: 12
+    },
+    zmanTypeNameText10: {
+        color: '#99f',
+        fontSize: 22
     },
 });

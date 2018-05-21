@@ -231,10 +231,10 @@ export default class AppUtils {
             day = jdate.Day,
             dow = jdate.DayOfWeek,
             { chatzosHayom, chatzosHalayla, alos } = AppUtils.getBasicShulZmanim(sdate, location),
-            isAfterChatzosHayom = Utils.totalSeconds(chatzosHayom) < Utils.totalSeconds(time),
-            isAfterChatzosHalayla = Utils.totalSeconds(chatzosHalayla) < Utils.totalSeconds(time) ||
+            isAfterChatzosHayom = Utils.totalSeconds(chatzosHayom) <= Utils.totalSeconds(time),
+            isAfterChatzosHalayla = Utils.totalSeconds(chatzosHalayla) <= Utils.totalSeconds(time) ||
                 chatzosHalayla.hour > 12 && time.Hour < 12, //Chatzos is before 12 AM and time is after 12 AM
-            isAfterAlos = Utils.totalSeconds(alos) < Utils.totalSeconds(time),
+            isAfterAlos = Utils.totalSeconds(alos) <= Utils.totalSeconds(time),
             isYomTov = (month === 1 && day > 14 && day < 22) ||
                 (month === 3 && day === 6) ||
                 (month === 7 && [1, 2, 10, 15, 16, 17, 18, 19, 20, 21, 22].includes(day));
@@ -342,7 +342,7 @@ export default class AppUtils {
                 if (day < 6 && !isAfterAlos) {
                     notifications.push(`${Utils.toJNum(day + 44)} בעומר`);
                 }
-                if (day < 13) {
+                if (day < 8) {
                     noTachnun = true;
                 }
                 if (day === 6 && isAfterAlos) {
@@ -350,6 +350,9 @@ export default class AppUtils {
                     notifications.push('מגילת רות');
                     notifications.push('אקדמות');
                     notifications.push('יזכור');
+                }
+                else if (day === 7 && isAfterAlos) {
+                    notifications.push('א"א למנצח');
                 }
                 break;
             case 4: //Tammuz

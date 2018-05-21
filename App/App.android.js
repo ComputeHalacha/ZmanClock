@@ -29,6 +29,7 @@ export default class App extends PureComponent {
         this.setInitialData = this.setInitialData.bind(this);
         this.getStorageData = this.getStorageData.bind(this);
         this.needsZmanRefresh = this.needsZmanRefresh.bind(this);
+        this.setNotifications = this.setNotifications.bind(this);
         this.refresh = this.refresh.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.openDrawer = this.openDrawer.bind(this);
@@ -59,8 +60,8 @@ export default class App extends PureComponent {
                 ? new jDate(sd)
                 : new jDate(Utils.addDaysToSdate(sd, 1)),
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, settings);
-        log('Settings in constructor:', settings);
-        this.state = { openDrawer: false, settings, zmanTimes, sd, nowTime, sunset, jdate };
+        this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
+        this.state = { settings, zmanTimes, sd, nowTime, sunset, jdate };
     }
 
     async getStorageData() {
@@ -69,12 +70,41 @@ export default class App extends PureComponent {
         this.setState({ settings, sd: null });
     }
     needsZmanRefresh(sd, nowTime) {
-        return !this.state.sd ||
+        if (!this.state.sd ||
             sd.getDate() !== this.state.sd.getDate() ||
             this.state.zmanTimes.some(zt =>
                 !zt.isTommorrow &&
                 Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
-                this.state.settings.minToShowPassedZman);
+                this.state.settings.minToShowPassedZman)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    setNotifications() {
+        const { jdate, sd, nowTime, location } = this.state,
+            { chatzosHayom, chatzosHalayla, alos } = this.shulZmanim;
+        let needsRefresh = false;
+        //Notifications need refreshing by chatzos and alos
+        if (chatzosHayom && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHayom)) {
+            this.shulZmanim.chatzosHayom = null;
+            needsRefresh = true;
+        }
+        if (chatzosHalayla && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHalayla)) {
+            this.shulZmanim.chatzosHalayla = null;
+            needsRefresh = true;
+        }
+        if (alos && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(alos)) {
+            this.shulZmanim.alos = null;
+            needsRefresh = true;
+        }
+        if (needsRefresh) {
+            log('Refreshing notifications');
+            const notifications = this.state.settings.showNotifications &&
+                AppUtils.getNotifications(jdate, sd, nowTime, location);
+            this.setState({ notifications });
+        }
     }
     refresh() {
         const sd = new Date(),
@@ -95,15 +125,19 @@ export default class App extends PureComponent {
                     ? new jDate(sd)
                     : new jDate(Utils.addDaysToSdate(sd, 1)),
                 location = this.state.settings.location,
-                zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings),
-                notifications = this.state.settings.showNotifications &&
-                    AppUtils.getNotifications(jdate, sd, nowTime, location);
-
-            this.setState({ zmanTimes, sd, nowTime, sunset, jdate, notifications });
+                zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings);
+            if (this.state.settings.showNotifications &&
+                (!this.state.sd || sd.getDate() !== this.state.sd.getDate())) {
+                this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
+            }
+            this.setState({ zmanTimes, sd, nowTime, sunset, jdate });
+        }
+        if (this.state.settings.showNotifications) {
+            this.setNotifications();
         }
     }
     toggleDrawer() {
-        if (this.state.openDrawer) {
+        if (this.isDrawerOpen) {
             this.closeDrawer();
         }
         else {
@@ -112,10 +146,10 @@ export default class App extends PureComponent {
     }
     openDrawer() {
         this.drawer.openDrawer();
-        this.setState({ openDrawer: true });
+        this.isDrawerOpen = true;
     }
     closeDrawer() {
-        this.setState({ openDrawer: false });
+        this.isDrawerOpen = false;
         this.drawer.closeDrawer();
     }
     changeSettings(settings) {
@@ -130,8 +164,8 @@ export default class App extends PureComponent {
             <DrawerLayoutAndroid
                 drawerWidth={325}
                 drawerPosition={DrawerLayoutAndroid.positions.Right}
-                onDrawerOpen={() => this.setState({ openDrawer: true })}
-                onDrawerClose={() => this.setState({ openDrawer: false })}
+                onDrawerOpen={() => this.isDrawerOpen = true}
+                onDrawerClose={() => this.isDrawerOpen = false}
                 renderNavigationView={() =>
                     <SettingsDrawer
                         close={this.closeDrawer}
