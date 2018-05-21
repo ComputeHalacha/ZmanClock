@@ -81,6 +81,12 @@ export default class AppUtils {
         }
         for (let zmanType of zmanTypes) {
             switch (zmanType.name) {
+                case 'chatzosNight':
+                    zmanTimes.push({
+                        zmanType,
+                        time: Utils.addMinutes(chatzos, 720)
+                    });
+                    break;
                 case 'alos90':
                     zmanTimes.push({
                         zmanType,

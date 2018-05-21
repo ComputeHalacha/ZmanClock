@@ -1,4 +1,5 @@
 export const ZmanTypes = [
+    { name: 'chatzosNight', decs: 'חצות הלילה', eng: 'Midnight', heb: 'חצות הלילה' },
     { name: 'alos90', decs: 'עלות השחר - 90 דקות', eng: 'Alos Hashachar', heb: 'עלות השחר' },
     { name: 'alos72', decs: 'עלות השחר - 72 דקות', eng: 'Alos Hashachar', heb: 'עלות השחר' },
     { name: 'netzElevation', decs: 'הנץ החמה בגובה המיקום', eng: 'Sunrise', heb: 'הנץ החמה' },

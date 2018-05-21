@@ -17,18 +17,16 @@ export default class Main extends PureComponent {
             return null;
         const timeDiff = Utils.timeDiff(this.props.nowTime, zt.time, !zt.isTommorrow),
             was = (timeDiff.sign === -1),
-            minutes = timeDiff.minute,
+            minutes = Utils.totalMinutes(timeDiff),
             minutesFrom10 = (10 - minutes),
-            isWithin10 = (!was && !zt.isTommorrow) && (minutes < 10);
-        return <View key={index} style={[
-            styles.singleZman,
-            { height: `${parseInt(100 / Math.min(this.props.settings.numberOfItemsToShow, this.props.zmanTimes.length)) - 5}%` },
-            was
-                ? styles.singleZmanWas
-                : null]}>
+            isWithin10 = (!was && !zt.isTommorrow) && (minutes < 10),
+            itemHeight = parseInt(100 /
+                Math.min(this.props.settings.numberOfItemsToShow, this.props.zmanTimes.length)) - 2;
+        return <View key={index}
+            style={[styles.singleZman, was ? styles.singleZmanWas : { height: isWithin10 ? 350 : `${itemHeight}%`}]}>
             <Text style={[styles.timeRemainingLabel, {
                 color: was ? '#550' : '#99f',
-                fontSize: was ? 15 : (isWithin10 ? 20 + minutesFrom10 : 18)
+                fontSize: (was || !isWithin10) ? 15 : 15 + minutesFrom10
             }]}>
                 {`${zt.zmanType.heb} ${was ? 'עבר לפני' : 'בעוד'}:`}
             </Text>
@@ -54,13 +52,13 @@ export default class Main extends PureComponent {
                     (isWithin10
                         ? styles.zmanTypeNameText10
                         : styles.zmanTypeNameText)}>
-                {`${zt.isTommorrow? 'מחר ' :''}בשעה: `}
+                {`${zt.isTommorrow ? 'מחר ' : ''}בשעה: `}
                 <Text style={[styles.zmanTimeText, isWithin10
                     ? { fontSize: 20, fontWeight: 'bold' } : null]}>
                     {Utils.getTimeString(zt.time, true)}
                 </Text>
             </Text>
-        </View>;
+        </View >;
     }
     render() {
         return <View style={styles.container}>
@@ -97,8 +95,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     scrollContent: {
-        flex: 1,
-        justifyContent: 'center'
+        flex: 1
     },
     notificationsView: {
         marginTop: 10,
@@ -119,7 +116,8 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         padding: 20,
         width: '100%',
-        marginBottom: 10
+        marginBottom: 10,
+        minHeight: 130
     },
     singleZmanWas: {
         backgroundColor: '#111',
