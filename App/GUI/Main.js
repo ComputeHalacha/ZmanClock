@@ -22,11 +22,10 @@ export default class Main extends PureComponent {
             isWithin10 = (!was && !zt.isTommorrow) && (minutes < 10);
         return <View key={index} style={[
             styles.singleZman,
+            { height: `${parseInt(100 / Math.min(this.props.settings.numberOfItemsToShow, this.props.zmanTimes.length)) - 5}%` },
             was
                 ? styles.singleZmanWas
-                : (isWithin10
-                    ? styles.singleZman10
-                    : styles.singleZmanReg)]}>
+                : null]}>
             <Text style={[styles.timeRemainingLabel, {
                 color: was ? '#550' : '#99f',
                 fontSize: was ? 15 : (isWithin10 ? 20 + minutesFrom10 : 18)
@@ -55,9 +54,9 @@ export default class Main extends PureComponent {
                     (isWithin10
                         ? styles.zmanTypeNameText10
                         : styles.zmanTypeNameText)}>
-                {'בשעה: '}
+                {`${zt.isTommorrow? 'מחר ' :''}בשעה: `}
                 <Text style={[styles.zmanTimeText, isWithin10
-                    ? { fontSize: 22 } : null]}>
+                    ? { fontSize: 20, fontWeight: 'bold' } : null]}>
                     {Utils.getTimeString(zt.time, true)}
                 </Text>
             </Text>
@@ -78,10 +77,7 @@ export default class Main extends PureComponent {
                 {Utils.getTimeString(this.props.nowTime, true)}
             </Text>
             <ScrollView style={styles.scrollView}
-                contentContainerStyle={
-                    this.props.zmanTimes.length > 3 && this.props.settings.numberOfItemsToShow > 3
-                        ? styles.scrollContent
-                        : styles.container}>
+                contentContainerStyle={styles.scrollContent}>
                 {this.props.zmanTimes.map((zt, i) => this.displaySingleZman(zt, i))}
             </ScrollView>
         </View >;
@@ -96,11 +92,12 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     scrollView: {
+        height: '75%',
         width: '90%',
         flex: 1
     },
     scrollContent: {
-        backgroundColor: '#000',
+        flex: 1,
         justifyContent: 'center'
     },
     notificationsView: {
@@ -116,19 +113,13 @@ const styles = StyleSheet.create({
         fontSize: 13
     },
     singleZman: {
+        backgroundColor: '#111',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 7,
         padding: 20,
         width: '100%',
-        marginBottom: 5
-    },
-    singleZmanReg: {
-        backgroundColor: '#112'
-    },
-    singleZman10: {
-        backgroundColor: '#334',
-        height: 300
+        marginBottom: 10
     },
     singleZmanWas: {
         backgroundColor: '#111',

@@ -83,7 +83,8 @@ export default class App extends PureComponent {
         }
     }
     setNotifications() {
-        const { jdate, sd, nowTime, location } = this.state,
+        const { jdate, sd, nowTime, settings } = this.state,
+            location = settings.location,
             { chatzosHayom, chatzosHalayla, alos } = this.shulZmanim;
         let needsRefresh = false;
         //Notifications need refreshing by chatzos and alos
