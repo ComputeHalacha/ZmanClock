@@ -348,7 +348,7 @@ export default class AppUtils {
                 if (day < 6 && !isAfterAlos) {
                     notifications.push(`${Utils.toJNum(day + 44)} בעומר`);
                 }
-                if (day < 8) {
+                if (day < 13) {
                     noTachnun = true;
                 }
                 if (day === 6 && isAfterAlos) {

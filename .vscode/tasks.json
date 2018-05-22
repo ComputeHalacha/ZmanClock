@@ -13,7 +13,10 @@
         },
         {
             "label": "Build APK Release",
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "type": "shell",
             "command": "cd android && ./gradlew assembleRelease"
         },
@@ -28,6 +31,24 @@
             "group": "build",
             "type": "shell",
             "command": "react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle"
+        },
+        {
+            "label": "Build debug Android and install",
+            "group": "build",
+            "type": "shell",
+            "command": "react-native run-android"
+        },
+        {
+            "label": "Start",
+            "group": "build",
+            "type": "shell",
+            "command": "react-native start"
+        },
+        {
+            "label": "Start -  reset cache",
+            "group": "build",
+            "type": "shell",
+            "command": "react-native start --reset-cache"
         }
     ]
 }
