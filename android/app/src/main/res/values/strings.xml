@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">שעון זמנים</string>
+    <string name="sample_device_admin_description">שעון זמנים</string>
+    <string name="sample_device_admin">שעון זמנים</string>
 </resources>
