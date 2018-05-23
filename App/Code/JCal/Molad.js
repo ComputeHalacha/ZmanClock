@@ -1,13 +1,21 @@
 import Utils from './Utils.js';
 import jDate from './jDate.js';
+import Location from './Location';
 
-/* Returns the molad for the given jewish month and year.
+/**
+ * Gets the molad for the given jewish month and year.
  * Algorithm was adapted from Hebcal by Danny Sadinoff
  *
  * Example of use:
  * const moladString = Molad.getString(5776, 10);
  */
 export default class Molad {
+    /**
+     *
+     * @param {Number} month
+     * @param {Number} year
+     * @returns {{jDate:jDate,time:{hour:Number,minute:Number,second:Number},chalakim:Number}}
+     */
     static getMolad(month, year) {
         let totalMonths, partsElapsed, hoursElapsed, parts, monthAdj = month - 7;
 
@@ -23,14 +31,18 @@ export default class Molad {
 
         return {
             jDate: new jDate((1 + (29 * Utils.toInt(totalMonths))) + Utils.toInt((hoursElapsed / 24))),
-            time: { hour: Utils.toInt(hoursElapsed) % 24, minute: Utils.toInt((parts % 1080) / 18) },
+            time: { hour: Utils.toInt(hoursElapsed) % 24, minute: Utils.toInt((parts % 1080) / 18), second: 0 },
             chalakim: parts % 18
         };
     }
 
-    // Returns the time of the molad as a string in the format: Monday Night, 8:33 PM and 12 Chalakim
-    // The molad is always in Jerusalem so we use the Jerusalem sunset times
-    // to determine whether to display "Night" or "Motzai Shabbos" etc. (check this...)
+    /**
+     * Returns the time of the molad as a string in the format: Monday Night, 8:33 PM and 12 Chalakim
+     * The molad is always in Jerusalem so we use the Jerusalem sunset times
+     * to determine whether to display "Night" or "Motzai Shabbos" etc. (check this...)
+     * @param {Number} year
+     * @param {Number} month
+     */
     static getString(year, month) {
         const molad = Molad.getMolad(month, year),
             nightfall = molad.jDate.getSunriseSunset(Location.getJerusalem()).sunset,
@@ -56,9 +68,13 @@ export default class Molad {
         return str;
     }
 
-    // Returns the time of the molad as a string in the format: ליל שני 20:33 12 חלקים
-    // The molad is always in Jerusalem so we use the Jerusalem sunset times
-    // to determine whether to display "ליל/יום" or "מוצאי שב"ק" etc.
+    /**
+     * Returns the time of the molad as a string in the format: ליל שני 20:33 12 חלקים
+     * The molad is always in Jerusalem so we use the Jerusalem sunset times
+     * to determine whether to display "ליל/יום" or "מוצאי שב"ק" etc.
+     * @param {Number} year
+     * @param {Number} month
+     */
     static getStringHeb(year, month) {
         const molad = Molad.getMolad(month, year),
             nightfall = molad.jDate.getSunriseSunset(Location.getJerusalem()).sunset,

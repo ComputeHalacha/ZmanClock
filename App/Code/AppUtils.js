@@ -3,6 +3,7 @@ import Zmanim from './JCal/Zmanim';
 import Location from './JCal/Location';
 import Settings from './Settings';
 import jDate from './JCal/jDate';
+import Molad from './JCal/Molad';
 
 export default class AppUtils {
     static zmanTimesCache = [];
@@ -243,12 +244,61 @@ export default class AppUtils {
             isAfterAlos = Utils.totalSeconds(alos) <= Utils.totalSeconds(time),
             isYomTov = (month === 1 && day > 14 && day < 22) ||
                 (month === 3 && day === 6) ||
-                (month === 7 && [1, 2, 10, 15, 16, 17, 18, 19, 20, 21, 22].includes(day));
+                (month === 7 && [1, 2, 10, 15, 16, 17, 18, 19, 20, 21, 22].includes(day)),
+            isLeapYear = jDate.isJdLeapY(jdate.Year);
         let noTachnun = ((dow === 5 || day === 29) && isAfterChatzosHayom);
 
         if (dow === 6 && !isYomTov) {
+            if (month === 1 && day > 7 && day < 15) {
+                notifications.push('שבת הגדול');
+            }
+            else if (month === 7 && day > 2 && day < 10) {
+                notifications.push('שבת שובה');
+            }
+            else if (month === 5 && day > 2 && day < 10) {
+                notifications.push('שבת חזון');
+            }
+            else if ((month === (isLeapYear ? 12 : 11) && day > 23 && day < 30) ||
+                (month === (isLeapYear ? 13 : 12) && day === 1)) {
+                notifications.push('פרשת שקלים');
+            }
+            else if (month === (isLeapYear ? 13 : 12) && day > 7 && day < 14) {
+                notifications.push('פרשת זכור');
+            }
+            else if (month === (isLeapYear ? 13 : 12) && day > 16 && day < 24) {
+                notifications.push('פרשת פרה');
+            }
+            else if ((month === (isLeapYear ? 13 : 12) && day > 23 && day < 30) ||
+                (month === 1 && day === 1)) {
+                notifications.push('פרשת החודש');
+            }
+
+            //All months but Tishrei have Shabbos Mevarchim on the Shabbos before Rosh Chodesh
+            if (month != 6 && day > 22 && day < 30) {
+                notifications.push('המולד יהיה ב' +
+                    Molad.getStringHeb(month, jdate.Year));
+                    notifications.push('מברכים החודש');
+            }
+            if (isAfterAlos && !isAfterChatzosHayom) {
+                notifications.push('קה"ת פרשת ' +
+                    jdate.getSedra(true).toStringHeb());
+            }
+            //Kriyas Hatora - Shabbos mincha
+            else if (!(month === 7 && day === 10)) {
+                notifications.push('קה"ת במנחה פרשת ' +
+                    jdate.addDays(1).getSedra(true).sedras[0].heb);
+            }
+            else {
+                //only Yom Kippur has its own Kriyas Hatorah
+                notifications.push('קה"ת במנחה סוף פרשת אח"מ"' +
+                    jdate.addDays(1).getSedra(true).toStringHeb());
+            }
+        }
+        else if ((dow === 1 || dow === 4) &&
+            !isYomTov && isAfterAlos && !isAfterChatzosHayom &&
+            !AppUtils.hasOwnKriyasHatorah(jdate, location)) {
             notifications.push('קה"ת פרשת ' +
-                jdate.getSedra(true).map((s) => s.heb).join(' - '));
+                jdate.getSedra(true).toStringHeb());
         }
         if (dow === 0 && !isAfterAlos) {
             notifications.push(
@@ -578,7 +628,7 @@ export default class AppUtils {
                 break;
             case 12:
             case 13:
-                if (month === 12 && jDate.isJdLeapY(jdate.Year)) { //Adar Rishon in a leap year
+                if (month === 12 && isLeapYear) { //Adar Rishon in a leap year
                     if ((day === 13 && isAfterChatzosHayom) || [14, 15].includes(day)) {
                         noTachnun = true;
                         notifications.push('א"א למנצח');
@@ -624,5 +674,40 @@ export default class AppUtils {
             notifications.push('א"א תחנון');
         }
         return notifications;
+    }
+
+    /**
+     * @param {jDate} jdate
+     */
+    static hasOwnKriyasHatorah(jdate, location) {
+        const { Month, Day, DayOfWeek } = jdate;
+        //Rosh chodesh
+        if ((Day === 1) || (Day === 30)) {
+            return true;
+        }
+        switch (Month) {
+            case 1:
+                return Day > 14 && Day < 22;
+            case 4:
+                return Day === 17 || (DayOfWeek === 0 && Day === 18);
+            case 5:
+                return Day === 9 || (DayOfWeek === 0 && Day === 10);
+            case 7:
+                return [3, 16, 17, 18, 19, 20, 21].includes(Day) ||
+                    (DayOfWeek === 0 && Day === 4);
+            case 9:
+                return Day >= 25;
+            case 10:
+                return Day === 10 ||
+                    Day < 3 ||
+                    (Day === 3 && jDate.isShortKislev(jdate.Year));
+            case 12:
+            case 13:
+                return Month === (jDate.isJdLeapY(jdate.Year) ? 13 : 12) &&
+                    (Day === 13 ||
+                        Day === (location.Name === 'ירושלים' ? 15 : 14));
+            default:
+                return false;
+        }
     }
 }
