@@ -36,8 +36,6 @@ public class NavigationBarAndroid extends ReactContextBaseJavaModule {
                     decorView.setSystemUiVisibility(uiOptions);
                 }
             });
-
         }
     }
-
 }

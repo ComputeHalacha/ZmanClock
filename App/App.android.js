@@ -24,8 +24,6 @@ export default class App extends PureComponent {
         super(props);
         KeepAwake.activate();
 
-        this.hamburger = { uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAScwAAEnMBjCK5BwAAABl0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC4yMfEgaZUAAADXSURBVDhPzdOxigIxEIDh8dDO9hCfxicRrCwWVrPJJNnJui4iFlaW4mOJWCsi4sEJFmohQm62tzIKF/jaYcKfgCGaU5bfaTD0QbL8iiYdgdT2hpb8Owg0FzBuMEabrtC6dQhl3ZKyYQzdxaJGRA3nXDMETSbfRVF8wf8/PYmFkPonVKL0oS+xw5XT87Nir1Da/kKi7ZRtRaAEzSZRpgdcphpFUf0dPlPZe18pt2wFKmfwuApINDl/mX1fheEOO6F0u3w2p2fFXhELeQSeOuNCPhTf8iHQxn+Uve7z9rX0GAAAAABJRU5ErkJggg==' };
-
         this.setInitialData = this.setInitialData.bind(this);
         this.getStorageData = this.getStorageData.bind(this);
         this.needsZmanRefresh = this.needsZmanRefresh.bind(this);
@@ -46,6 +44,7 @@ export default class App extends PureComponent {
         if (this.timer) {
             clearInterval(this.timer);
         }
+        KeepAwake.deactivate();
     }
     componentDidUpdate() {
         NavigationBarAndroid.hide();
@@ -189,7 +188,6 @@ export default class App extends PureComponent {
                         <Text style={styles.headerTextName}>
                             {this.state.settings.location.Name}
                         </Text>
-                        <Image style={styles.hamburger} source={this.hamburger} />
                     </View>
                 </ToolbarAndroid>
                 <Main
@@ -215,10 +213,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 13,
         color: '#557'
-    },
-    hamburger: {
-        width: 20,
-        height: 15
     },
     toolbarAndroid: {
         height: 40,

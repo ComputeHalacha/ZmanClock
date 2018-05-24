@@ -13,6 +13,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
 
 public class MainActivity extends ReactActivity {
     final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -68,5 +70,9 @@ public class MainActivity extends ReactActivity {
       } else {
           Toast.makeText(getApplicationContext(),"Not owner", Toast.LENGTH_LONG).show();
       }
+
+        KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);
+        KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
+        lock.disableKeyguard();
     }
 }

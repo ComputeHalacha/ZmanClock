@@ -49,6 +49,12 @@
             "group": "build",
             "type": "shell",
             "command": "react-native start --reset-cache"
+        },
+        {
+            "label": "Install apk",
+            "group": "build",
+            "type": "shell",
+            "command": "D:/Android/sdk/platform-tools/adb.exe install -r D:/Repos_git/ZmanClock/android/app/build/outputs/apk/release/app-release.apk"
         }
     ]
 }
