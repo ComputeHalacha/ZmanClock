@@ -22,7 +22,6 @@ import { log } from './Code/GeneralUtils';
 export default class App extends PureComponent {
     constructor(props) {
         super(props);
-        KeepAwake.activate();
 
         this.setInitialData = this.setInitialData.bind(this);
         this.getStorageData = this.getStorageData.bind(this);
@@ -37,6 +36,7 @@ export default class App extends PureComponent {
         this.setInitialData();
     }
     componentDidMount() {
+        KeepAwake.activate();
         this.getStorageData();
         this.timer = setInterval(this.refresh, 1000);
     }
@@ -47,6 +47,7 @@ export default class App extends PureComponent {
         KeepAwake.deactivate();
     }
     componentDidUpdate() {
+        KeepAwake.activate();
         NavigationBarAndroid.hide();
     }
     setInitialData() {
