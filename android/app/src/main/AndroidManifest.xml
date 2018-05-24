@@ -30,25 +30,20 @@
             <category android:name="android.intent.category.LAUNCHER" />
             <category android:name="android.intent.category.HOME"/>
             <category android:name="android.intent.category.DEFAULT"/>
-            <category android:name="android.intent.category.MONKEY"/>
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-
       <receiver android:name=".BootReceiver">
           <intent-filter >
               <action android:name="android.intent.action.BOOT_COMPLETED"/>
           </intent-filter>
       </receiver>
       <receiver android:name="com.zmanclock.DeviceReceiver"
-            android:label="@string/sample_device_admin"
-            android:description="@string/sample_device_admin_description"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
-            <meta-data android:name="android.app.device_admin" android:resource="@xml/my_admin" />
+                android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data android:name="android.app.device_admin" android:resource="@xml/zmanclock_admin" />
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
       </receiver>
     </application>
-
 </manifest>

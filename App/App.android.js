@@ -83,30 +83,39 @@ export default class App extends PureComponent {
         }
     }
     setNotifications() {
-        const { jdate, sd, nowTime, settings } = this.state,
-            location = settings.location,
-            { chatzosHayom, chatzosHalayla, alos } = this.shulZmanim;
-        let needsRefresh = false;
-        //Notifications need refreshing by chatzos and alos
-        if (chatzosHayom && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHayom)) {
-            this.shulZmanim.chatzosHayom = null;
-            needsRefresh = true;
+        const { settings } = this.state;
+
+        if (settings.showNotifications) {
+            let needsRefresh = false;
+            const { nowTime } = this.state,
+                { chatzosHayom, chatzosHalayla, alos } = this.shulZmanim;
+
+            //Notifications need refreshing by chatzos and alos
+            if (chatzosHayom && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHayom)) {
+                this.shulZmanim.chatzosHayom = null;
+                needsRefresh = true;
+            }
+            if (chatzosHalayla && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHalayla)) {
+                this.shulZmanim.chatzosHalayla = null;
+                needsRefresh = true;
+            }
+            if (alos && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(alos)) {
+                this.shulZmanim.alos = null;
+                needsRefresh = true;
+            }
+
+            if (needsRefresh) {
+                log('Refreshing notifications');
+                const { jdate, sd, nowTime } = this.state,
+                    notifications = AppUtils.getNotifications(jdate, sd, nowTime, settings.location);
+                this.setState({ notifications });
+            }
         }
-        if (chatzosHalayla && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHalayla)) {
-            this.shulZmanim.chatzosHalayla = null;
-            needsRefresh = true;
-        }
-        if (alos && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(alos)) {
-            this.shulZmanim.alos = null;
-            needsRefresh = true;
-        }
-        if (needsRefresh) {
-            log('Refreshing notifications');
-            const notifications = this.state.settings.showNotifications &&
-                AppUtils.getNotifications(jdate, sd, nowTime, location);
-            this.setState({ notifications });
+        else if (this.state.notifications && this.state.notifications.length) {
+            this.setState({ notifications: [] });
         }
     }
+
     refresh() {
         const sd = new Date(),
             nowTime = Utils.timeFromDate(sd);
@@ -133,9 +142,7 @@ export default class App extends PureComponent {
             }
             this.setState({ zmanTimes, sd, nowTime, sunset, jdate });
         }
-        if (this.state.settings.showNotifications) {
-            this.setNotifications();
-        }
+        this.setNotifications();
     }
     toggleDrawer() {
         if (this.isDrawerOpen) {
