@@ -12,10 +12,10 @@ export const ZmanTypes = [
     { name: 'minGed', decs: 'מנחה גדולה', eng: 'Mincha Gedola', heb: 'מנחה גדולה' },
     { name: 'minKet', decs: 'מנחה קטנה', eng: 'Mincha Ketana', heb: 'מנחה קטנה' },
     { name: 'plag', decs: 'פלג המנחה', eng: 'Plag HaMincha', heb: 'פלג המנחה' },
-    { name: 'candles', decs: 'הדלקת נרות', eng: 'Candle Lighting', heb: 'הדלקת נרות' },
     { name: 'shkiaMishor', decs: 'שקיעת החמה מגובה פני הים', eng: 'Sunset', heb: 'שקיעת החמה' },
     { name: 'shkiaElevation', decs: 'שקיעת החמה מגובה המיקום', eng: 'Sunset', heb: 'שקיעת החמה' },
     { name: 'tzais45', decs: '45 דקות אחרי שקיעה', eng: 'Nightfall', heb: 'צאת הכוכבים' },
+    { name: 'tzais50', decs: '50 דקות אחרי שקיעה', eng: 'Nightfall', heb: 'צאת הכוכבים' },
     { name: 'tzais72', decs: '72 דקות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' },
     { name: 'tzais72Zmaniot', decs: '72 דקות זמניות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' },
     { name: 'tzais72ZmaniotMA', decs: '72 דקות זמניות אחרי שקיעה - מג"א', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' }

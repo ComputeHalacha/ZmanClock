@@ -36,7 +36,7 @@ export default class Zmanim {
             xmRise = 0, xmSet = 0, xlRise = 0, xlSet = 0, aRise = 0, aSet = 0, ahrRise = 0, ahrSet = 0,
             hRise = 0, hSet = 0, tRise = 0, tSet = 0, utRise = 0, utSet = 0;
 
-            const day = Zmanim.dayOfYear(date),
+        const day = Zmanim.dayOfYear(date),
             earthRadius = 6356900,
             zenithAtElevation = Zmanim.degToDec(zeninthDeg, zenithMin) +
                 Zmanim.radToDeg(Math.acos(earthRadius / (earthRadius +
@@ -134,10 +134,18 @@ export default class Zmanim {
             set = Utils.addMinutes(set, offset);
         }
 
-        const riseMinutes = (rise.hour * 60) + rise.minute,
-            setMinutes = (set.hour * 60) + set.minute;
+        return (Utils.totalSeconds(set) - Utils.totalSeconds(rise)) / 720;
+    }
 
-        return (setMinutes - riseMinutes) / 12;
+    static getShaaZmanisMga(sunTimes, israel) {
+        let rise = Utils.addMinutes(sunTimes.sunrise, -(israel ? 90 : 72)),
+            set = Utils.addMinutes(sunTimes.sunset, (israel ? 50 : 72));
+
+        if (isNaN(rise.hour) || isNaN(set.hour)) {
+            return NaN;
+        }
+
+        return (Utils.totalSeconds(set) - Utils.totalSeconds(rise)) / 720;
     }
 
     static getCandleLighting(date, location) {

@@ -5,8 +5,7 @@ import {
     DrawerLayoutAndroid,
     StyleSheet,
     Text,
-    View,
-    Image
+    View
 } from 'react-native';
 import KeepAwake from 'react-native-keep-awake';
 import NavigationBarAndroid from './Code/NavigationBar';
@@ -36,7 +35,6 @@ export default class App extends PureComponent {
         this.setInitialData();
     }
     componentDidMount() {
-        KeepAwake.activate();
         this.getStorageData();
         this.timer = setInterval(this.refresh, 1000);
     }
@@ -44,10 +42,8 @@ export default class App extends PureComponent {
         if (this.timer) {
             clearInterval(this.timer);
         }
-        KeepAwake.deactivate();
     }
     componentDidUpdate() {
-        KeepAwake.activate();
         NavigationBarAndroid.hide();
     }
     setInitialData() {
@@ -180,6 +176,7 @@ export default class App extends PureComponent {
                         changeSettings={this.changeSettings}
                         settings={this.state.settings} />}
                 ref={(drawer) => this.drawer = drawer}>
+                <KeepAwake />
                 <StatusBar hidden={true} />
                 <ToolbarAndroid
                     rtl={true}

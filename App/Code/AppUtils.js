@@ -48,18 +48,17 @@ export default class AppUtils {
     static getZmanTimes(zmanTypes, date, location) {
         const mem = AppUtils.zmanTimesCache.find(z => Utils.isSameSdate(z.date, date) && z.location.Name === location.Name),
             zmanTimes = [];
-        let sunrise, sunset, suntimesMishor, sunriseMishor, sunsetMishor, candles, mishorNeg90, chatzos, shaaZmanis, shaaZmanis90;
+        let sunrise, sunset, suntimesMishor, sunriseMishor, sunsetMishor, mishorNeg90, chatzos, shaaZmanis, shaaZmanisMga;
         if (mem) {
             sunrise = mem.sunrise;
             sunset = mem.sunset;
             suntimesMishor = mem.suntimesMishor;
             sunriseMishor = mem.sunriseMishor;
             sunsetMishor = mem.sunsetMishor;
-            candles = mem.candles;
             mishorNeg90 = mem.mishorNeg90;
             chatzos = mem.chatzos;
             shaaZmanis = mem.shaaZmanis;
-            shaaZmanis90 = mem.shaaZmanis90;
+            shaaZmanisMga = mem.shaaZmanisMga;
         }
         else {
             const suntimes = Zmanim.getSunTimes(date, location, true);
@@ -68,17 +67,15 @@ export default class AppUtils {
             suntimesMishor = Zmanim.getSunTimes(date, location, false);
             sunriseMishor = suntimesMishor.sunrise;
             sunsetMishor = suntimesMishor.sunset;
-            candles = jDate.toJDate(date).hasCandleLighting() &&
-                Zmanim.getCandleLightingFromSunTimes({ sunrise, sunset }, location);
             mishorNeg90 = Utils.addMinutes(sunriseMishor, -90);
             chatzos = sunriseMishor && sunsetMishor &&
                 Zmanim.getChatzosFromSuntimes(suntimesMishor);
             shaaZmanis = sunriseMishor && sunsetMishor &&
                 Zmanim.getShaaZmanisFromSunTimes(suntimesMishor);
-            shaaZmanis90 = sunriseMishor && sunsetMishor &&
-                Zmanim.getShaaZmanisFromSunTimes(suntimesMishor, 90);
+            shaaZmanisMga = sunriseMishor && sunsetMishor &&
+                Zmanim.getShaaZmanisMga(suntimesMishor, true);
 
-            AppUtils.zmanTimesCache.push({ date, location, sunrise, sunset, suntimesMishor, sunriseMishor, sunsetMishor, candles, mishorNeg90, chatzos, shaaZmanis, shaaZmanis90 });
+            AppUtils.zmanTimesCache.push({ date, location, sunrise, sunset, suntimesMishor, sunriseMishor, sunsetMishor, mishorNeg90, chatzos, shaaZmanis, shaaZmanisMga });
         }
         for (let zmanType of zmanTypes) {
             switch (zmanType.name) {
@@ -115,7 +112,7 @@ export default class AppUtils {
                 case 'szksMga':
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(mishorNeg90, Math.floor(shaaZmanis90 * 3))
+                        time: Utils.addMinutes(mishorNeg90, Math.floor(shaaZmanisMga * 3))
                     });
                     break;
                 case 'szksGra':
@@ -127,7 +124,7 @@ export default class AppUtils {
                 case 'sztMga':
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(mishorNeg90, Math.floor(shaaZmanis90 * 4))
+                        time: Utils.addMinutes(mishorNeg90, Math.floor(shaaZmanisMga * 4))
                     });
                     break;
                 case 'sztGra':
@@ -160,12 +157,6 @@ export default class AppUtils {
                         time: Utils.addMinutes(sunriseMishor, (shaaZmanis * 10.75))
                     });
                     break;
-                case 'candles':
-                    zmanTimes.push({
-                        zmanType,
-                        time: candles
-                    });
-                    break;
                 case 'shkiaMishor':
                     zmanTimes.push({
                         zmanType,
@@ -184,6 +175,12 @@ export default class AppUtils {
                         time: Utils.addMinutes(sunset, 45)
                     });
                     break;
+                case 'tzais50':
+                    zmanTimes.push({
+                        zmanType,
+                        time: Utils.addMinutes(sunset, 50)
+                    });
+                    break;
                 case 'tzais72':
                     zmanTimes.push({
                         zmanType,
@@ -199,7 +196,7 @@ export default class AppUtils {
                 case 'tzais72ZmaniotMA':
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunset, (shaaZmanis90 * 1.2))
+                        time: Utils.addMinutes(sunset, (shaaZmanisMga * 1.2))
                     });
                     break;
             }
@@ -216,8 +213,7 @@ export default class AppUtils {
     static getBasicShulZmanim(sdate, location) {
         const zmanim = AppUtils.getZmanTimes([
             { name: 'chatzos' },
-            { name: 'alos90' },
-            { name: 'tzais45' }],
+            { name: 'alos90' }],
             sdate,
             location);
         return {
@@ -277,7 +273,7 @@ export default class AppUtils {
             if (month != 6 && day > 22 && day < 30) {
                 notifications.push('המולד יהיה ב' +
                     Molad.getStringHeb(month, jdate.Year));
-                    notifications.push('מברכים החודש');
+                notifications.push('מברכים החודש');
             }
             if (isAfterAlos && !isAfterChatzosHayom) {
                 notifications.push('קה"ת פרשת ' +
@@ -670,9 +666,20 @@ export default class AppUtils {
                 }
                 break;
         }
-        if (noTachnun && isAfterAlos && dow !== 6 && !isYomTov) {
-            notifications.push('א"א תחנון');
+        if (noTachnun && isAfterAlos && !isYomTov) {
+            if (dow < 6) {
+                notifications.push('א"א תחנון');
+            }
+            else if (isAfterChatzosHayom) {
+                notifications.push('א"א צדקתך');
+            }
+            else if (!((month === 1 && day > 21) ||
+                (month === 2) ||
+                (month === 3 && day < 6))) {
+                notifications.push('א"א אב הרחמים');
+            }
         }
+
         return notifications;
     }
 
