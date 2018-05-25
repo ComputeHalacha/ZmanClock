@@ -97,6 +97,12 @@ export default class AppUtils {
                         time: Utils.addMinutes(sunriseMishor, -72)
                     });
                     break;
+                case 'talisTefillin':
+                    zmanTimes.push({
+                        zmanType,
+                        time: Utils.addMinutes(sunriseMishor, -45)
+                    });
+                    break;
                 case 'netzElevation':
                     zmanTimes.push({
                         zmanType,
