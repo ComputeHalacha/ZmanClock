@@ -84,9 +84,9 @@ export default class App extends PureComponent {
         if (settings.showNotifications) {
             let needsRefresh = false;
             const { nowTime } = this.state,
-                { chatzosHayom, chatzosHalayla, alos } = this.shulZmanim;
+                { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
 
-            //Notifications need refreshing by chatzos and alos
+            //Notifications need refreshing by chatzos, alos and shkia
             if (chatzosHayom && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHayom)) {
                 this.shulZmanim.chatzosHayom = null;
                 needsRefresh = true;
@@ -97,6 +97,10 @@ export default class App extends PureComponent {
             }
             if (alos && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(alos)) {
                 this.shulZmanim.alos = null;
+                needsRefresh = true;
+            }
+            if (shkia && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(shkia)) {
+                this.shulZmanim.shkia = null;
                 needsRefresh = true;
             }
 

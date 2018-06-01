@@ -214,18 +214,21 @@ export default class AppUtils {
      * Returns the zmanim nessesary for showing basic shul notifications: chatzosHayom, chatzosHalayla, alos
      * @param {Date} sdate
      * @param {Location} location
-     * @returns {{chatzosHayom:{hour:Number,minute:Number,second:Number}, chatzosHalayla:{hour:Number,minute:Number,second:Number}, alos:{hour:Number,minute:Number,second:Number} }}
+     * @returns {{chatzosHayom:{hour:Number,minute:Number,second:Number}, chatzosHalayla:{hour:Number,minute:Number,second:Number}, alos:{hour:Number,minute:Number,second:Number}, shkia:{hour:Number,minute:Number,second:Number} }}
      */
     static getBasicShulZmanim(sdate, location) {
         const zmanim = AppUtils.getZmanTimes([
             { name: 'chatzos' },
-            { name: 'alos90' }],
+            { name: 'alos90' },
+            { name: 'shkiaElevation' },
+        ],
             sdate,
             location);
         return {
             chatzosHayom: zmanim[0].time,
             chatzosHalayla: Utils.addMinutes(zmanim[0].time, 720),
-            alos: zmanim[1].time
+            alos: zmanim[1].time,
+            shkia: zmanim[2].time
         };
     }
 
@@ -239,16 +242,21 @@ export default class AppUtils {
             month = jdate.Month,
             day = jdate.Day,
             dow = jdate.DayOfWeek,
-            { chatzosHayom, chatzosHalayla, alos } = AppUtils.getBasicShulZmanim(sdate, location),
+            { chatzosHayom, chatzosHalayla, alos, shkia } = AppUtils.getBasicShulZmanim(sdate, location),
             isAfterChatzosHayom = Utils.totalSeconds(chatzosHayom) <= Utils.totalSeconds(time),
             isAfterChatzosHalayla = Utils.totalSeconds(chatzosHalayla) <= Utils.totalSeconds(time) ||
                 chatzosHalayla.hour > 12 && time.Hour < 12, //Chatzos is before 12 AM and time is after 12 AM
             isAfterAlos = Utils.totalSeconds(alos) <= Utils.totalSeconds(time),
+            isAfterShkia = Utils.totalSeconds(shkia) <= Utils.totalSeconds(time),
+            isDaytime = isAfterAlos && !isAfterShkia,
+            isNightTime = isAfterShkia && !isAfterAlos,
+            isMorning = isDaytime && !isAfterChatzosHayom,
+            isAfternoon = isDaytime && isAfterChatzosHayom,
             isYomTov = (month === 1 && day > 14 && day < 22) ||
                 (month === 3 && day === 6) ||
                 (month === 7 && [1, 2, 10, 15, 16, 17, 18, 19, 20, 21, 22].includes(day)),
             isLeapYear = jDate.isJdLeapY(jdate.Year);
-        let noTachnun = ((dow === 5 || day === 29) && isAfterChatzosHayom);
+        let noTachnun = ((dow === 5 || day === 29) && isAfternoon);
 
         if (dow === 6 && !isYomTov) {
             if (month === 1 && day > 7 && day < 15) {
@@ -281,7 +289,7 @@ export default class AppUtils {
                     Molad.getStringHeb(month, jdate.Year));
                 notifications.push('מברכים החודש');
             }
-            if (isAfterAlos && !isAfterChatzosHayom) {
+            if (isMorning) {
                 notifications.push('קה"ת פרשת ' +
                     jdate.getSedra(true).toStringHeb());
             }
@@ -297,36 +305,39 @@ export default class AppUtils {
             }
         }
         else if ((dow === 1 || dow === 4) &&
-            !isYomTov && isAfterAlos && !isAfterChatzosHayom &&
+            !isYomTov && isDaytime && isMorning &&
             !AppUtils.hasOwnKriyasHatorah(jdate, location)) {
             notifications.push('קה"ת פרשת ' +
                 jdate.getSedra(true).toStringHeb());
         }
-        if (dow === 0 && !isAfterAlos) {
+        //הבדלה בתפילה for מוצאי שבת
+        if (dow === 0 && isNightTime) {
             notifications.push(
                 isYomTov
                     ? 'ותודיעינו'
                     : 'אתה חוננתנו');
         }
-        else if (dow !== 6 && !isAfterAlos && ((month === 1 && (day === 16 || day === 22)) ||
-            (month === 3 && day === 7) ||
-            (month === 7 && [3, 11, 16, 23].includes(day)))) {
+        //אתה חוננתנו for מוצאי יו"ט
+        else if (dow !== 6 && isNightTime &&
+            ((month === 1 && (day === 16 || day === 22)) ||
+                (month === 3 && day === 7) ||
+                (month === 7 && [3, 11, 16, 23].includes(day)))) {
             notifications.push('אתה חוננתנו');
         }
         if ((month !== 7 && day === 1) || day === 30) {
             noTachnun = true;
             notifications.push('ראש חודש');
             notifications.push('יעלה ויבא');
-            if (isAfterAlos) {
+            if (isDaytime) {
                 notifications.push('חצי הלל');
-                if (!isAfterChatzosHayom)
+                if (isMorning)
                     notifications.push('א"א למנצח');
             }
 
         }
         else if (month !== 6 &&
             ((dow < 6 && day === 29) || (dow === 4 && day === 28)) &&
-            isAfterChatzosHayom) {
+            isAfternoon) {
             notifications.push('יו"כ קטן');
         }
         switch (month) {
@@ -334,7 +345,7 @@ export default class AppUtils {
                 noTachnun = true;
                 if (day > 15) {
                     notifications.push('מוריד הטל');
-                    if (!isAfterAlos)
+                    if (isNightTime)
                         notifications.push(`${Utils.toJNum(day - 15)} בעומר`);
                 }
                 if (dow !== 6 && day > 15 && day !== 21) {
@@ -346,26 +357,24 @@ export default class AppUtils {
                 }
                 if (day === 15) {
                     notifications.push('יום טוב');
-                    if (isAfterAlos) {
-                        notifications.push('הלל השלם');
-                        if (isAfterChatzosHayom) {
-                            notifications.push('מוריד הטל');
-                        }
+                    notifications.push('הלל השלם');
+                    if (isAfternoon) {
+                        notifications.push('מוריד הטל');
                     }
                 }
                 else if ([16, 17, 18, 19, 20, 21].includes(day)) {
                     if (day === 21) {
                         notifications.push('שביעי של פםח');
-                        if (isAfterAlos)
+                        if (isDaytime)
                             notifications.push('יזכור');
                     }
                     else {
                         notifications.push('חול המועד');
                         notifications.push('יעלה ויבא');
-                        if (!isAfterChatzosHayom)
+                        if (isMorning)
                             notifications.push('א"א למנצח');
                     }
-                    if (isAfterAlos)
+                    if (isDaytime)
                         notifications.push('חצי הלל');
                 }
                 if (dow === 6 && [15, 16, 17, 18, 19, 20].includes(day)) {
@@ -373,7 +382,7 @@ export default class AppUtils {
                 }
                 break;
             case 2: //Iyar
-                if (!isAfterAlos)
+                if (isNightTime)
                     notifications.push(`${Utils.toJNum(day + 15)} בעומר`);
                 if (day <= 15) {
                     notifications.push('מוריד הטל');
@@ -382,40 +391,41 @@ export default class AppUtils {
                     }
                 }
                 if (day === 15 ||
-                    (day === 14 && isAfterChatzosHayom) ||
+                    (day === 14 && isAfternoon) ||
                     day === 18 ||
-                    (day === 17 && isAfterChatzosHayom)) {
+                    (day === 17 && isAfternoon)) {
                     noTachnun = true;
                     if (day === 15)
                         notifications.push('פסח שני');
                 }
-                if (isAfterAlos && (dow === 1 && day > 3 && day < 13) ||
-                    (dow === 4 && day > 6 && day < 14) ||
-                    (dow === 1 && day > 10 && day < 18)) {
+                if (isDaytime &&
+                    ((dow === 1 && day > 3 && day < 13) ||
+                        (dow === 4 && day > 6 && day < 14) ||
+                        (dow === 1 && day > 10 && day < 18))) {
                     notifications.push('סליחות בה"ב');
                     notifications.push('אבינו מלכנו');
                 }
                 break;
             case 3: //Sivan
-                if (day < 6 && !isAfterAlos) {
+                if (day < 6 && isNightTime) {
                     notifications.push(`${Utils.toJNum(day + 44)} בעומר`);
                 }
                 if (day < 13) {
                     noTachnun = true;
                 }
-                if (day === 6 && isAfterAlos) {
+                if (day === 6 && isDaytime) {
                     notifications.push('הלל השלם');
                     notifications.push('מגילת רות');
                     notifications.push('אקדמות');
                     notifications.push('יזכור');
                 }
-                else if (day === 7 && isAfterAlos) {
+                else if (day === 7 && isDaytime) {
                     notifications.push('א"א למנצח');
                 }
                 break;
             case 4: //Tammuz
-                if (((day === 17 && dow !== 6) || (day === 18 && dow === 0)) && isAfterAlos) {
-                    if (!isAfterChatzosHayom) {
+                if (isDaytime && ((day === 17 && dow !== 6) || (day === 18 && dow === 0))) {
+                    if (isMorning) {
                         notifications.push('סליחות י"ז בתמוז');
                     }
                     notifications.push('אבינו מלכנו');
@@ -423,19 +433,19 @@ export default class AppUtils {
                 }
                 break;
             case 5: //Av
-                if (isAfterChatzosHayom && (day === 8 && dow !== 5)) {
+                if (isAfternoon && (day === 8 && dow !== 5)) {
                     noTachnun = true;
                 }
                 else if ((day === 9 && dow !== 6) || (day === 10 && dow === 0)) {
                     notifications.push('מגילת איכה');
-                    if (isAfterAlos) {
+                    if (isDaytime) {
                         notifications.push('קינות לתשעה באב');
                         notifications.push('עננו');
                         notifications.push('א"א למנצח');
                     }
                     noTachnun = true;
                 }
-                else if (isAfterChatzosHayom && day === 14) {
+                else if (isAfternoon && day === 14) {
                     noTachnun = true;
                 }
                 else if (day === 15) {
@@ -444,7 +454,7 @@ export default class AppUtils {
                 break;
             case 6: //Ellul
                 notifications.push('לדוד ה\' אורי');
-                if (dow !== 6 && isAfterChatzosHalayla && !isAfterChatzosHayom &&
+                if (dow !== 6 && isAfterChatzosHalayla && isMorning &&
                     (day >= 26 || (dow > 4 && day > 20))) {
                     notifications.push('סליחות');
                 }
@@ -468,31 +478,35 @@ export default class AppUtils {
                 }
                 switch (day) {
                     case 1:
-                        if (dow !== 6) {
+                        if (dow !== 6 && isDaytime) {
                             notifications.push('תקיעת שופר');
-                            if (isAfterChatzosHayom) {
+                            if (isAfternoon) {
                                 notifications.push('תשליך');
                             }
                         }
                         break;
                     case 2:
-                        notifications.push('תקיעת שופר');
-                        if (dow === 0 && isAfterChatzosHayom) {
-                            notifications.push('תשליך');
+                        if (isDaytime) {
+                            notifications.push('תקיעת שופר');
+                            if (dow === 0 && isAfternoon) {
+                                notifications.push('תשליך');
+                            }
                         }
                         break;
                     case 3:
                         if (dow !== 6) {
-                            if (!isAfterChatzosHayom) {
-                                notifications.push('סליחות צום גדליה');
+                            if (isDaytime) {
+                                if (isMorning) {
+                                    notifications.push('סליחות צום גדליה');
+                                }
+                                notifications.push('עננו');
                             }
-                            notifications.push('עננו');
                             notifications.push('המלך המשפט');
                         }
                         break;
                     case 4:
-                        if (dow === 0) {
-                            if (!isAfterChatzosHayom) {
+                        if (dow === 0 && isDaytime) {
+                            if (isMorning) {
                                 notifications.push('סליחות צום גדליה');
                             }
                             notifications.push('עננו');
@@ -502,10 +516,10 @@ export default class AppUtils {
                         }
                         break;
                     case 9:
-                        if ((!isAfterChatzosHayom) && dow === 5) {
+                        if ((isMorning) && dow === 5) {
                             notifications.push('אבינו מלכנו');
                         }
-                        if (isAfterChatzosHayom) {
+                        if (isAfternoon) {
                             notifications.push('ודוי בעמידה');
                         }
                         else {
@@ -517,12 +531,12 @@ export default class AppUtils {
                         break;
                     case 10:
                         notifications.push('לפני ה\' תטהרו');
-                        if (isAfterAlos) {
+                        if (isDaytime) {
                             notifications.push('יזכור');
                         }
                         break;
                     case 15:
-                        if (isAfterAlos) {
+                        if (isDaytime) {
                             notifications.push('הלל השלם');
                             if (dow !== 6) {
                                 notifications.push('קה קלי');
@@ -536,7 +550,7 @@ export default class AppUtils {
                     case 20:
                         notifications.push('חול המועד');
                         notifications.push('יעלה ויבא');
-                        if (isAfterAlos) {
+                        if (isDaytime) {
                             notifications.push('הושענות');
                             notifications.push('הלל השלם');
                         }
@@ -544,7 +558,7 @@ export default class AppUtils {
                     case 21:
                         notifications.push('הושעה רבה');
                         notifications.push('יעלה ויבא');
-                        if (!isAfterAlos) {
+                        if (isNightTime) {
                             notifications.push('משנה תורה');
                         }
                         else {
@@ -554,7 +568,7 @@ export default class AppUtils {
                         break;
                     case 22:
                         notifications.push('שמ"ע - שמח"ת');
-                        if (isAfterAlos) {
+                        if (isDaytime) {
                             notifications.push('הלל השלם');
                             notifications.push('יזכור');
                             notifications.push('משיב הרוח ומוריד הגשם');
@@ -572,9 +586,10 @@ export default class AppUtils {
                 }
                 break;
             case 8: //Cheshvan
-                if (isAfterAlos && (dow === 1 && day > 3 && day < 13) ||
-                    (dow === 4 && day > 6 && day < 14) ||
-                    (dow === 1 && day > 10 && day < 18)) {
+                if (isDaytime &&
+                    ((dow === 1 && day > 3 && day < 13) ||
+                        (dow === 4 && day > 6 && day < 14) ||
+                        (dow === 1 && day > 10 && day < 18))) {
                     notifications.push('סליחות בה"ב');
                     notifications.push('אבינו מלכנו');
                 }
@@ -589,15 +604,15 @@ export default class AppUtils {
                 if (day <= 7) {
                     notifications.push('ותן טל ומטר');
                 }
-                else if (day === 24 && dow !== 6 && isAfterChatzosHayom) {
+                else if (day === 24 && dow !== 6 && isAfternoon) {
                     noTachnun = true;
                 }
                 else if (day >= 25) {
                     noTachnun = true;
                     notifications.push('על הניסים');
-                    if (isAfterAlos) {
+                    if (isDaytime) {
                         notifications.push('הלל השלם');
-                        if (!isAfterChatzosHayom)
+                        if (isMorning)
                             notifications.push('א"א למנצח');
                     }
                 }
@@ -606,14 +621,14 @@ export default class AppUtils {
                 if (day <= (jDate.isShortKislev(jdate.Year) ? 3 : 2)) {
                     noTachnun = true;
                     notifications.push('על הניסים');
-                    if (isAfterAlos) {
+                    if (isDaytime) {
                         notifications.push('הלל השלם');
-                        if (!isAfterChatzosHayom)
+                        if (isMorning)
                             notifications.push('א"א למנצח');
                     }
                 }
-                else if (day === 10 && isAfterAlos) {
-                    if (!isAfterChatzosHayom) {
+                else if (day === 10 && isDaytime) {
+                    if (isMorning) {
                         notifications.push('סליחות עשרה בטבת');
                     }
                     notifications.push('אבינו מלכנו');
@@ -621,7 +636,7 @@ export default class AppUtils {
                 }
                 break;
             case 11: //Shvat
-                if (day === 14 && isAfterChatzosHayom)
+                if (day === 14 && isAfternoon)
                     noTachnun = true;
                 if (day === 15) {
                     noTachnun = true;
@@ -631,14 +646,17 @@ export default class AppUtils {
             case 12:
             case 13:
                 if (month === 12 && isLeapYear) { //Adar Rishon in a leap year
-                    if ((day === 13 && isAfterChatzosHayom) || [14, 15].includes(day)) {
+                    if (((day === 13 && isAfternoon) || [14, 15].includes(day)) &&
+                        isDaytime) {
                         noTachnun = true;
                         notifications.push('א"א למנצח');
                     }
                 }
                 else { //The "real" Adar: the only one in a non-leap-year or Adar Sheini
-                    if (isAfterAlos && (day === 11 && dow === 4) || (day === 13 && dow !== 6)) {
-                        if (!isAfterChatzosHayom) {
+                    if (isDaytime &&
+                        ((day === 11 && dow === 4) ||
+                            (day === 13 && dow !== 6))) {
+                        if (isMorning) {
                             notifications.push('סליחות תענית אסתר');
                         }
                         notifications.push('אבינו מלכנו');
@@ -672,16 +690,17 @@ export default class AppUtils {
                 }
                 break;
         }
-        if (noTachnun && isAfterAlos && !isYomTov) {
+        if (noTachnun && isDaytime && !isYomTov) {
             if (dow < 6) {
                 notifications.push('א"א תחנון');
             }
-            else if (isAfterChatzosHayom) {
+            else if (isAfternoon) {
                 notifications.push('א"א צדקתך');
             }
-            else if (!((month === 1 && day > 21) ||
-                (month === 2) ||
-                (month === 3 && day < 6))) {
+            else if (isDaytime &&
+                !((month === 1 && day > 21) ||
+                    (month === 2) ||
+                    (month === 3 && day < 6))) {
                 notifications.push('א"א אב הרחמים');
             }
         }
