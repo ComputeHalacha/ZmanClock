@@ -251,6 +251,30 @@ export default class Utils {
     }
 
     /**
+     * Returns the given time interval in a formatted string.
+     * @param {{hour:Number, minute:Number,second:Number,sign?: 1 | -1}} time An object in the format {hour : 23, minute :42, second: 18 }
+     */
+    static getTimeIntervalTextStringHeb(time) {
+        let t = '';
+        if (time.hour > 0) {
+            t += `${time.hour.toString()} ${time.hour === 1 ? 'שעה' : 'שעות'}`;
+        }
+        if (time.minute > 0) {
+            if (t.length) {
+                t += ' ';
+            }
+            t += `${time.minute.toString()} ${time.minute === 1 ? 'דקה' : 'דקות'}`;
+        }
+        if (time.second > 0) {
+            if (t.length) {
+                t += ' ';
+            }
+            t += `${Math.trunc(time.second).toString()} ${time.second === 1 ? 'שנייה' : 'שניות'}`;
+        }
+        return t;
+    }
+
+    /**
      * Returns the given time in a formatted string.
      * @param {{hour:Number, minute:Number,second:Number,sign?: 1 | -1}} time An object in the format {hour : 23, minute :42, second: 18 }
      * @param {Boolean} [army] If falsey, the returned string will be: 11:42:18 PM otherwise it will be 23:42:18

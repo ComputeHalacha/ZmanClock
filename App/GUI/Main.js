@@ -20,45 +20,35 @@ export default class Main extends PureComponent {
             minutes = Utils.totalMinutes(timeDiff),
             minutesFrom10 = (10 - minutes),
             isWithin10 = (!was && !zt.isTommorrow) && (minutes < 10),
-            itemHeight = parseInt(100 /
-                Math.min(this.props.settings.numberOfItemsToShow, this.props.zmanTimes.length)) - 2;
-        return <View key={index}
-            style={[styles.singleZman, was ? styles.singleZmanWas : { height: isWithin10 ? 350 : `${itemHeight}%`}]}>
-            <Text style={[styles.timeRemainingLabel, {
-                color: was ? '#550' : '#99f',
-                fontSize: (was || !isWithin10) ? 15 : 15 + minutesFrom10
-            }]}>
-                {`${zt.zmanType.heb} ${was ? 'עבר לפני' : 'בעוד'}:`}
-            </Text>
-            <Text style={[styles.timeRemainingText, {
-                color: was
-                    ? '#844'
-                    : (isWithin10
-                        ? `rgb(${200 + (minutesFrom10 * 5)},
+            itemHeight = Math.trunc(100 /
+                Math.min(Number(this.props.settings.numberOfItemsToShow),
+                    Number(this.props.zmanTimes.length))) - 2,
+            timeRemainingColor = was
+                ? '#844'
+                : (isWithin10
+                    ? `rgb(${200 + (minutesFrom10 * 5)},
                             ${150 + (minutesFrom10 * 5)},
                             100)` :
-                        '#a99'),
-                fontSize: was
-                    ? 20
-                    : (isWithin10
-                        ? 50 + (minutesFrom10 * 3)
-                        : 50)
+                    '#a99');
+        return <View key={index}
+            style={[styles.singleZman, { height: `${itemHeight}%` }]}>
+            <Text style={[styles.timeRemainingLabel, {
+                color: was ? '#550' : '#99f',
+                fontSize: 15
             }]}>
-                {Utils.getTimeString(timeDiff, true)}
+                <Text style={styles.timeRemainingNumber}>{zt.zmanType.heb}</Text>
+                {`  ${was ? 'עבר לפני' : 'בעוד'}:`}
             </Text>
-            <Text style={
-                was
-                    ? styles.zmanTypeNameTextWas :
-                    (isWithin10
-                        ? styles.zmanTypeNameText10
-                        : styles.zmanTypeNameText)}>
+            <Text style={[styles.timeRemainingText, { color: timeRemainingColor }]}>
+                {Utils.getTimeIntervalTextStringHeb(timeDiff)}
+            </Text>
+            <Text style={was ? styles.zmanTypeNameTextWas : styles.zmanTypeNameText}>
                 {`${zt.isTommorrow ? 'מחר ' : ''}בשעה: `}
-                <Text style={[styles.zmanTimeText, isWithin10
-                    ? { fontSize: 20, fontWeight: 'bold' } : null]}>
+                <Text style={isWithin10 ? styles.within10ZmanTimeText : styles.zmanTimeText}>
                     {Utils.getTimeString(zt.time, true)}
                 </Text>
             </Text>
-        </View >;
+        </View>;
     }
     render() {
         return <View style={styles.container}>
@@ -119,9 +109,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         minHeight: 130
     },
-    singleZmanWas: {
-        backgroundColor: '#111',
-    },
     dateText: {
         color: '#b88',
         fontSize: 25,
@@ -130,6 +117,7 @@ const styles = StyleSheet.create({
     timeText1: {
         color: '#999',
         fontSize: 60,
+        padding: 1
     },
     timeNowText: {
         color: '#99f',
@@ -139,8 +127,17 @@ const styles = StyleSheet.create({
     zmanTimeText: {
         color: '#9b9'
     },
+    within10ZmanTimeText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#9b9'
+    },
     timeRemainingText: {
-        fontSize: 50,
+        fontSize: 38,
+    },
+    timeRemainingNumber: {
+        color: '#ffffee',
+        fontSize: 20
     },
     timeRemainingLabel: {
         fontSize: 18,
@@ -148,14 +145,10 @@ const styles = StyleSheet.create({
     },
     zmanTypeNameText: {
         color: '#99f',
-        fontSize: 14
+        fontSize: 22
     },
     zmanTypeNameTextWas: {
         color: '#558',
-        fontSize: 12
-    },
-    zmanTypeNameText10: {
-        color: '#99f',
-        fontSize: 22
-    },
+        fontSize: 15
+    }
 });
