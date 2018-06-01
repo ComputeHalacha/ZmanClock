@@ -7,35 +7,38 @@ import { log, error, setDefault } from './GeneralUtils';
 export default class Settings {
     /**
      *
-     * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow]
+     * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow] List of which zmanim to show
      * @param {Location} [location]
-     * @param {boolean} [showNotifications]
-     * @param {number} [numberOfItemsToShow]
-     * @param {number} [minToShowPassedZman]
+     * @param {boolean} [showNotifications] Show shul notifications?
+     * @param {number} [numberOfItemsToShow] Number of zmanim to show on the main screen
+     * @param {number} [minToShowPassedZman] Number of minutes to continue showing zmanim that have passed
      */
     constructor(zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman) {
         /**
-         * @property {[ZmanTypes]} zmanimToShow
+         * @property {[ZmanTypes]} zmanimToShow List of which zmanim to show
          */
         this.zmanimToShow = zmanimToShow || [
+            getZmanType('alos90'),
             getZmanType('netzMishor'),
-            getZmanType('shkiaElevation')];
+            getZmanType('shkiaElevation'),
+            getZmanType('tzais50')
+        ];
         /**
          * @property {Location} location
          */
         this.location = location || findLocation('ירושלים');
         /**
-         * @property {boolean} showNotifications
+         * @property {boolean} showNotifications Show shul notifications?
          */
         this.showNotifications = setDefault(showNotifications, true);
         /**
-         * @property {number} numberOfItemsToShow
+         * @property {number} numberOfItemsToShow Number of zmanim to show on the main screen
          */
-        this.numberOfItemsToShow = setDefault(numberOfItemsToShow, 2);
+        this.numberOfItemsToShow = setDefault(numberOfItemsToShow, 3);
         /**
-         * @property {number} minToShowPassedZman
+         * @property {number} minToShowPassedZman Number of minutes to continue showing zmanim that have passed
          */
-        this.minToShowPassedZman = setDefault(minToShowPassedZman, 30);
+        this.minToShowPassedZman = setDefault(minToShowPassedZman, 2);
     }
     clone() {
         return new Settings(
