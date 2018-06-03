@@ -251,6 +251,15 @@ export default class Utils {
     }
 
     /**
+     * Determines if the second given time is after the first given time
+     * @param {{hour : Number, minute :Number, second: Number }} beforeTime
+     * @param {{hour : Number, minute :Number, second: Number }} afterTime
+     */
+    static isTimeAfter(beforeTime, afterTime) {
+        return Utils.totalSeconds(beforeTime) <= Utils.totalSeconds(afterTime);
+    }
+
+    /**
      * Returns the given time interval in a formatted string.
      * @param {{hour:Number, minute:Number,second:Number,sign?: 1 | -1}} time An object in the format {hour : 23, minute :42, second: 18 }
      */
@@ -451,10 +460,9 @@ export default class Utils {
      * @param {Location} location
      */
     static isAfterSunset(sdate, location) {
-        const sunriseSunset = Zmanim.getSunTimes(sdate, location),
-            nowSeconds = (sdate.getHours() * 60) + sdate.getSeconds(),
-            shkiaSeconds = Utils.totalSeconds(sunriseSunset.sunset);
-        return nowSeconds >= shkiaSeconds;
+        const shkia = Zmanim.getSunTimes(sdate, location).sunset,
+            now = Utils.timeFromDate(sdate);
+        return Utils.isTimeAfter(shkia, now);
     }
     /**
      * Gets the current Jewish Date at the given Location

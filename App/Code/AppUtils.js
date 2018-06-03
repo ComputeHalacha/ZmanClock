@@ -243,11 +243,11 @@ export default class AppUtils {
             day = jdate.Day,
             dow = jdate.DayOfWeek,
             { chatzosHayom, chatzosHalayla, alos, shkia } = AppUtils.getBasicShulZmanim(sdate, location),
-            isAfterChatzosHayom = Utils.totalSeconds(chatzosHayom) <= Utils.totalSeconds(time),
-            isAfterChatzosHalayla = Utils.totalSeconds(chatzosHalayla) <= Utils.totalSeconds(time) ||
+            isAfterChatzosHayom = Utils.isTimeAfter(chatzosHayom, time),
+            isAfterChatzosHalayla = Utils.isTimeAfter(chatzosHalayla, time) ||
                 chatzosHalayla.hour > 12 && time.Hour < 12, //Chatzos is before 12 AM and time is after 12 AM
-            isAfterAlos = Utils.totalSeconds(alos) <= Utils.totalSeconds(time),
-            isAfterShkia = Utils.totalSeconds(shkia) <= Utils.totalSeconds(time),
+            isAfterAlos = Utils.isTimeAfter(alos, time),
+            isAfterShkia = Utils.isTimeAfter(shkia, time),
             isDaytime = isAfterAlos && !isAfterShkia,
             isNightTime = isAfterShkia && !isAfterAlos,
             isMorning = isDaytime && !isAfterChatzosHayom,

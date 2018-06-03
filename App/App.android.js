@@ -87,20 +87,20 @@ export default class App extends PureComponent {
                 { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
 
             //Notifications need refreshing by chatzos, alos and shkia
-            if (chatzosHayom && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHayom)) {
+            if (shkia && Utils.isTimeAfter(shkia, nowTime)) {
+                this.shulZmanim.shkia = null;
+                needsRefresh = true;
+            }
+            else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
                 this.shulZmanim.chatzosHayom = null;
                 needsRefresh = true;
             }
-            if (chatzosHalayla && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(chatzosHalayla)) {
-                this.shulZmanim.chatzosHalayla = null;
-                needsRefresh = true;
-            }
-            if (alos && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(alos)) {
+            else if (alos && Utils.isTimeAfter(alos, nowTime)) {
                 this.shulZmanim.alos = null;
                 needsRefresh = true;
             }
-            if (shkia && Utils.totalMinutes(nowTime) >= Utils.totalMinutes(shkia)) {
-                this.shulZmanim.shkia = null;
+            else if (chatzosHalayla && Utils.isTimeAfter(chatzosHalayla, nowTime)) {
+                this.shulZmanim.chatzosHalayla = null;
                 needsRefresh = true;
             }
 
@@ -112,6 +112,7 @@ export default class App extends PureComponent {
             }
         }
         else if (this.state.notifications && this.state.notifications.length) {
+            //If setting is off, hide all notifications
             this.setState({ notifications: [] });
         }
     }
@@ -136,11 +137,8 @@ export default class App extends PureComponent {
                     : new jDate(Utils.addDaysToSdate(sd, 1)),
                 location = this.state.settings.location,
                 zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings);
-            if (this.state.settings.showNotifications &&
-                (!this.state.sd || sd.getDate() !== this.state.sd.getDate())) {
-                this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
-            }
             this.setState({ zmanTimes, sd, nowTime, sunset, jdate });
+            this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
         }
         this.setNotifications();
     }
