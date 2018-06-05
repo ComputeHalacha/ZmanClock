@@ -52,9 +52,9 @@ export default class App extends PureComponent {
             nowTime = Utils.timeFromDate(sd),
             location = settings.location,
             sunset = Zmanim.getSunTimes(sd, location).sunset,
-            jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
-                ? new jDate(sd)
-                : new jDate(Utils.addDaysToSdate(sd, 1)),
+            jdate = Utils.isTimeAfter(sunset, nowTime)
+                ? new jDate(Utils.addDaysToSdate(sd, 1))
+                : new jDate(sd),
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, settings);
         this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
         this.state = { settings, zmanTimes, sd, nowTime, sunset, jdate };
@@ -89,26 +89,44 @@ export default class App extends PureComponent {
             //Notifications need refreshing by chatzos, alos and shkia
             if (shkia && Utils.isTimeAfter(shkia, nowTime)) {
                 this.shulZmanim.shkia = null;
+                //Passed zmanim
+                this.shulZmanim.alos = null;
+                this.shulZmanim.chatzosHayom = null;
+                if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                    this.shulZmanim.chatzosHalayla = null;
+                }
                 needsRefresh = true;
+                log('Refreshing notifications due to shkia.');
             }
             else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
                 this.shulZmanim.chatzosHayom = null;
+                //Passed zmanim
+                this.shulZmanim.alos = null;
+                if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                    this.shulZmanim.chatzosHalayla = null;
+                }
                 needsRefresh = true;
+                log('Refreshing notifications due to chatzos hayom.');
             }
             else if (alos && Utils.isTimeAfter(alos, nowTime)) {
                 this.shulZmanim.alos = null;
+                if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                    this.shulZmanim.chatzosHalayla = null;
+                }
                 needsRefresh = true;
+                log('Refreshing notifications due to alos.');
             }
             else if (chatzosHalayla && Utils.isTimeAfter(chatzosHalayla, nowTime)) {
                 this.shulZmanim.chatzosHalayla = null;
                 needsRefresh = true;
+                log('Refreshing notifications due to chatzosHalayla.');
             }
 
             if (needsRefresh) {
-                log('Refreshing notifications');
                 const { jdate, sd, nowTime } = this.state,
                     notifications = AppUtils.getNotifications(jdate, sd, nowTime, settings.location);
                 this.setState({ notifications });
+                log('Refreshing notifications: ', jdate, sd, nowTime);
             }
         }
         else if (this.state.notifications && this.state.notifications.length) {
@@ -122,9 +140,9 @@ export default class App extends PureComponent {
             nowTime = Utils.timeFromDate(sd);
         if (!this.needsZmanRefresh(sd, nowTime)) {
             log('Refreshing just times');
-            let { jdate } = this.state;
+            let { jdate, sunset } = this.state;
             if (Utils.isSameSdate(jdate.getDate(), sd) &&
-                Utils.timeDiff(nowTime, this.state.sunset, true).sign === -1) {
+                Utils.isTimeAfter(sunset, nowTime)) {
                 jdate = jdate.addDays(1);
             }
             this.setState({ sd, nowTime, jdate });
@@ -132,9 +150,9 @@ export default class App extends PureComponent {
         else {
             log('Refreshing all zmanim');
             const sunset = Zmanim.getSunTimes(sd, this.state.settings.location).sunset,
-                jdate = Utils.timeDiff(nowTime, sunset, true).sign > 0
-                    ? new jDate(sd)
-                    : new jDate(Utils.addDaysToSdate(sd, 1)),
+                jdate = Utils.isTimeAfter(sunset, nowTime)
+                    ? new jDate(Utils.addDaysToSdate(sd, 1))
+                    : new jDate(sd),
                 location = this.state.settings.location,
                 zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings);
             this.setState({ zmanTimes, sd, nowTime, sunset, jdate });

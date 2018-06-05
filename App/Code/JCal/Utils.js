@@ -251,12 +251,12 @@ export default class Utils {
     }
 
     /**
-     * Determines if the second given time is after the first given time
+     * Determines if the second given time is after (or at) the first given time
      * @param {{hour : Number, minute :Number, second: Number }} beforeTime
      * @param {{hour : Number, minute :Number, second: Number }} afterTime
      */
     static isTimeAfter(beforeTime, afterTime) {
-        return Utils.totalSeconds(beforeTime) <= Utils.totalSeconds(afterTime);
+        return Utils.totalSeconds(afterTime) >= Utils.totalSeconds(beforeTime);
     }
 
     /**

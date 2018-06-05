@@ -45,12 +45,12 @@ export default class Molad {
      */
     static getString(year, month) {
         const molad = Molad.getMolad(month, year),
-            nightfall = molad.jDate.getSunriseSunset(Location.getJerusalem()).sunset,
-            isNight = Utils.totalMinutes(Utils.timeDiff(molad.time, nightfall)) >= 0,
+            zmanim = molad.jDate.getSunriseSunset(Location.getJerusalem()),
+            isNight = Utils.isTimeAfter(zmanim.sunset, molad.time),
             dow = molad.jDate.getDayOfWeek();
         let str = '';
 
-        if (isNaN(nightfall.hour)) {
+        if (isNaN(zmanim.sunset.hour)) {
             str += Utils.dowEng[dow];
         }
         else if (dow === 6 && isNight) {
@@ -77,8 +77,9 @@ export default class Molad {
      */
     static getStringHeb(year, month) {
         const molad = Molad.getMolad(month, year),
-            nightfall = molad.jDate.getSunriseSunset(Location.getJerusalem()).sunset,
-            isNight = Utils.totalMinutes(Utils.timeDiff(molad.time, nightfall)) >= 0,
+            zmanim = molad.jDate.getSunriseSunset(Location.getJerusalem()),
+            isNight = Utils.isTimeAfter(zmanim.sunset, molad.time) &&
+                Utils.isTimeAfter(molad.time, zmanim.sunrise),
             dow = molad.jDate.getDayOfWeek();
         let str = '';
 

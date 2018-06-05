@@ -4,6 +4,7 @@ import Location from './JCal/Location';
 import Settings from './Settings';
 import jDate from './JCal/jDate';
 import Molad from './JCal/Molad';
+import { log } from './GeneralUtils';
 
 export default class AppUtils {
     static zmanTimesCache = [];
@@ -233,8 +234,10 @@ export default class AppUtils {
     }
 
     /**
-     *
+     * Get shul notifications for the given date and location
      * @param {jDate} jdate
+     * @param {Date} sdate
+     * @param {{hour : Number, minute :Number, second: Number }} time
      * @param {Location} location
      */
     static getNotifications(jdate, sdate, time, location) {
@@ -245,11 +248,11 @@ export default class AppUtils {
             { chatzosHayom, chatzosHalayla, alos, shkia } = AppUtils.getBasicShulZmanim(sdate, location),
             isAfterChatzosHayom = Utils.isTimeAfter(chatzosHayom, time),
             isAfterChatzosHalayla = Utils.isTimeAfter(chatzosHalayla, time) ||
-                chatzosHalayla.hour > 12 && time.Hour < 12, //Chatzos is before 12 AM and time is after 12 AM
+                (chatzosHalayla.hour > 12 && time.hour < 12), //Chatzos is before 0:00 and time is after 0:00
             isAfterAlos = Utils.isTimeAfter(alos, time),
             isAfterShkia = Utils.isTimeAfter(shkia, time),
             isDaytime = isAfterAlos && !isAfterShkia,
-            isNightTime = isAfterShkia && !isAfterAlos,
+            isNightTime = !isDaytime,
             isMorning = isDaytime && !isAfterChatzosHayom,
             isAfternoon = isDaytime && isAfterChatzosHayom,
             isYomTov = (month === 1 && day > 14 && day < 22) ||
@@ -284,7 +287,7 @@ export default class AppUtils {
             }
 
             //All months but Tishrei have Shabbos Mevarchim on the Shabbos before Rosh Chodesh
-            if (month != 6 && day > 22 && day < 30) {
+            if (month !== 6 && day > 22 && day < 30) {
                 notifications.push('המולד יהיה ב' +
                     Molad.getStringHeb(month, jdate.Year));
                 notifications.push('מברכים החודש');
@@ -294,24 +297,31 @@ export default class AppUtils {
                     jdate.getSedra(true).toStringHeb());
             }
             //Kriyas Hatora - Shabbos mincha
-            else if (!(month === 7 && day === 10)) {
+            else if (isAfternoon && !(month === 7 && day === 10)) {
                 notifications.push('קה"ת במנחה פרשת ' +
                     jdate.addDays(1).getSedra(true).sedras[0].heb);
             }
-            else {
+            else if (isAfternoon) {
                 //only Yom Kippur has its own Kriyas Hatorah
                 notifications.push('קה"ת במנחה סוף פרשת אח"מ"' +
                     jdate.addDays(1).getSedra(true).toStringHeb());
             }
+            if (dow === 0 && isNightTime && ((month === 6 && day > 22) ||
+                (month === 7 && day < 22 && day !== 3) ||
+                (month === 1 && day > 8 && day < 15) ||
+                (month === 3 && day < 6))) {
+                notifications.push('א"א ויהי נועם');
+            }
         }
-        else if ((dow === 1 || dow === 4) &&
-            !isYomTov && isDaytime && isMorning &&
+        //Kriyas hatorah for monday and thursday
+        else if (!isYomTov && isMorning &&
+            (dow === 1 || dow === 4) &&
             !AppUtils.hasOwnKriyasHatorah(jdate, location)) {
             notifications.push('קה"ת פרשת ' +
                 jdate.getSedra(true).toStringHeb());
         }
         //הבדלה בתפילה for מוצאי שבת
-        if (dow === 0 && isNightTime) {
+        if (dow === 0 && isAfterShkia) {
             notifications.push(
                 isYomTov
                     ? 'ותודיעינו'
@@ -691,16 +701,15 @@ export default class AppUtils {
                 break;
         }
         if (noTachnun && isDaytime && !isYomTov) {
-            if (dow < 6) {
+            if (dow !== 6) {
                 notifications.push('א"א תחנון');
             }
             else if (isAfternoon) {
                 notifications.push('א"א צדקתך');
             }
-            else if (isDaytime &&
-                !((month === 1 && day > 21) ||
-                    (month === 2) ||
-                    (month === 3 && day < 6))) {
+            else if (!((month === 1 && day > 21) ||
+                (month === 2) ||
+                (month === 3 && day < 6))) {
                 notifications.push('א"א אב הרחמים');
             }
         }
