@@ -115,13 +115,14 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     timeText1: {
-        color: '#999',
-        fontSize: 60,
-        padding: 1
+        color: '#595',
+        fontSize: 80,
+        padding: 1,
+        marginBottom: 15
     },
     timeNowText: {
         color: '#99f',
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold'
     },
     zmanTimeText: {
