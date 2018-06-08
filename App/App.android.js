@@ -8,6 +8,7 @@ import {
     View
 } from 'react-native';
 import KeepAwake from 'react-native-keep-awake';
+import ScreenBrightness from 'react-native-screen-brightness';
 import NavigationBarAndroid from './Code/NavigationBar';
 import jDate from './Code/JCal/jDate';
 import Utils from './Code/JCal/Utils';
@@ -58,6 +59,9 @@ export default class App extends PureComponent {
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, settings);
         this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
         this.state = { settings, zmanTimes, sd, nowTime, sunset, jdate };
+
+        //Set screen brightnesss to full.
+        ScreenBrightness.setBrightness(1);
     }
 
     async getStorageData() {
@@ -159,6 +163,11 @@ export default class App extends PureComponent {
             this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
         }
         this.setNotifications();
+
+        //Once a minute set brightness to full.
+        if (nowTime.second === 0) {
+            ScreenBrightness.setBrightness(1);
+        }
     }
     toggleDrawer() {
         if (this.isDrawerOpen) {
