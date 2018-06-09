@@ -305,7 +305,7 @@ export default class AppUtils {
 
 
 function getShabbosNotifications(notifications, dayInfo) {
-    const { month, day, isLeapYear, isMorning, isYomTov, jdate, isAfternoon } = dayInfo;
+    const { month, day, isLeapYear, isDaytime, isMorning, isYomTov, jdate, isAfternoon } = dayInfo;
     if (month === 1 && day > 7 && day < 15) {
         notifications.push('שבת הגדול');
     }
@@ -333,9 +333,11 @@ function getShabbosNotifications(notifications, dayInfo) {
         notifications.push('קה"ת פרשת ' +
             jdate.getSedra(true).toStringHeb());
         //All months but Tishrei have Shabbos Mevarchim on the Shabbos before Rosh Chodesh
-        if (month !== 6 && day > 22 && day < 30) {
+        if (isDaytime &&
+            (month !== 6 && day > 22 && day < 30)) {
+            const nextMonth = jdate.addMonths(1);
             notifications.push('המולד יהיה ב' +
-                Molad.getStringHeb(month, jdate.Year));
+                Molad.getStringHeb(nextMonth.Year, nextMonth.Month));
             notifications.push('מברכים החודש');
         }
     }
@@ -503,11 +505,14 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             }
             else if ((day === 9 && dow !== DaysOfWeek.SHABBOS) ||
                 (day === 10 && dow === DaysOfWeek.SUNDAY)) {
-                notifications.push('מגילת איכה');
                 if (isDaytime) {
                     notifications.push('קינות לתשעה באב');
                     notifications.push('עננו');
                     notifications.push('א"א למנצח');
+                }
+                else if (dow === DaysOfWeek.SUNDAY) {
+                    notifications.push('א"א ויהי נועם');
+                    notifications.push('מגילת איכה');
                 }
                 noTachnun = true;
             }

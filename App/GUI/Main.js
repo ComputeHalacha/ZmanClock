@@ -6,11 +6,13 @@ import {
     ScrollView
 } from 'react-native';
 import Utils from '../Code/JCal/Utils';
+import { log } from '../Code/GeneralUtils';
 
 export default class Main extends PureComponent {
     constructor(props) {
         super(props);
         this.displaySingleZman = this.displaySingleZman.bind(this);
+        this.getNotificationsView = this.getNotificationsView.bind(this);
     }
     displaySingleZman(zt, index) {
         if (index >= this.props.settings.numberOfItemsToShow)
@@ -50,16 +52,34 @@ export default class Main extends PureComponent {
             </Text>
         </View>;
     }
+    getNotificationsView() {
+        const notifications = this.props.notifications,
+            innerViews = [];
+        if (notifications && notifications.length) {
+            for (let i = 0; i < Math.ceil(notifications.length / 3); i++) {
+                let texts = [];
+                for (let index = 0; index < 3; index++) {
+                    const note = notifications[(i * 3) + index];
+                    if (note) {
+                        texts.push(<Text key={index} style={styles.notificationsText}>
+                            {note}
+                        </Text>);
+                    }
+                }
+                innerViews.push(<View key={i} style={styles.notificationsInnerView}>
+                    {texts}
+                </View>);
+            }
+        }
+        return (<View style={styles.notificationsView}>
+            {innerViews}
+        </View>);
+    }
+
     render() {
         return <View style={styles.container}>
             <Text style={styles.dateText}>{this.props.jdate.toStringHeb()}</Text>
-            <View style={styles.notificationsView}>
-                {this.props.notifications && this.props.notifications.map((n, i) =>
-                    <Text key={i} style={styles.notificationsText}>
-                        {n}
-                    </Text>
-                )}
-            </View>
+            {this.getNotificationsView()}
             <Text style={styles.timeNowText}>השעה עכשיו:</Text>
             <Text style={styles.timeText1}>
                 {Utils.getTimeString(this.props.nowTime, true)}
@@ -89,10 +109,14 @@ const styles = StyleSheet.create({
     },
     notificationsView: {
         marginTop: 10,
-        marginBottom: 20,
+        marginBottom: 10,
+        width: '100%'
+    },
+    notificationsInnerView: {
         justifyContent: 'space-around',
         flexDirection: 'row',
-        width: '100%'
+        marginBottom: 10,
+        width: '100%',
     },
     notificationsText: {
         color: '#899',
