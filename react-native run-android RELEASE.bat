@@ -6,6 +6,10 @@ ECHO "1. Set developer mode to on. "
 ECHO "2. Turn on developer debug mode. "
 ECHO "3. Set lock screen to 'None'. "
 ECHO "4. Set developer option to never close screen when plugged in. "
+ECHO "5. Set screen brightness to 100%. "
+ECHO "6. In settings/Display/Sleep - set to never"
+ECHO "7. In settings/Display/Sleep - turn off intelligent backlight"
+ECHO "8. If on large device, in settings - set to to large font size"
 PAUSE
 adb install ./app/build/outputs/apk/release/app-release.apk
 PAUSE
