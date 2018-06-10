@@ -1,4 +1,4 @@
-import React, { PureComponent  } from 'react';
+import React, { PureComponent } from 'react';
 import {
     StyleSheet,
     Text,
@@ -10,8 +10,9 @@ import {
 import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
 import { range, setDefault } from '../Code/GeneralUtils';
+import { setSystemTime, getSystemTime } from '../Code/SystemTime';
 
-export default class SettingsDrawer extends PureComponent  {
+export default class SettingsDrawer extends PureComponent {
     constructor(props) {
         super(props);
         this.onChangeSettings = this.onChangeSettings.bind(this);
@@ -32,9 +33,12 @@ export default class SettingsDrawer extends PureComponent  {
         this.props.changeSettings(settings);
     }
     render() {
-        const { zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = this.props.settings;
+        setSystemTime({ hour: 0, minute: 0, second: 0 });
+        const { zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = this.props.settings,
+            hour = 23, minute = 5, second = 10;
         return (
             <View style={styles.outContainer}>
+                <Text>{`${getSystemTime()}`}</Text>
                 <View style={styles.container}>
                     <Text style={styles.header}>שעון זמנים - הגדרות</Text>
                     <ScrollView contentContainerStyle={styles.inContainer}>
@@ -94,6 +98,32 @@ export default class SettingsDrawer extends PureComponent  {
                                 onValueChange={minToShowPassedZman => this.onChangeSettings({ minToShowPassedZman })}>
                                 {range(0, 60).map(num =>
                                     <Picker.Item key={num} value={num} label={num.toString()} />)}
+                            </Picker>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={styles.labelCheckbox}>שעה: </Text>
+                            <Picker
+                                style={styles.numberPicker}
+                                itemStyle={styles.pickerItem}
+                                selectedValue={hour}>
+                                {range(0, 23).map(num =>
+                                    <Picker.Item key={num} ref={p => this.pickerHour = p} value={num} label={num.toString()} />)}
+                            </Picker>
+                            <Text style={styles.labelCheckbox}>דקה: </Text>
+                            <Picker
+                                style={styles.numberPicker}
+                                itemStyle={styles.pickerItem}
+                                selectedValue={minute}>
+                                {range(0, 59).map(num =>
+                                    <Picker.Item key={num} ref={p => this.pickerMinute = p} value={num} label={num.toString()} />)}
+                            </Picker>
+                            <Text style={styles.labelCheckbox}>שנייה: </Text>
+                            <Picker
+                                style={styles.numberPicker}
+                                itemStyle={styles.pickerItem}
+                                selectedValue={second}>
+                                {range(0, 59).map(num =>
+                                    <Picker.Item key={num} ref={p => this.pickerSecond = p} value={num} label={num.toString()} />)}
                             </Picker>
                         </View>
                     </ScrollView>

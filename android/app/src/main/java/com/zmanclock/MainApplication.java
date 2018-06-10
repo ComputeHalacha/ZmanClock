@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import java.util.Arrays;
 import java.util.List;
 import com.zmanclock.navbar.NavigationBarAndroidPackage;
+import com.zmanclock.systemtime.SystemTimeAndroidPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -27,7 +28,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
           new KCKeepAwakePackage(),
-          new NavigationBarAndroidPackage()
+          new NavigationBarAndroidPackage(),
+          new SystemTimeAndroidPackage()
       );
     }
 
