@@ -305,7 +305,7 @@ export default class AppUtils {
 
 
 function getShabbosNotifications(notifications, dayInfo) {
-    const { month, day, isLeapYear, isDaytime, isMorning, isYomTov, jdate, isAfternoon } = dayInfo;
+    const { month, day, isLeapYear, isMorning, isYomTov, jdate, isAfternoon } = dayInfo;
     if (month === 1 && day > 7 && day < 15) {
         notifications.push('שבת הגדול');
     }
@@ -333,8 +333,7 @@ function getShabbosNotifications(notifications, dayInfo) {
         notifications.push('קה"ת פרשת ' +
             jdate.getSedra(true).toStringHeb());
         //All months but Tishrei have Shabbos Mevarchim on the Shabbos before Rosh Chodesh
-        if (isDaytime &&
-            (month !== 6 && day > 22 && day < 30)) {
+        if (month !== 6 && day > 22 && day < 30) {
             const nextMonth = jdate.addMonths(1);
             notifications.push('המולד יהיה ב' +
                 Molad.getStringHeb(nextMonth.Year, nextMonth.Month));
@@ -342,7 +341,7 @@ function getShabbosNotifications(notifications, dayInfo) {
         }
     }
     //Kriyas Hatora - Shabbos by mincha - besides for Yom Kippur
-    if (isAfternoon && !(month === 7 && day === 10)) {
+    else if (isAfternoon && !(month === 7 && day === 10)) {
         notifications.push('קה"ת במנחה פרשת ' +
             jdate.addDays(1).getSedra(true).sedras[0].heb);
     }
@@ -456,17 +455,20 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     notifications.push('ותן ברכה');
                 }
             }
+            //Pesach Sheini and Lag Ba'Omer
             if (day === 15 ||
                 (day === 14 && isAfternoon) ||
                 day === 18 ||
                 (day === 17 && isAfternoon)) {
                 noTachnun = true;
-                if (day === 15)
+                if (day === 15) {
                     notifications.push('פסח שני');
+                }
             }
-            if (isDaytime &&
+            //Baha"b
+            if (isMorning &&
                 ((dow === DaysOfWeek.MONDAY && day > 3 && day < 13) ||
-                    (dow === DaysOfWeek.SHABBOS && day > 6 && day < 14) ||
+                    (dow === DaysOfWeek.THURSDAY && day > 6 && day < 14) ||
                     (dow === DaysOfWeek.MONDAY && day > 10 && day < 18))) {
                 notifications.push('סליחות בה"ב');
                 notifications.push('אבינו מלכנו');
@@ -479,13 +481,13 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             if (day < 13) {
                 noTachnun = true;
             }
-            if (day === 6 && isDaytime) {
+            if (day === 6 && isMorning) {
                 notifications.push('הלל השלם');
                 notifications.push('מגילת רות');
                 notifications.push('אקדמות');
                 notifications.push('יזכור');
             }
-            else if (day === 7 && isDaytime) {
+            else if (day === 7 && isMorning) {
                 notifications.push('א"א למנצח');
             }
             break;
@@ -510,9 +512,11 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     notifications.push('עננו');
                     notifications.push('א"א למנצח');
                 }
-                else if (dow === DaysOfWeek.SUNDAY) {
-                    notifications.push('א"א ויהי נועם');
+                else {
                     notifications.push('מגילת איכה');
+                    if (dow === DaysOfWeek.SUNDAY) {
+                        notifications.push('א"א ויהי נועם');
+                    }
                 }
                 noTachnun = true;
             }
