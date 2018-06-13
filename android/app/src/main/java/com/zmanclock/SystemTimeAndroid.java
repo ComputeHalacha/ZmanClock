@@ -7,6 +7,7 @@ import com.facebook.react.ReactActivity;
 
 import android.content.Context;
 import android.app.Activity;
+import android.content.Intent;
 import android.app.AlarmManager;
 import java.util.Calendar;
 
@@ -36,6 +37,7 @@ public class SystemTimeAndroid extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void openSystemTimeSettings() {
-
+        Activity reactActivity = getCurrentActivity();
+        reactActivity.startActivity(new Intent(android.provider.Settings.ACTION_DATE_SETTINGS));
     }
 }
