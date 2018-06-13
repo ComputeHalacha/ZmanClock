@@ -189,7 +189,7 @@ export default class App extends PureComponent {
         log('Rendering');
         return (
             <DrawerLayoutAndroid
-                drawerWidth={325}
+                drawerWidth={400}
                 onDrawerOpen={() => this.isDrawerOpen = true}
                 onDrawerClose={() => this.isDrawerOpen = false}
                 renderNavigationView={() =>
@@ -198,12 +198,12 @@ export default class App extends PureComponent {
                         changeSettings={this.changeSettings}
                         settings={this.state.settings}
                         nowTime={this.state.nowTime}
-                        showSettings={this.showSettings} />}
+                        showSettings={this.showSettings}
+                        drawerPosition={DrawerLayoutAndroid.positions.Right} />}
                 ref={(drawer) => this.drawer = drawer}>
                 <KeepAwake />
                 <StatusBar hidden={true} />
                 <ToolbarAndroid
-                    rtl={true}
                     style={styles.toolbarAndroid}
                     onTouchStart={() => this.toggleDrawer()}>
                     <View style={styles.headerView}>

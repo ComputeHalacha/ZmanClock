@@ -78,7 +78,7 @@ export default class SettingsDrawer extends PureComponent {
                                 style={styles.checkbox} />
                             <Text style={styles.labelCheckbox}>הצג מידע יומית</Text>
                         </View>
-                        <View style={styles.checkboxView}>
+                        <View style={styles.numBoxView}>
                             <Picker
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
@@ -89,7 +89,7 @@ export default class SettingsDrawer extends PureComponent {
                             </Picker>
                             <Text style={styles.labelCheckbox}>מקסימום פרטים להציג במסך:     </Text>
                         </View>
-                        <View style={styles.checkboxView}>
+                        <View style={styles.numBoxView}>
                             <Picker
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
@@ -102,7 +102,7 @@ export default class SettingsDrawer extends PureComponent {
                         </View>
                         <Text style={styles.label}>עריכת שעה</Text>
                         <Text>השעה עכשיו: {Utils.getTimeString(this.props.nowTime, true)}</Text>
-                        <View style={{ flexDirection: 'row', marginTop: 6 }}>
+                        <View style={{ margin: 10 }}>
                             <TouchableHighlight onPress={openSystemTimeSettings}>
                                 <View style={styles.setTimeView}>
                                     <Text style={styles.labelCheckbox}>עריכת שעון</Text>
@@ -176,12 +176,17 @@ const styles = StyleSheet.create({
     },
     numberPicker: {
         height: 50,
-        width: 40,
+        width: 60,
         backgroundColor: '#444',
-        marginBottom: 5
+        marginBottom: 5,
+        alignItems: 'center'
     },
     checkboxView: {
+        flexDirection: 'row'
+    },
+    numBoxView: {
         flexDirection: 'row-reverse',
+        justifyContent: 'space-between',
     },
     scrollView: {
         flex: 1,
@@ -189,6 +194,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#333',
         width: '90%',
         marginLeft: 10,
+        marginRight: 10,
         padding: 5
     },
     labelCheckbox: {
