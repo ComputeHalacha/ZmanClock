@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, ToastAndroid } from 'react-native';
 import Utils from './JCal/Utils';
 
 /**
@@ -6,10 +6,19 @@ import Utils from './JCal/Utils';
  * @param {{hour:number,minute:number,second:number}} time
  */
 export function setSystemTime(time) {
-    const now =  new Date(),
+    const now = new Date(),
         midnight = now.valueOf() - (Utils.totalSeconds(Utils.timeFromDate(now)) * 1000),
         milliseconds = midnight + (Utils.totalSeconds(time) * 1000);
-    return NativeModules.SystemTimeAndroid.setSystemTime(milliseconds);
+    let success = false;
+    try {
+        success = NativeModules.SystemTimeAndroid.setSystemTime(milliseconds);
+    }
+    catch (e) {
+        ToastAndroid.show('Time could not be set. Please assure that the current app is a system app in a rooted device. ' +
+            e.description, ToastAndroid.LONG);
+    }
+
+    return success;
 }
 
 /**
@@ -17,4 +26,11 @@ export function setSystemTime(time) {
  */
 export function getSystemTime() {
     return NativeModules.SystemTimeAndroid.getSystemTime();
+}
+
+/**
+ * Open system settings for date and time
+ */
+export function openSystemTimeSettings() {
+    NativeModules.SystemTimeAndroid.openSystemTimeSettings();
 }

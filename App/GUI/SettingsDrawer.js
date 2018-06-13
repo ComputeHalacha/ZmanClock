@@ -5,12 +5,15 @@ import {
     View,
     Picker,
     ScrollView,
-    CheckBox
+    CheckBox,
+    Image,
+    TouchableHighlight
 } from 'react-native';
 import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
 import { range, setDefault } from '../Code/GeneralUtils';
-import { setSystemTime, getSystemTime } from '../Code/SystemTime';
+import Utils from '../Code/JCal/Utils';
+import { openSystemTimeSettings } from '../Code/SystemTime';
 
 export default class SettingsDrawer extends PureComponent {
     constructor(props) {
@@ -33,12 +36,9 @@ export default class SettingsDrawer extends PureComponent {
         this.props.changeSettings(settings);
     }
     render() {
-        setSystemTime({ hour: 0, minute: 0, second: 0 });
-        const { zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = this.props.settings,
-            hour = 23, minute = 5, second = 10;
+        const { zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = this.props.settings;
         return (
             <View style={styles.outContainer}>
-                <Text>{`${getSystemTime()}`}</Text>
                 <View style={styles.container}>
                     <Text style={styles.header}>שעון זמנים - הגדרות</Text>
                     <ScrollView contentContainerStyle={styles.inContainer}>
@@ -100,36 +100,22 @@ export default class SettingsDrawer extends PureComponent {
                                     <Picker.Item key={num} value={num} label={num.toString()} />)}
                             </Picker>
                         </View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.labelCheckbox}>שעה: </Text>
-                            <Picker
-                                style={styles.numberPicker}
-                                itemStyle={styles.pickerItem}
-                                selectedValue={hour}>
-                                {range(0, 23).map(num =>
-                                    <Picker.Item key={num} ref={p => this.pickerHour = p} value={num} label={num.toString()} />)}
-                            </Picker>
-                            <Text style={styles.labelCheckbox}>דקה: </Text>
-                            <Picker
-                                style={styles.numberPicker}
-                                itemStyle={styles.pickerItem}
-                                selectedValue={minute}>
-                                {range(0, 59).map(num =>
-                                    <Picker.Item key={num} ref={p => this.pickerMinute = p} value={num} label={num.toString()} />)}
-                            </Picker>
-                            <Text style={styles.labelCheckbox}>שנייה: </Text>
-                            <Picker
-                                style={styles.numberPicker}
-                                itemStyle={styles.pickerItem}
-                                selectedValue={second}>
-                                {range(0, 59).map(num =>
-                                    <Picker.Item key={num} ref={p => this.pickerSecond = p} value={num} label={num.toString()} />)}
-                            </Picker>
+                        <Text style={styles.label}>עריכת שעה</Text>
+                        <Text>השעה עכשיו: {Utils.getTimeString(this.props.nowTime, true)}</Text>
+                        <View style={{ flexDirection: 'row', marginTop: 6 }}>
+                            <TouchableHighlight onPress={openSystemTimeSettings}>
+                                <View style={styles.setTimeView}>
+                                    <Text style={styles.labelCheckbox}>עריכת שעון</Text>
+                                    <Image
+                                        style={{ width: 35, height: 35 }}
+                                        source={{ uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==' }} />
+                                </View>
+                            </TouchableHighlight>
                         </View>
                     </ScrollView>
                     <Text style={styles.close} onPress={() => this.props.close()}>סגור X</Text>
                 </View>
-            </View>
+            </View >
         );
     }
 }
@@ -178,7 +164,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     picker: {
-        height: 35,
+        height: 50,
         width: '100%',
         backgroundColor: '#444',
     },
@@ -187,7 +173,7 @@ const styles = StyleSheet.create({
         color: '#999',
     },
     numberPicker: {
-        height: 37,
+        height: 50,
         width: 40,
         backgroundColor: '#444',
         marginBottom: 5
@@ -206,5 +192,11 @@ const styles = StyleSheet.create({
     labelCheckbox: {
         color: '#777',
         margin: 5
-    }
+    },
+    setTimeView: {
+        flexDirection: 'row',
+        padding: 2,
+        backgroundColor: '#555',
+        borderRadius: 5
+    },
 });

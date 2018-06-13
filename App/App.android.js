@@ -195,7 +195,8 @@ export default class App extends PureComponent {
                     <SettingsDrawer
                         close={this.closeDrawer}
                         changeSettings={this.changeSettings}
-                        settings={this.state.settings} />}
+                        settings={this.state.settings}
+                        nowTime={this.state.nowTime} />}
                 ref={(drawer) => this.drawer = drawer}>
                 <KeepAwake />
                 <StatusBar hidden={true} />
