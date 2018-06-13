@@ -79,7 +79,6 @@ export default class SettingsDrawer extends PureComponent {
                             <Text style={styles.labelCheckbox}>הצג מידע יומית</Text>
                         </View>
                         <View style={styles.checkboxView}>
-                            <Text style={styles.labelCheckbox}>מקסימום פרטים להציג במסך:     </Text>
                             <Picker
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
@@ -88,9 +87,9 @@ export default class SettingsDrawer extends PureComponent {
                                 {range(1, 10).map(num =>
                                     <Picker.Item key={num} value={num} label={num.toString()} />)}
                             </Picker>
+                            <Text style={styles.labelCheckbox}>מקסימום פרטים להציג במסך:     </Text>
                         </View>
                         <View style={styles.checkboxView}>
-                            <Text style={styles.labelCheckbox}>מספר דקות להציג זמנים שעברו: </Text>
                             <Picker
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
@@ -99,6 +98,7 @@ export default class SettingsDrawer extends PureComponent {
                                 {range(0, 60).map(num =>
                                     <Picker.Item key={num} value={num} label={num.toString()} />)}
                             </Picker>
+                            <Text style={styles.labelCheckbox}>מספר דקות להציג זמנים שעברו: </Text>
                         </View>
                         <Text style={styles.label}>עריכת שעה</Text>
                         <Text>השעה עכשיו: {Utils.getTimeString(this.props.nowTime, true)}</Text>
@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
         borderRadius: 6
     },
     inContainer: {
-        alignContent: 'flex-end',
-        alignItems: 'flex-end'
+        alignContent: 'flex-start',
+        alignItems: 'flex-start'
     },
     header: {
         color: '#aac',
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: '#333',
         width: '90%',
-        marginRight: 10,
+        marginLeft: 10,
         padding: 5
     },
     labelCheckbox: {

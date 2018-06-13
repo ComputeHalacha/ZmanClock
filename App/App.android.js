@@ -190,7 +190,6 @@ export default class App extends PureComponent {
         return (
             <DrawerLayoutAndroid
                 drawerWidth={325}
-                drawerPosition={DrawerLayoutAndroid.positions.Right}
                 onDrawerOpen={() => this.isDrawerOpen = true}
                 onDrawerClose={() => this.isDrawerOpen = false}
                 renderNavigationView={() =>
