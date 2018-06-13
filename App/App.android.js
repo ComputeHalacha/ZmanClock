@@ -135,7 +135,9 @@ export default class App extends PureComponent {
             this.setState({ notifications: [] });
         }
     }
-
+    showSettings() {
+        NavigationBarAndroid.openSystemSettings();
+    }
     refresh() {
         const sd = new Date(),
             nowTime = Utils.timeFromDate(sd);
@@ -196,7 +198,8 @@ export default class App extends PureComponent {
                         close={this.closeDrawer}
                         changeSettings={this.changeSettings}
                         settings={this.state.settings}
-                        nowTime={this.state.nowTime} />}
+                        nowTime={this.state.nowTime}
+                        showSettings={this.showSettings} />}
                 ref={(drawer) => this.drawer = drawer}>
                 <KeepAwake />
                 <StatusBar hidden={true} />

@@ -1,6 +1,7 @@
 package com.zmanclock.navbar;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 
 import com.facebook.react.ReactActivity;
@@ -37,5 +38,11 @@ public class NavigationBarAndroid extends ReactContextBaseJavaModule {
                 }
             });
         }
+    }
+
+    @ReactMethod
+    public void openSystemSettings() {
+        Activity reactActivity = getCurrentActivity();
+        reactActivity.startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
     }
 }

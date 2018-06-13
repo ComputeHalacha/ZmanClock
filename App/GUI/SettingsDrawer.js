@@ -113,9 +113,11 @@ export default class SettingsDrawer extends PureComponent {
                             </TouchableHighlight>
                         </View>
                     </ScrollView>
-                    <Text style={styles.close} onPress={() => this.props.close()}>סגור X</Text>
+                    <Text style={styles.close}
+                        onPress={() => this.props.close()}
+                        onLongPress={() => this.props.showSettings()}>סגור X</Text>
                 </View>
-            </View >
+            </View>
         );
     }
 }
