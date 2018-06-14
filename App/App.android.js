@@ -31,6 +31,7 @@ export default class App extends PureComponent {
         this.openDrawer = this.openDrawer.bind(this);
         this.closeDrawer = this.closeDrawer.bind(this);
         this.changeSettings = this.changeSettings.bind(this);
+        this.isPastShulZman = this.isPastShulZman.bind(this);
 
         this.setInitialData();
     }
@@ -60,7 +61,6 @@ export default class App extends PureComponent {
         this.needsNotificationsRefresh = true;
         this.state = { settings, zmanTimes, sd, nowTime, sunset, jdate };
     }
-
     async getStorageData() {
         const settings = await Settings.getSettings();
         //Cause a notifications refresh
@@ -83,51 +83,8 @@ export default class App extends PureComponent {
     }
     setNotifications() {
         const { settings } = this.state;
-
         if (settings.showNotifications) {
-            let needsRefresh = this.needsNotificationsRefresh;
-            if (!needsRefresh) {
-                const { nowTime } = this.state,
-                    { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
-
-                //Notifications need refreshing by chatzos, alos and shkia
-                if (shkia && Utils.isTimeAfter(shkia, nowTime)) {
-                    this.shulZmanim.shkia = null;
-                    //Passed zmanim
-                    this.shulZmanim.alos = null;
-                    this.shulZmanim.chatzosHayom = null;
-                    if (chatzosHalayla && chatzosHalayla.hour < 12) {
-                        this.shulZmanim.chatzosHalayla = null;
-                    }
-                    needsRefresh = true;
-                    log('Refreshing notifications due to shkia.');
-                }
-                else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
-                    this.shulZmanim.chatzosHayom = null;
-                    //Passed zmanim
-                    this.shulZmanim.alos = null;
-                    if (chatzosHalayla && chatzosHalayla.hour < 12) {
-                        this.shulZmanim.chatzosHalayla = null;
-                    }
-                    needsRefresh = true;
-                    log('Refreshing notifications due to chatzos hayom.');
-                }
-                else if (alos && Utils.isTimeAfter(alos, nowTime)) {
-                    this.shulZmanim.alos = null;
-                    if (chatzosHalayla && chatzosHalayla.hour < 12) {
-                        this.shulZmanim.chatzosHalayla = null;
-                    }
-                    needsRefresh = true;
-                    log('Refreshing notifications due to alos.');
-                }
-                else if (chatzosHalayla && Utils.isTimeAfter(chatzosHalayla, nowTime)) {
-                    this.shulZmanim.chatzosHalayla = null;
-                    needsRefresh = true;
-                    log('Refreshing notifications due to chatzosHalayla.');
-                }
-            }
-
-            if (needsRefresh) {
+            if (this.needsNotificationsRefresh || this.isPastShulZman()) {
                 const { jdate, sd, nowTime } = this.state,
                     notifications = AppUtils.getNotifications(jdate, sd, nowTime, settings.location);
                 this.needsNotificationsRefresh = false;
@@ -142,6 +99,52 @@ export default class App extends PureComponent {
     }
     showSettings() {
         NavigationBarAndroid.openSystemSettings();
+    }
+    isPastShulZman() {
+        const { nowTime } = this.state,
+            { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
+
+        //Notifications need refreshing by chatzos, alos and shkia
+        if (shkia && Utils.isTimeAfter(shkia, nowTime)) {
+            //We only want to refresh the notifications one time
+            this.shulZmanim.shkia = null;
+            //Nullify passed zmanim, we are refreshing anyway.
+            this.shulZmanim.alos = null;
+            this.shulZmanim.chatzosHayom = null;
+            if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                this.shulZmanim.chatzosHalayla = null;
+            }
+            log('Refreshing notifications due to shkia.');
+            return true;
+        }
+        else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
+            //We only want to refresh the notifications one time
+            this.shulZmanim.chatzosHayom = null;
+            //Nullify passed zmanim, we are refreshing anyway.
+            this.shulZmanim.alos = null;
+            if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                this.shulZmanim.chatzosHalayla = null;
+            }
+            log('Refreshing notifications due to chatzos hayom.');
+            return true;
+        }
+        else if (alos && Utils.isTimeAfter(alos, nowTime)) {
+            //We only want to refresh the notifications one time
+            this.shulZmanim.alos = null;
+            //Nullify passed zmanim, we are refreshing anyway.
+            if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                this.shulZmanim.chatzosHalayla = null;
+            }
+            log('Refreshing notifications due to alos.');
+            return true;
+        }
+        else if (chatzosHalayla && Utils.isTimeAfter(chatzosHalayla, nowTime)) {
+            //We only want to refresh the notifications one time
+            this.shulZmanim.chatzosHalayla = null;
+            log('Refreshing notifications due to chatzosHalayla.');
+            return true;
+        }
+        return false;
     }
     refresh() {
         const sd = new Date(),
