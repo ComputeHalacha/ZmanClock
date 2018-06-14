@@ -63,6 +63,8 @@ export default class App extends PureComponent {
 
     async getStorageData() {
         const settings = await Settings.getSettings();
+        //Cause a notifications refresh
+        this.needsNotificationsRefresh = settings.showNotifications;
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
         this.setState({ settings, sd: null });
     }
@@ -128,8 +130,8 @@ export default class App extends PureComponent {
             if (needsRefresh) {
                 const { jdate, sd, nowTime } = this.state,
                     notifications = AppUtils.getNotifications(jdate, sd, nowTime, settings.location);
-                this.setState({ notifications });
                 this.needsNotificationsRefresh = false;
+                this.setState({ notifications });
                 log('Refreshing notifications: ', jdate, sd, nowTime);
             }
         }
