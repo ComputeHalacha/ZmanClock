@@ -57,8 +57,8 @@ export default class App extends PureComponent {
                 : new jDate(sd),
             zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, settings);
         this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
+        this.needsNotificationsRefresh = true;
         this.state = { settings, zmanTimes, sd, nowTime, sunset, jdate };
-
     }
 
     async getStorageData() {
@@ -83,50 +83,53 @@ export default class App extends PureComponent {
         const { settings } = this.state;
 
         if (settings.showNotifications) {
-            let needsRefresh = false;
-            const { nowTime } = this.state,
-                { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
+            let needsRefresh = this.needsNotificationsRefresh;
+            if (!needsRefresh) {
+                const { nowTime } = this.state,
+                    { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
 
-            //Notifications need refreshing by chatzos, alos and shkia
-            if (shkia && Utils.isTimeAfter(shkia, nowTime)) {
-                this.shulZmanim.shkia = null;
-                //Passed zmanim
-                this.shulZmanim.alos = null;
-                this.shulZmanim.chatzosHayom = null;
-                if (chatzosHalayla && chatzosHalayla.hour < 12) {
-                    this.shulZmanim.chatzosHalayla = null;
+                //Notifications need refreshing by chatzos, alos and shkia
+                if (shkia && Utils.isTimeAfter(shkia, nowTime)) {
+                    this.shulZmanim.shkia = null;
+                    //Passed zmanim
+                    this.shulZmanim.alos = null;
+                    this.shulZmanim.chatzosHayom = null;
+                    if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                        this.shulZmanim.chatzosHalayla = null;
+                    }
+                    needsRefresh = true;
+                    log('Refreshing notifications due to shkia.');
                 }
-                needsRefresh = true;
-                log('Refreshing notifications due to shkia.');
-            }
-            else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
-                this.shulZmanim.chatzosHayom = null;
-                //Passed zmanim
-                this.shulZmanim.alos = null;
-                if (chatzosHalayla && chatzosHalayla.hour < 12) {
-                    this.shulZmanim.chatzosHalayla = null;
+                else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
+                    this.shulZmanim.chatzosHayom = null;
+                    //Passed zmanim
+                    this.shulZmanim.alos = null;
+                    if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                        this.shulZmanim.chatzosHalayla = null;
+                    }
+                    needsRefresh = true;
+                    log('Refreshing notifications due to chatzos hayom.');
                 }
-                needsRefresh = true;
-                log('Refreshing notifications due to chatzos hayom.');
-            }
-            else if (alos && Utils.isTimeAfter(alos, nowTime)) {
-                this.shulZmanim.alos = null;
-                if (chatzosHalayla && chatzosHalayla.hour < 12) {
-                    this.shulZmanim.chatzosHalayla = null;
+                else if (alos && Utils.isTimeAfter(alos, nowTime)) {
+                    this.shulZmanim.alos = null;
+                    if (chatzosHalayla && chatzosHalayla.hour < 12) {
+                        this.shulZmanim.chatzosHalayla = null;
+                    }
+                    needsRefresh = true;
+                    log('Refreshing notifications due to alos.');
                 }
-                needsRefresh = true;
-                log('Refreshing notifications due to alos.');
-            }
-            else if (chatzosHalayla && Utils.isTimeAfter(chatzosHalayla, nowTime)) {
-                this.shulZmanim.chatzosHalayla = null;
-                needsRefresh = true;
-                log('Refreshing notifications due to chatzosHalayla.');
+                else if (chatzosHalayla && Utils.isTimeAfter(chatzosHalayla, nowTime)) {
+                    this.shulZmanim.chatzosHalayla = null;
+                    needsRefresh = true;
+                    log('Refreshing notifications due to chatzosHalayla.');
+                }
             }
 
             if (needsRefresh) {
                 const { jdate, sd, nowTime } = this.state,
                     notifications = AppUtils.getNotifications(jdate, sd, nowTime, settings.location);
                 this.setState({ notifications });
+                this.needsNotificationsRefresh = false;
                 log('Refreshing notifications: ', jdate, sd, nowTime);
             }
         }
@@ -182,6 +185,7 @@ export default class App extends PureComponent {
     changeSettings(settings) {
         log('changed settings:', settings);
         settings.save();
+        this.needsNotificationsRefresh = settings.showNotifications;
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
         this.setState({ settings, sd: null });
     }

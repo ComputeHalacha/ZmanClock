@@ -1,3 +1,4 @@
+# To install...
 cd android
 ./gradlew assembleRelease
 PAUSE
@@ -15,6 +16,13 @@ adb install ./app/build/outputs/apk/release/app-release.apk
 PAUSE
 adb shell dpm set-device-owner com.zmanclock/.DeviceReceiver
 PAUSE
+ECHO "Try to move app to system app folder. (may need rooted device)"
+adb shell
+cd /data/app/
+ls
+# Find name of com.zmanclock.. folder is. Say it is com.zmanclock-1.
+mv com.zmanclock-1 /system/app/com.zmanclock-1
+exit
+PAUSE
 adb reboot
-ECHO "All done"
 PAUSE
