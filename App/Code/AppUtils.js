@@ -347,9 +347,9 @@ function getShabbosNotifications(notifications, dayInfo) {
             jdate.addDays(1).getSedra(true).sedras[0].heb);
     }
     if (isAfternoon && ((month === 1 && day > 21) || month <= 6)) {
-        notifications.push('פרקי אבות: ' +
+        notifications.push('פרקי אבות - ' +
             PirkeiAvos.getPrakim(jdate, true).map(s =>
-                `${Utils.toJNum(s)} Perek`).join(' ו'));
+                `פרק ${Utils.toJNum(s)}`).join(' ו'));
     }
 }
 
