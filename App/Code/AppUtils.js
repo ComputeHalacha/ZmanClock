@@ -4,6 +4,7 @@ import Location from './JCal/Location';
 import Settings from './Settings';
 import jDate from './JCal/jDate';
 import Molad from './JCal/Molad';
+import PirkeiAvos from './JCal/PirkeiAvos';
 
 const DaysOfWeek = Object.freeze({
     SUNDAY: 0,
@@ -344,6 +345,11 @@ function getShabbosNotifications(notifications, dayInfo) {
     else if (isAfternoon && !(month === 7 && day === 10)) {
         notifications.push('קה"ת במנחה פרשת ' +
             jdate.addDays(1).getSedra(true).sedras[0].heb);
+    }
+    if (isAfternoon && ((month === 1 && day > 21) || month <= 6)) {
+        notifications.push('פרקי אבות: ' +
+            PirkeiAvos.getPrakim(jdate, true).map(s =>
+                `${Utils.toJNum(s)} Perek`).join(' ו'));
     }
 }
 
