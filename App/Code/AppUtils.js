@@ -269,23 +269,22 @@ export default class AppUtils {
                 (month === 3 && day === 6) ||
                 (month === 7 && [1, 2, 10, 15, 16, 17, 18, 19, 20, 21, 22].includes(day)),
             isLeapYear = jDate.isJdLeapY(jdate.Year),
+            noTachnun = isAfternoon && (dow === DaysOfWeek.FRIDAY || day === 29),
             dayInfo = {
-                jdate, sdate, month, day, dow, isAfterChatzosHayom, isAfterChatzosHalayla, isAfterAlos,
-                isAfterShkia, isDaytime, isNightTime, isMorning, isAfternoon, isYomTov, isLeapYear
+                jdate, sdate, month, day, dow, isAfterChatzosHayom,
+                isAfterChatzosHalayla, isAfterAlos,
+                isAfterShkia, isDaytime, isNightTime, isMorning,
+                isAfternoon, isYomTov, isLeapYear, noTachnun
             };
-
-        //No tachnun by mincha of Erev Shabbos and Erev Rosh Chodesh
-        let noTachnun = isAfternoon && (dow === DaysOfWeek.FRIDAY || day === 29);
-
         if (dow === DaysOfWeek.SHABBOS) {
             getShabbosNotifications(notifications, dayInfo);
         }
         else {
-            noTachnun = getWeekDayNotifications(notifications, dayInfo);
+            getWeekDayNotifications(notifications, dayInfo);
         }
-        noTachnun = getAroundTheYearNotifications(notifications, dayInfo);
+        getAroundTheYearNotifications(notifications, dayInfo);
 
-        if (noTachnun && isDaytime && !isYomTov) {
+        if (dayInfo.noTachnun && isDaytime && !isYomTov) {
             if (dow !== DaysOfWeek.SHABBOS) {
                 notifications.push('א"א תחנון');
             }
@@ -354,7 +353,6 @@ function getShabbosNotifications(notifications, dayInfo) {
 }
 
 function getWeekDayNotifications(notifications, dayInfo) {
-    let { noTachnun } = dayInfo;
     const { isNightTime, dow, isYomTov, month, day, isMorning, jdate, location, isDaytime, isAfternoon } = dayInfo;
 
     //Motzai Shabbos before Yom Tov - no ויהי נועם
@@ -385,7 +383,7 @@ function getWeekDayNotifications(notifications, dayInfo) {
     }
     //Rosh Chodesh
     if ((month !== 7 && day === 1) || day === 30) {
-        noTachnun = true;
+        dayInfo.noTachnun = true;
         notifications.push('ראש חודש');
         notifications.push('יעלה ויבא');
         //Rosh Chodesh Teves is during Chanuka
@@ -403,15 +401,13 @@ function getWeekDayNotifications(notifications, dayInfo) {
         isAfternoon) {
         notifications.push('יו"כ קטן');
     }
-    return noTachnun;
 }
 
 function getAroundTheYearNotifications(notifications, dayInfo) {
-    let { noTachnun } = dayInfo;
     const { month, day, isNightTime, dow, isAfternoon, isDaytime, isMorning, isAfterChatzosHalayla, jdate, isLeapYear, location } = dayInfo;
     switch (month) {
         case 1: //Nissan
-            noTachnun = true;
+            dayInfo.noTachnun = true;
             if (day > 15) {
                 notifications.push('מוריד הטל');
                 if (isNightTime)
@@ -466,7 +462,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 (day === 14 && isAfternoon) ||
                 day === 18 ||
                 (day === 17 && isAfternoon)) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
                 if (day === 15) {
                     notifications.push('פסח שני');
                 }
@@ -485,7 +481,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 notifications.push(`${Utils.toJNum(day + 44)} בעומר`);
             }
             if (day < 13) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             if (day === 6 && isMorning) {
                 notifications.push('הלל השלם');
@@ -509,7 +505,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             break;
         case 5: //Av
             if (isAfternoon && (day === 8 && dow !== DaysOfWeek.FRIDAY)) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             else if ((day === 9 && dow !== DaysOfWeek.SHABBOS) ||
                 (day === 10 && dow === DaysOfWeek.SUNDAY)) {
@@ -524,13 +520,13 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                         notifications.push('א"א ויהי נועם');
                     }
                 }
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             else if (isAfternoon && day === 14) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             else if (day === 15) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             break;
         case 6: //Ellul
@@ -541,7 +537,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 notifications.push('סליחות');
             }
             if (day === 29) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             break;
         case 7: //Tishrei
@@ -618,7 +614,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     if (isDaytime && dow !== DaysOfWeek.FRIDAY) {
                         notifications.push('א"א אבינו מלכנו');
                     }
-                    noTachnun = true;
+                    dayInfo.noTachnun = true;
                     break;
                 case 10:
                     notifications.push('לפני ה\' תטהרו');
@@ -674,7 +670,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 notifications.push('לדוד ה\' אורי');
             }
             else if (day >= 10) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             else if (day > 22) {
                 notifications.push('משיב הרוח ומוריד הגשם');
@@ -700,10 +696,10 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 notifications.push('ותן טל ומטר');
             }
             else if (day === 24 && dow !== DaysOfWeek.SHABBOS && isAfternoon) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             }
             else if (day >= 25) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
                 notifications.push('על הניסים');
                 if (isDaytime) {
                     notifications.push('הלל השלם');
@@ -714,7 +710,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             break;
         case 10: //Teves
             if (day <= (jDate.isShortKislev(jdate.Year) ? 3 : 2)) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
                 notifications.push('על הניסים');
                 if (isDaytime) {
                     notifications.push('הלל השלם');
@@ -732,9 +728,9 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             break;
         case 11: //Shvat
             if (day === 14 && isAfternoon)
-                noTachnun = true;
+                dayInfo.noTachnun = true;
             if (day === 15) {
-                noTachnun = true;
+                dayInfo.noTachnun = true;
                 notifications.push('ט"ו בשבט');
             }
             break;
@@ -743,7 +739,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             if (month === 12 && isLeapYear) { //Adar Rishon in a leap year
                 if (((day === 13 && isAfternoon) || [14, 15].includes(day)) &&
                     isDaytime) {
-                    noTachnun = true;
+                    dayInfo.noTachnun = true;
                     notifications.push('א"א למנצח');
                 }
             }
@@ -761,7 +757,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     //Only ירושלים says על הניסים on ט"ו
                     const isYerushalayim = (location.Name === 'ירושלים');
                     if (day === 14) {
-                        noTachnun = true;
+                        dayInfo.noTachnun = true;
                         notifications.push('א"א למנצח');
                         if (!isYerushalayim) {
                             notifications.push('על הניסים');
@@ -769,7 +765,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                         }
                     }
                     else if (day === 15) {
-                        noTachnun = true;
+                        dayInfo.noTachnun = true;
                         notifications.push('א"א למנצח');
                         if (isYerushalayim) {
                             notifications.push('על הניסים');
@@ -784,7 +780,6 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             }
             break;
     }
-    return noTachnun;
 }
 
 function hasOwnKriyasHatorah(jdate, location) {

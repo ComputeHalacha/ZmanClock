@@ -186,6 +186,8 @@ export default class App extends PureComponent {
     closeDrawer() {
         this.isDrawerOpen = false;
         this.drawer.closeDrawer();
+        //refresh notifications
+        this.needsNotificationsRefresh = this.state.settings.showNotifications;
     }
     changeSettings(settings) {
         log('changed settings:', settings);
