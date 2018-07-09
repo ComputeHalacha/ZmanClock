@@ -15,12 +15,11 @@ export function setSystemTime(time) {
     }
     catch (e) {
         ToastAndroid.show('Time could not be set. Please assure that the current app is a system app in a rooted device. ' +
-            e.description, ToastAndroid.LONG);
+            (e.description || ''), ToastAndroid.LONG);
     }
 
     return success;
 }
-
 /**
  * 	Get the current system time
  */

@@ -8,7 +8,7 @@ import com.facebook.react.ReactActivity;
 import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
-import android.app.AlarmManager;
+import android.os.SystemClock;
 import java.util.Calendar;
 
 public class SystemTimeAndroid extends ReactContextBaseJavaModule {
@@ -23,10 +23,8 @@ public class SystemTimeAndroid extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setSystemTime(final double milliseconds) {
-        Activity reactActivity = getCurrentActivity();
-        AlarmManager am = (AlarmManager) reactActivity.getSystemService(Context.ALARM_SERVICE);
-        am.setTime((long)milliseconds);
+    public boolean setSystemTime(final double milliseconds) {
+        return SystemClock.setCurrentTimeMillis((long)milliseconds);
     }
 
     @ReactMethod
