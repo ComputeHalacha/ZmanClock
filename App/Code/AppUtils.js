@@ -305,7 +305,7 @@ export default class AppUtils {
 
 
 function getShabbosNotifications(notifications, dayInfo) {
-    const { month, day, isLeapYear, isMorning, isYomTov, jdate, isAfternoon } = dayInfo;
+    const { month, day, isLeapYear, isMorning, isYomTov, jdate, isDaytime , isAfternoon} = dayInfo;
     if (month === 1 && day > 7 && day < 15) {
         notifications.push('שבת הגדול');
     }
@@ -340,12 +340,23 @@ function getShabbosNotifications(notifications, dayInfo) {
             notifications.push('מברכים החודש');
         }
     }
+    //Rosh Chodesh
+    if ((month !== 7 && day === 1) || day === 30) {
+        notifications.push('ראש חודש');
+        notifications.push('יעלה ויבא');
+        //Rosh Chodesh Teves is during Chanuka
+        if (isDaytime && month !== 10) {
+            notifications.push('חצי הלל');
+        }
+    }
     //Kriyas Hatora - Shabbos by mincha - besides for Yom Kippur
     else if (isAfternoon && !(month === 7 && day === 10)) {
         notifications.push('קה"ת במנחה פרשת ' +
             jdate.addDays(1).getSedra(true).sedras[0].heb);
     }
-    if (isAfternoon && ((month === 1 && day > 21) || month <= 6)) {
+    if (isAfternoon &&
+        ((month === 1 && day > 21) || month <= 6 &&
+            (!(month === 5 && [8, 9].includes(day))))) {
         notifications.push('פרקי אבות - ' +
             PirkeiAvos.getPrakim(jdate, true).map(s =>
                 `פרק ${Utils.toJNum(s)}`).join(' ו'));
