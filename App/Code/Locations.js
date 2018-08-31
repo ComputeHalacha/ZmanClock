@@ -83,6 +83,7 @@ export const Locations = [
     new Location('קצרין', true, 32.98, -35.68, 2, 0),
     new Location('חשמונאים', true, 31.93, -35.02, 2, 255),
     new Location('לניאדו / נתניה', true, 32.33, -34.87, 2, 26),
+    new Location('פומפדיתא', false, 35.00, -44.21, 3, 0),
 ];
 Locations.sort(function (a, b) { return (a.Name > b.Name) ? 1 : ((b.Name > a.Name) ? -1 : 0); });
 
