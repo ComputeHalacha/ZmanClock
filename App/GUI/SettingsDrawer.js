@@ -13,6 +13,8 @@ import { Locations } from '../Code/Locations';
 import { ZmanTypes } from '../Code/ZmanTypes';
 import { range, setDefault } from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
+import AppUtils from '../Code/AppUtils';
+
 import { openSystemTimeSettings } from '../Code/SystemTime';
 
 export default class SettingsDrawer extends PureComponent {
@@ -115,9 +117,9 @@ export default class SettingsDrawer extends PureComponent {
                     </ScrollView>
                     <Text style={styles.close}
                         onPress={() => this.props.close()}
-                        onLongPress={() =>
-                            location.Name === 'פומפדיתא' &&
-                            this.props.showSettings()}>סגור X</Text>
+                        onLongPress={() => AppUtils.changeSystemHomeSettings(this.prop.settings)}>
+                        סגור X
+                    </Text>
                 </View>
             </View>
         );

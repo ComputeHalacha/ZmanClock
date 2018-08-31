@@ -97,9 +97,6 @@ export default class App extends PureComponent {
             this.setState({ notifications: [] });
         }
     }
-    showSettings() {
-        NavigationBarAndroid.openSystemSettings();
-    }
     isPastShulZman() {
         const { nowTime } = this.state,
             { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
@@ -209,7 +206,6 @@ export default class App extends PureComponent {
                         changeSettings={this.changeSettings}
                         settings={this.state.settings}
                         nowTime={this.state.nowTime}
-                        showSettings={this.showSettings}
                         drawerPosition={DrawerLayoutAndroid.positions.Right} />}
                 ref={(drawer) => this.drawer = drawer}>
                 <KeepAwake />

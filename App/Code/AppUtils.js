@@ -5,6 +5,7 @@ import Settings from './Settings';
 import jDate from './JCal/jDate';
 import Molad from './JCal/Molad';
 import PirkeiAvos from './JCal/PirkeiAvos';
+import NavigationBarAndroid from './Code/NavigationBar';
 
 const DaysOfWeek = Object.freeze({
     SUNDAY: 0,
@@ -301,11 +302,26 @@ export default class AppUtils {
         //return only unique values
         return [...new Set(notifications)];
     }
+/**
+ * Show Android settings to switch the Home app. 
+ * This allows the developer to access the default Android home app.
+ * The user is only allowed to exit the app this way if they enter the "password" - 
+ * which is accomplished by changing the app settings to the required values (see code below).  
+ * @param {{ location:Location, showNotifications:Boolean, numberOfItemsToShow:Number, minToShowPassedZman:Number }} settings 
+ */
+    static changeSystemHomeSettings(settings) {
+        const { location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = settings;
+        if (location.Name === 'פומפדיתא' &&
+            (!showNotifications) &&
+            numberOfItemsToShow === 9 &&
+            minToShowPassedZman === 57) {
+            NavigationBarAndroid.changeSystemHomeSettings();
+        }
+    }
 }
 
-
 function getShabbosNotifications(notifications, dayInfo) {
-    const { month, day, isLeapYear, isMorning, isYomTov, jdate, isDaytime , isAfternoon} = dayInfo;
+    const { month, day, isLeapYear, isMorning, isYomTov, jdate, isDaytime, isAfternoon } = dayInfo;
     if (month === 1 && day > 7 && day < 15) {
         notifications.push('שבת הגדול');
     }

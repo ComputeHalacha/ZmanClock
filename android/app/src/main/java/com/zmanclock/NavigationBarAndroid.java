@@ -41,7 +41,7 @@ public class NavigationBarAndroid extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void openSystemSettings() {
+    public void changeSystemHomeSettings() {
         Activity reactActivity = getCurrentActivity();
         reactActivity.startActivity(new Intent(android.provider.Settings.ACTION_HOME_SETTINGS));
     }
