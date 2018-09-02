@@ -5,7 +5,7 @@ import Settings from './Settings';
 import jDate from './JCal/jDate';
 import Molad from './JCal/Molad';
 import PirkeiAvos from './JCal/PirkeiAvos';
-import NavigationBarAndroid from './Code/NavigationBar';
+import NavigationBarAndroid from './NavigationBar';
 
 const DaysOfWeek = Object.freeze({
     SUNDAY: 0,
