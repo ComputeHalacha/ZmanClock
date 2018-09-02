@@ -117,7 +117,7 @@ export default class SettingsDrawer extends PureComponent {
                     </ScrollView>
                     <Text style={styles.close}
                         onPress={() => this.props.close()}
-                        onLongPress={() => AppUtils.changeSystemHomeSettings(this.prop.settings)}>
+                        onLongPress={() => AppUtils.changeSystemHomeSettings(this.props.settings)}>
                         סגור X
                     </Text>
                 </View>
