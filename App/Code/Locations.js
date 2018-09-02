@@ -61,7 +61,7 @@ export const Locations = [
     new Location('קרית טבעון', true, 32.73, -35.08, 2, 39),
     new Location('קרית ים', true, 32.83, -35.07, 2, 0),
     new Location('קרית מלאכי', true, 31.73, -34.75, 2, 0),
-    new Location('מודיעין עילית', true, 31.933, -35.0426, 2, 240, 30),
+    new Location('מודיעין עילית', true, 31.933822, -35.042337, 2, 240, 30),
     new Location('קרית שמונה', true, 33.2, -35.57, 2, 0),
     new Location('ראש העין', true, 32.08, -34.95, 2, 90),
     new Location('ראש פינה', true, 32.97, -35.48, 2, 131),
