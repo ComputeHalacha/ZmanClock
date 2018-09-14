@@ -28,8 +28,9 @@ ECHO "Try to move app to system app folder. (may need rooted device)"
 adb shell
 cd /data/app/
 ls
+PAUSE
 
-@REM Find name of com.zmanclock.. folder is. Say it is com.zmanclock-1.
+@REM Find full name of com.zmanclock folder. Say it is com.zmanclock-1.
 mv com.zmanclock-1 /system/app/com.zmanclock-1
 exit
 PAUSE

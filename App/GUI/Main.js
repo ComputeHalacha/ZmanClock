@@ -6,7 +6,6 @@ import {
     ScrollView
 } from 'react-native';
 import Utils from '../Code/JCal/Utils';
-import { log } from '../Code/GeneralUtils';
 
 export default class Main extends PureComponent {
     constructor(props) {
@@ -45,7 +44,7 @@ export default class Main extends PureComponent {
                 {Utils.getTimeIntervalTextStringHeb(timeDiff)}
             </Text>
             <Text style={was ? styles.zmanTypeNameTextWas : styles.zmanTypeNameText}>
-                {`${zt.isTommorrow ? 'מחר ' : ''}בשעה: `}
+                {`${zt.isTommorrow && zt.time.hour > 2 ? 'מחר ' : ''}בשעה: `}
                 <Text style={isWithin10 ? styles.within10ZmanTimeText : styles.zmanTimeText}>
                     {Utils.getTimeString(zt.time, true)}
                 </Text>
