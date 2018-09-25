@@ -138,8 +138,9 @@ export default class Zmanim {
     }
 
     static getShaaZmanisMga(sunTimes, israel) {
-        let rise = Utils.addMinutes(sunTimes.sunrise, -(israel ? 90 : 72)),
-            set = Utils.addMinutes(sunTimes.sunset, (israel ? 50 : 72));
+        const minutes = israel ? 90 : 72;
+        let rise = Utils.addMinutes(sunTimes.sunrise, -minutes),
+            set = Utils.addMinutes(sunTimes.sunset, minutes);
 
         if (isNaN(rise.hour) || isNaN(set.hour)) {
             return NaN;

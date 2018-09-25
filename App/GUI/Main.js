@@ -84,7 +84,7 @@ export default class Main extends PureComponent {
                 {Utils.getTimeString(this.props.nowTime, true)}
             </Text>
             <ScrollView style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}>
+                contentContainerStyle={{ flex: (this.props.settings.numberOfItemsToShow > 3 ? 0 : 1) }}>
                 {this.props.zmanTimes.map((zt, i) => this.displaySingleZman(zt, i))}
             </ScrollView>
         </View >;
@@ -99,11 +99,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     scrollView: {
-        height: '75%',
         width: '90%',
-        flex: 1
-    },
-    scrollContent: {
+        height: '75%',
         flex: 1
     },
     notificationsView: {
@@ -158,6 +155,7 @@ const styles = StyleSheet.create({
     },
     timeRemainingText: {
         fontSize: 38,
+        textAlign: 'center'
     },
     timeRemainingNumber: {
         color: '#ffffee',
