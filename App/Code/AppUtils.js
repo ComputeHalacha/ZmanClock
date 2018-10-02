@@ -693,7 +693,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     }
                     break;
             }
-            if (day <= 22) {
+            if (day < 22) {
                 notifications.push('לדוד ה\' אורי');
             }
             else if (day >= 10) {
