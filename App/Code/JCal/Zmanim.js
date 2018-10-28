@@ -196,11 +196,9 @@ export default class Zmanim {
             sec = Math.round(60.0 * (minFloat - min)),
             inCurrTZ = location.UTCOffset === Utils.currUtcOffset();
 
-        if (inCurrTZ && Utils.isDateDST(date)) {
-            hour++;
-        }
-        else if ((!inCurrTZ) &&
-            ((location.Israel && Utils.isIsrael_DST(date)) || Utils.isUSA_DST(date))) {
+        if ((location.Israel && Utils.isIsrael_DST(date)) ||
+            (inCurrTZ && Utils.isDateDST(date)) ||
+            ((!inCurrTZ) && Utils.isUSA_DST(date))) {
             hour++;
         }
 

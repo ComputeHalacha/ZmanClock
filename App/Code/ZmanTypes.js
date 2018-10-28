@@ -17,9 +17,9 @@ export const ZmanTypes = [
     { name: 'shkiaElevation', decs: 'שקיעת החמה מגובה המיקום', eng: 'Sunset', heb: 'שקיעת החמה' },
     { name: 'tzais45', decs: '45 דקות אחרי שקיעה', eng: 'Nightfall', heb: 'צאת הכוכבים' },
     { name: 'tzais50', decs: '50 דקות אחרי שקיעה', eng: 'Nightfall', heb: 'צאת הכוכבים' },
-    { name: 'tzais72', decs: '72 דקות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' },
-    { name: 'tzais72Zmaniot', decs: '72 דקות זמניות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' },
-    { name: 'tzais72ZmaniotMA', decs: '72 דקות זמניות אחרי שקיעה - מג"א', eng: 'Rabbeinu Tam', heb: 'צאת הכוכבים - ר"ת' }
+    { name: 'tzais72', decs: '72 דקות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צה"כ ר"ת - 72 דקות' },
+    { name: 'tzais72Zmaniot', decs: '72 דקות זמניות אחרי שקיעה', eng: 'Rabbeinu Tam', heb: 'צה"כ ר"ת - זמניות' },
+    { name: 'tzais72ZmaniotMA', decs: '72 דקות זמניות אחרי שקיעה - מג"א', eng: 'Rabbeinu Tam', heb: 'צה"כ ר"ת - זמניות מג"א' }
 ];
 
 /**
