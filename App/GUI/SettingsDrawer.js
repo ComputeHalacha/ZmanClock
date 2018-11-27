@@ -67,7 +67,7 @@ export default class SettingsDrawer extends PureComponent {
                                         this.onChangeSettings({ zmanimToShow: zmanimToShowList });
                                     }}
                                     style={styles.checkbox} />
-                                <Text style={styles.labelCheckbox}>{zt.decs}</Text>
+                                <Text style={styles.labelCheckbox}>{zt.desc}</Text>
                             </View>)}
                         </View>
                         <Text style={styles.label}>העדפות כלליות</Text>

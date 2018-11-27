@@ -7,7 +7,7 @@ import { log, error, setDefault } from './GeneralUtils';
 export default class Settings {
     /**
      *
-     * @param {[{name:String, decs: String, eng: String, heb: String }]} [zmanimToShow] List of which zmanim to show
+     * @param {[{name:String, desc: String, eng: String, heb: String }]} [zmanimToShow] List of which zmanim to show
      * @param {Location} [location]
      * @param {boolean} [showNotifications] Show shul notifications?
      * @param {number} [numberOfItemsToShow] Number of zmanim to show on the main screen

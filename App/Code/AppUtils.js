@@ -26,7 +26,7 @@ export default class AppUtils {
     * @param {Date} sdate
     * @param {{hour : Number, minute :Number, second: Number }} time
     * @param {Settings} settings
-    * @returns {[{zmanType:{name:String, decs: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]}
+    * @returns {[{zmanType:{name:String, desc: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTommorrow:Boolean}]}
     */
     static getCorrectZmanTimes(sdate, time, settings) {
         const correctedTimes = [],
@@ -52,10 +52,10 @@ export default class AppUtils {
 
     /**
      * Gets the zmanim for all the types in the given list.
-     * @param {[{name:String,decs:?String,eng:?String,heb:?String}]} zmanTypes An array of ZmanTypes to get the zman for.
+     * @param {[{name:String,desc:?String,eng:?String,heb:?String}]} zmanTypes An array of ZmanTypes to get the zman for.
      * @param {Date} date The secular date to get the zmanim for
      * @param {Location} location The location for which to get the zmanim
-     * @returns{[{zmanType:{name:String,decs:String,eng:String,heb:String },time:{hour:Number,minute:Number,second:Number}}]}
+     * @returns{[{zmanType:{name:String,desc:String,eng:String,heb:String },time:{hour:Number,minute:Number,second:Number}}]}
      */
     static getZmanTimes(zmanTypes, date, location) {
         const mem = AppUtils.zmanTimesCache.find(z => Utils.isSameSdate(z.date, date) && z.location.Name === location.Name),
@@ -112,7 +112,7 @@ export default class AppUtils {
                 case 'talisTefillin':
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunriseMishor, -45)
+                        time: Utils.addMinutes(sunriseMishor, -36)
                     });
                     break;
                 case 'netzElevation':
@@ -303,11 +303,11 @@ export default class AppUtils {
         return [...new Set(notifications)];
     }
 /**
- * Show Android settings to switch the Home app. 
+ * Show Android settings to switch the Home app.
  * This allows the developer to access the default Android home app.
- * The user is only allowed to exit the app this way if they enter the "password" - 
- * which is accomplished by changing the app settings to the required values (see code below).  
- * @param {{ location:Location, showNotifications:Boolean, numberOfItemsToShow:Number, minToShowPassedZman:Number }} settings 
+ * The user is only allowed to exit the app this way if they enter the "password" -
+ * which is accomplished by changing the app settings to the required values (see code below).
+ * @param {{ location:Location, showNotifications:Boolean, numberOfItemsToShow:Number, minToShowPassedZman:Number }} settings
  */
     static changeSystemHomeSettings(settings) {
         const { location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = settings;
@@ -714,12 +714,12 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             if (day <= 22) {
                 notifications.push('משיב הרוח ומוריד הגשם');
             }
-            if (day >= 7) {
+            if (day >= 7 && dow !== DaysOfWeek.SHABBOS) {
                 notifications.push('ותן טל ומטר');
             }
             break;
         case 9: //Kislev
-            if (day <= 7) {
+            if (day <= 7 && dow !== DaysOfWeek.SHABBOS) {
                 notifications.push('ותן טל ומטר');
             }
             else if (day === 24 && dow !== DaysOfWeek.SHABBOS && isAfternoon) {
