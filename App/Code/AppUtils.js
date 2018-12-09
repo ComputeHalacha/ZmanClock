@@ -302,13 +302,13 @@ export default class AppUtils {
         //return only unique values
         return [...new Set(notifications)];
     }
-/**
- * Show Android settings to switch the Home app.
- * This allows the developer to access the default Android home app.
- * The user is only allowed to exit the app this way if they enter the "password" -
- * which is accomplished by changing the app settings to the required values (see code below).
- * @param {{ location:Location, showNotifications:Boolean, numberOfItemsToShow:Number, minToShowPassedZman:Number }} settings
- */
+    /**
+     * Show Android settings to switch the Home app.
+     * This allows the developer to access the default Android home app.
+     * The user is only allowed to exit the app this way if they enter the "password" -
+     * which is accomplished by changing the app settings to the required values (see code below).
+     * @param {{ location:Location, showNotifications:Boolean, numberOfItemsToShow:Number, minToShowPassedZman:Number }} settings
+     */
     static changeSystemHomeSettings(settings) {
         const { location, showNotifications, numberOfItemsToShow, minToShowPassedZman } = settings;
         if (location.Name === 'פומפדיתא' &&
@@ -361,7 +361,7 @@ function getShabbosNotifications(notifications, dayInfo) {
         notifications.push('ראש חודש');
         notifications.push('יעלה ויבא');
         //Rosh Chodesh Teves is during Chanuka
-        if (isDaytime && month !== 10) {
+        if (isDaytime && month !== 10 && !(month === 9 && day === 30)) {
             notifications.push('חצי הלל');
         }
     }
@@ -414,9 +414,9 @@ function getWeekDayNotifications(notifications, dayInfo) {
         notifications.push('ראש חודש');
         notifications.push('יעלה ויבא');
         //Rosh Chodesh Teves is during Chanuka
-        if (isDaytime && month !== 10) {
+        if (isDaytime && month !== 10 && !(month === 9 && day === 30)) {
             notifications.push('חצי הלל');
-            if (isMorning) {
+            if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                 notifications.push('א"א למנצח');
             }
         }
@@ -446,7 +446,9 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             if (dow !== DaysOfWeek.SHABBOS &&
                 [14, 16, 17, 18, 19, 20].includes(day)) {
                 notifications.push('א"א מזמור לתודה');
-                notifications.push('א"א למנצח');
+                if (dow !== DaysOfWeek.SHABBOS) {
+                    notifications.push('א"א למנצח');
+                }
             }
             if (day === 15) {
                 notifications.push('יום טוב');
@@ -464,7 +466,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 else {
                     notifications.push('חול המועד');
                     notifications.push('יעלה ויבא');
-                    if (isMorning)
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS)
                         notifications.push('א"א למנצח');
                 }
                 if (isDaytime)
@@ -516,7 +518,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 notifications.push('אקדמות');
                 notifications.push('יזכור');
             }
-            else if (day === 7 && isMorning) {
+            else if (day === 7 && isMorning && dow !== DaysOfWeek.SHABBOS) {
                 notifications.push('א"א למנצח');
             }
             break;
@@ -539,7 +541,9 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 if (isDaytime) {
                     notifications.push('קינות לתשעה באב');
                     notifications.push('עננו');
-                    notifications.push('א"א למנצח');
+                    if (dow !== DaysOfWeek.SHABBOS) {
+                        notifications.push('א"א למנצח');
+                    }
                 }
                 else {
                     notifications.push('מגילת איכה');
@@ -630,7 +634,9 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 case 9:
                     if (isMorning) {
                         notifications.push('א"א מזמור לתודה');
-                        notifications.push('א"א למנצח');
+                        if (dow !== DaysOfWeek.SHABBOS) {
+                            notifications.push('א"א למנצח');
+                        }
                         if (dow === DaysOfWeek.FRIDAY) {
                             notifications.push('אבינו מלכנו');
                         }
@@ -730,7 +736,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 notifications.push('על הניסים');
                 if (isDaytime) {
                     notifications.push('הלל השלם');
-                    if (isMorning)
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS)
                         notifications.push('א"א למנצח');
                 }
             }
@@ -741,7 +747,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 notifications.push('על הניסים');
                 if (isDaytime) {
                     notifications.push('הלל השלם');
-                    if (isMorning)
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS)
                         notifications.push('א"א למנצח');
                 }
             }
@@ -767,7 +773,9 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 if (((day === 13 && isAfternoon) || [14, 15].includes(day)) &&
                     isDaytime) {
                     dayInfo.noTachnun = true;
-                    notifications.push('א"א למנצח');
+                    if (dow !== DaysOfWeek.SHABBOS) {
+                        notifications.push('א"א למנצח');
+                    }
                 }
             }
             else { //The "real" Adar: the only one in a non-leap-year or Adar Sheini
@@ -785,7 +793,9 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     const isYerushalayim = (location.Name === 'ירושלים');
                     if (day === 14) {
                         dayInfo.noTachnun = true;
-                        notifications.push('א"א למנצח');
+                        if (dow !== DaysOfWeek.SHABBOS) {
+                            notifications.push('א"א למנצח');
+                        }
                         if (!isYerushalayim) {
                             notifications.push('על הניסים');
                             notifications.push('מגילת אסתר');
@@ -793,7 +803,9 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     }
                     else if (day === 15) {
                         dayInfo.noTachnun = true;
-                        notifications.push('א"א למנצח');
+                        if (dow !== DaysOfWeek.SHABBOS) {
+                            notifications.push('א"א למנצח');
+                        }
                         if (isYerushalayim) {
                             notifications.push('על הניסים');
                             notifications.push('מגילת אסתר');
