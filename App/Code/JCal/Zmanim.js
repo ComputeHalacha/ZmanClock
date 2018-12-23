@@ -92,7 +92,7 @@ export default class Zmanim {
             utSet = (hRise / 15) + ahrSet + Zmanim.adj(tSet) + lonHour;
             sunset = Zmanim.timeAdj(utSet + location.UTCOffset, date, location);
             if (sunset.hour > 0 && sunset.hour < 12) {
-                sunrise.hour += 12;
+                sunset.hour += 12;
             }
         }
 
