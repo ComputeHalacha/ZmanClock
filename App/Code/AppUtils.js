@@ -275,7 +275,7 @@ export default class AppUtils {
                 jdate, sdate, month, day, dow, isAfterChatzosHayom,
                 isAfterChatzosHalayla, isAfterAlos,
                 isAfterShkia, isDaytime, isNightTime, isMorning,
-                isAfternoon, isYomTov, isLeapYear, noTachnun
+                isAfternoon, isYomTov, isLeapYear, noTachnun, location
             };
         if (dow === DaysOfWeek.SHABBOS) {
             getShabbosNotifications(notifications, dayInfo);
