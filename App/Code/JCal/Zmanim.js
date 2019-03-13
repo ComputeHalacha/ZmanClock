@@ -193,12 +193,9 @@ export default class Zmanim {
         let hour = Utils.toInt(time);
         const minFloat = (time - hour) * 60 + 0.5,
             min = Utils.toInt(minFloat),
-            sec = Math.round(60.0 * (minFloat - min)),
-            inCurrTZ = location.UTCOffset === Utils.currUtcOffset();
+            sec = Math.round(60.0 * (minFloat - min));
 
-        if ((location.Israel && Utils.isIsrael_DST(date)) ||
-            (inCurrTZ && Utils.isDateDST(date)) ||
-            ((!inCurrTZ) && Utils.isUSA_DST(date))) {
+        if (Utils.isDST(location, date)) {
             hour++;
         }
 
