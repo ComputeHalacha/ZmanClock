@@ -8,7 +8,9 @@
   "dependencies": {
     "react": "16.6.3",
     "react-native": "0.58.6",
-    "react-native-keep-awake": "^4.0.0"
+    "react-native-check-box": "^2.1.7",
+    "react-native-keep-awake": "^4.0.0",
+    "react-native-select-multiple": "^1.2.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
