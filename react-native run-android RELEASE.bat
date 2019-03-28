@@ -1,6 +1,6 @@
 @REM To install this app, follow the steps below.
 @REM After successful completion, it will be quite difficult to
-@REM access the regular Android home screen and app launcher - 
+@REM access the regular Android home screen and app launcher -
 @REM effectively dedicating the device to this app.
 
 cd android
@@ -24,7 +24,21 @@ PAUSE
 adb shell dpm set-device-owner com.zmanclock/.DeviceReceiver
 PAUSE
 
-ECHO "Try to move app to system app folder. (may need rooted device)"
+ECHO "Try to Root the device **************************************************************************************************"
+adb root
+@REM Some response about success
+adb remount
+@REM Remount succeeded
+
+    ECHO "If that fails try"
+    adb root
+    adb disable-verity
+    adb reboot
+    adb root
+    adb remount
+    @REM Remount succeeded
+
+ECHO "Now if the rooting suceeded, try to move app to system app folder. (may need rooted device) *****************************"
 adb shell
 cd /data/app/
 ls
@@ -38,7 +52,7 @@ PAUSE
 adb reboot
 PAUSE
 
-@REM If all the above is successful, the device will be almost hermetically "locked" on this app - 
+@REM If all the above is successful, the device will be almost hermetically "locked" on this app -
 @REM without any obvious way to access the system settings etc.
 @REM For the developer, there is a hidden back-door within the app to access the regular Android system.
 @REM To access this back-door, open the settings drawer, set the settings to:
@@ -49,3 +63,4 @@ PAUSE
 @REM Then do a long-press on the Close button at the bottom of the settings drawer.
 @REM If done correctly, the Android settings page where you choose the Home app should show up.
 @REM Set the home page to the Launcher App.
+@REM Long press the start key to reboot the device into the Launcher App.
