@@ -1,9 +1,6 @@
 import { PixelRatio, Dimensions, Platform, ToastAndroid, Alert } from 'react-native';
-import jDate from './JCal/jDate';
-import Utils from './JCal/Utils';
 
 export const GLOBALS = Object.freeze({
-    VERSION_NAME: '0.01',
     IS_IOS: Platform.OS === 'ios',
     IS_ANDROID: Platform.OS === 'android',
     BUTTON_COLOR: Platform.OS === 'android' ? '#99b' : null,

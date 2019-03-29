@@ -16,6 +16,7 @@ import { range, setDefault } from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
 import { Locations } from '../Code/Locations';
 import { openSystemTimeSettings } from '../Code/SystemTime';
+import { version } from '../../package.json';
 import { ZmanTypes } from '../Code/ZmanTypes';
 
 export default class SettingsDrawer extends PureComponent {
@@ -64,7 +65,8 @@ export default class SettingsDrawer extends PureComponent {
     return (
       <View style={styles.outContainer}>
         <View style={styles.container}>
-          <Text style={styles.header}>שעון זמנים - הגדרות</Text>
+          <Text style={styles.header}>הגדרות</Text>
+          <Text style={styles.version}>{`שעון זמנים - גירסה ${version}`}</Text>
           <ScrollView contentContainerStyle={styles.inContainer}>
             <Text style={styles.label}>בחר מיקום</Text>
             <Picker
@@ -205,10 +207,15 @@ const styles = StyleSheet.create({
   header: {
     color: '#aac',
     fontSize: 20,
-    marginBottom: 10,
     backgroundColor: '#444',
     width: '100%',
     padding: 10
+  },
+  version: {
+    color: '#E7C45D',
+    fontSize: 12,
+    textAlign: 'center',
+    padding: 5
   },
   close: {
     color: '#99a',

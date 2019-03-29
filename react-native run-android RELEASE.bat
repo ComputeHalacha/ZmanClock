@@ -4,8 +4,12 @@
 @REM effectively dedicating the device to this app.
 
 cd android
+rm app/build/outputs/apk/release/*
 ./gradlew assembleRelease
 PAUSE
+
+@REM Copy the new apk to the lastestRelesae directory.
+cp app/build/outputs/apk/release/app-release.apk ../latestAPK/app-release.apk
 
 ECHO "Before installing app: "
 ECHO "1. Set developer mode to on. "
@@ -18,7 +22,8 @@ ECHO "7. In settings/Display/Sleep - turn off intelligent back-light"
 ECHO "8. If on large device, in settings - set to large font size"
 PAUSE
 
-adb install ./app/build/outputs/apk/release/app-release.apk
+cd ../
+adb install latestAPK/app-release.apk
 PAUSE
 
 adb shell dpm set-device-owner com.zmanclock/.DeviceReceiver
