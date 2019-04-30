@@ -382,10 +382,13 @@ function getShabbosNotifications(notifications, dayInfo) {
 function getWeekDayNotifications(notifications, dayInfo) {
     const { isNightTime, dow, isYomTov, month, day, isMorning, jdate, location, isDaytime, isAfternoon } = dayInfo;
 
-    //Motzai Shabbos before Yom Tov - no ויהי נועם
+    //מוצאי שבת
     if (isNightTime && dow === DaysOfWeek.SUNDAY) {
         //הבדלה בתפילה for מוצאי שבת
-        notifications.push(isYomTov ? 'ותודיעינו' : 'אתה חוננתנו');
+        notifications.push(((month === 1 && day === 15) || (month === 3 && day === 6))
+            ? 'ותודיעינו'
+            : 'אתה חוננתנו');
+        //Motzai Shabbos before Yom Tov - no ויהי נועם
         if ((month === 6 && day > 22) ||
             (month === 7 && day < 22 && day !== 3) ||
             (month === 1 && day > 8 && day < 15) ||
@@ -443,7 +446,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
             if (dow !== DaysOfWeek.SHABBOS && day > 15 && day !== 21) {
                 notifications.push('ותן ברכה');
             }
-            if (dow !== DaysOfWeek.SHABBOS &&
+            if (isMorning && dow !== DaysOfWeek.SHABBOS &&
                 [14, 16, 17, 18, 19, 20].includes(day)) {
                 notifications.push('א"א מזמור לתודה');
                 if (dow !== DaysOfWeek.SHABBOS) {
@@ -541,13 +544,13 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 if (isDaytime) {
                     notifications.push('קינות לתשעה באב');
                     notifications.push('עננו');
-                    if (dow !== DaysOfWeek.SHABBOS) {
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                         notifications.push('א"א למנצח');
                     }
                 }
                 else {
                     notifications.push('מגילת איכה');
-                    if (dow === DaysOfWeek.SUNDAY) {
+                    if (isNightTime && dow === DaysOfWeek.SUNDAY) {
                         notifications.push('א"א ויהי נועם');
                     }
                 }
@@ -773,7 +776,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 if (((day === 13 && isAfternoon) || [14, 15].includes(day)) &&
                     isDaytime) {
                     dayInfo.noTachnun = true;
-                    if (dow !== DaysOfWeek.SHABBOS) {
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                         notifications.push('א"א למנצח');
                     }
                 }
@@ -793,7 +796,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     const isYerushalayim = (location.Name === 'ירושלים');
                     if (day === 14) {
                         dayInfo.noTachnun = true;
-                        if (dow !== DaysOfWeek.SHABBOS) {
+                        if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                             notifications.push('א"א למנצח');
                         }
                         if (!isYerushalayim) {
@@ -803,7 +806,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     }
                     else if (day === 15) {
                         dayInfo.noTachnun = true;
-                        if (dow !== DaysOfWeek.SHABBOS) {
+                        if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                             notifications.push('א"א למנצח');
                         }
                         if (isYerushalayim) {

@@ -3,13 +3,17 @@
 @REM access the regular Android home screen and app launcher -
 @REM effectively dedicating the device to this app.
 
+@REM Compile the release build of the app *************************************************************************************
 cd android
 rm app/build/outputs/apk/release/*
 ./gradlew assembleRelease
+ECHO "The release build has been created"
 PAUSE
 
-@REM Copy the new apk to the lastestRelesae directory.
+@REM Copy the new apk to the lastestRelesae directory *************************************************************************
 cp app/build/outputs/apk/release/app-release.apk ../latestAPK/app-release.apk
+ECHO "The release build has been copied to the ./lastestAPK directory"
+PAUSE
 
 ECHO "Before installing app: "
 ECHO "1. Set developer mode to on. "
@@ -22,39 +26,50 @@ ECHO "7. In settings/Display/Sleep - turn off intelligent back-light"
 ECHO "8. If on large device, in settings - set to large font size"
 PAUSE
 
+@REM Install the app on the device ********************************************************************************************
 cd ../
 adb install latestAPK/app-release.apk
+ECHO "The app has been installed on the device"
 PAUSE
 
+@REM Make the app the device owner ********************************************************************************************
 adb shell dpm set-device-owner com.zmanclock/.DeviceReceiver
+ECHO "The app has been set as the device owner"
 PAUSE
 
-ECHO "Try to Root the device **************************************************************************************************"
+@REM Try to Root the device **************************************************************************************************
+ECHO "Attempting to Root the device"
 adb root
-@REM Some response about success
+@REM Expect some response about success
 adb remount
-@REM Remount succeeded
+@REM If that fails try:
+	@REM adb root
+	@REM adb disable-verity
+	@REM adb reboot
+	@REM adb root
+	@REM adb remount
 
-    ECHO "If that fails try"
-    adb root
-    adb disable-verity
-    adb reboot
-    adb root
-    adb remount
-    @REM Remount succeeded
+ECHO "Rooting and Remounting succeeded"
+PAUSE
 
-ECHO "Now if the rooting suceeded, try to move app to system app folder. (may need rooted device) *****************************"
+@REM Convert the app to a system app *******************************************************************************************
+@REM We will try to move app to the system app folder. 
+@REM NOTE: This will almost surely fail if the Rooting did not succeed.
+@REM First, access the device command line
 adb shell
+@REM adb install usually pushes apps to the /data/app directory
 cd /data/app/
+@REM List the contents of the directory
 ls
-PAUSE
-
-@REM Find full name of com.zmanclock folder. Say it is com.zmanclock-1.
+@REM Now, in the list displayed, find the full name of the com.zmanclock folder. For a new installation it usually is com.zmanclock-1.
+@REM We will now attempt to move the app to the system/app directory. 
+@REM NOTE: The following command assumes that the app was installed to /data/app/com.zmanclock-1. Change source path as needed.
 mv com.zmanclock-1 /system/app/com.zmanclock-1
+@REM Exit the android shell
 exit
-PAUSE
-
+@REM For the system to recognize the new system app, it needs to reboot
 adb reboot
+ECHO "Converted the app to a system device"
 PAUSE
 
 @REM If all the above is successful, the device will be almost hermetically "locked" on this app -
