@@ -14,7 +14,7 @@ const _yearCache = [],
     //The time zone offset (in minutes) for 1/1/1970 0:00:00 UTC at the current users time zone
     JS_START_OFFSET = new Date(0).getTimezoneOffset();
 /* ****************************************************************************************************************
- * Many of the date conversion algorithmsin the jDate class are based on the C code which was translated from Lisp
+ * Many of the date conversion algorithms in the jDate class are based on the C code which was translated from Lisp
  * in "Calendrical Calculations" by Nachum Dershowitz and Edward M. Reingold
  * in Software---Practice & Experience, vol. 20, no. 9 (September, 1990), pp. 899--928.
  * ****************************************************************************************************************/
