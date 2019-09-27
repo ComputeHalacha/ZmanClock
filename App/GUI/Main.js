@@ -16,11 +16,11 @@ export default class Main extends PureComponent {
     displaySingleZman(zt, index) {
         if (index >= this.props.settings.numberOfItemsToShow)
             return null;
-        const timeDiff = Utils.timeDiff(this.props.nowTime, zt.time, !zt.isTommorrow),
+        const timeDiff = Utils.timeDiff(this.props.nowTime, zt.time, !zt.isTomorrow),
             was = (timeDiff.sign === -1),
             minutes = Utils.totalMinutes(timeDiff),
             minutesFrom10 = (10 - minutes),
-            isWithin10 = (!was && !zt.isTommorrow) && (minutes < 10),
+            isWithin10 = (!was && !zt.isTomorrow) && (minutes < 10),
             itemHeight = Math.trunc(100 /
                 Math.min(Number(this.props.settings.numberOfItemsToShow),
                     Number(this.props.zmanTimes.length))) - 2,
@@ -44,7 +44,7 @@ export default class Main extends PureComponent {
                 {Utils.getTimeIntervalTextStringHeb(timeDiff)}
             </Text>
             <Text style={was ? styles.zmanTypeNameTextWas : styles.zmanTypeNameText}>
-                {`${zt.isTommorrow && zt.time.hour > 2 ? 'מחר ' : ''}בשעה: `}
+                {`${zt.isTomorrow && zt.time.hour > 2 ? 'מחר ' : ''}בשעה: `}
                 <Text style={isWithin10 ? styles.within10ZmanTimeText : styles.zmanTimeText}>
                     {Utils.getTimeString(zt.time, true)}
                 </Text>

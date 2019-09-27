@@ -15,6 +15,7 @@ import Zmanim from './Code/JCal/Zmanim';
 import Main from './GUI/Main';
 import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './Code/AppUtils';
+import getNotifications from './Code/Notifications';
 import Settings from './Code/Settings';
 import { log } from './Code/GeneralUtils';
 
@@ -72,7 +73,7 @@ export default class App extends PureComponent {
         if (!this.state.sd ||
             sd.getDate() !== this.state.sd.getDate() ||
             this.state.zmanTimes.some(zt =>
-                !zt.isTommorrow &&
+                !zt.isTomorrow &&
                 Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
                 this.state.settings.minToShowPassedZman)) {
             return true;
@@ -86,7 +87,7 @@ export default class App extends PureComponent {
         if (settings.showNotifications) {
             if (this.needsNotificationsRefresh || this.isPastShulZman()) {
                 const { jdate, sd, nowTime } = this.state,
-                    notifications = AppUtils.getNotifications(jdate, sd, nowTime, settings.location);
+                    notifications = getNotifications(jdate, sd, nowTime, settings.location);
                 this.needsNotificationsRefresh = false;
                 this.setState({ notifications });
                 log('Refreshing notifications: ', jdate, sd, nowTime);
