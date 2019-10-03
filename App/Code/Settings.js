@@ -7,21 +7,27 @@ import { log, error, setDefault } from './GeneralUtils';
 export default class Settings {
     /**
      *
-     * @param {[{name:String, desc: String, eng: String, heb: String }]} [zmanimToShow] List of which zmanim to show
+     * @param {[{id:Number, offset: ?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }]} [zmanimToShow] List of which zmanim to show
      * @param {Location} [location]
      * @param {boolean} [showNotifications] Show shul notifications?
      * @param {number} [numberOfItemsToShow] Number of zmanim to show on the main screen
      * @param {number} [minToShowPassedZman] Number of minutes to continue showing zmanim that have passed
      */
-    constructor(zmanimToShow, location, showNotifications, numberOfItemsToShow, minToShowPassedZman) {
+    constructor(
+        zmanimToShow,
+        location,
+        showNotifications,
+        numberOfItemsToShow,
+        minToShowPassedZman
+    ) {
         /**
-         * @property {[ZmanTypes]} zmanimToShow List of which zmanim to show
+         * @property {[{id:Number, offset: ?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }]} zmanimToShow List of which zmanim to show
          */
         this.zmanimToShow = zmanimToShow || [
-            getZmanType('alos90'),
-            getZmanType('netzMishor'),
-            getZmanType('shkiaElevation'),
-            getZmanType('tzais50')
+            getZmanType(1), //alos90
+            getZmanType(5), //netzMishor
+            getZmanType(15), //shkiaElevation
+            getZmanType(17), //tzais50
         ];
         /**
          * @property {Location} location
@@ -46,21 +52,35 @@ export default class Settings {
             this.location,
             this.showNotifications,
             this.numberOfItemsToShow,
-            this.minToShowPassedZman);
+            this.minToShowPassedZman
+        );
     }
     /**
      * Saves the current settings to AsyncStorage.
      */
     async save() {
         log('started save Settings');
-        await AsyncStorage.multiSet([
-            ['ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow)],
-            ['LOCATION_NAME', this.location.Name],
-            ['NOTIFICATIONS', JSON.stringify(Number(this.showNotifications))],
-            ['NUMBER_OF_ITEMS_TO_SHOW', JSON.stringify(this.numberOfItemsToShow)],
-            ['MINUTES_PASSED_ZMAN', JSON.stringify(this.minToShowPassedZman)]
-        ],
-            errors => errors && error('Error during AsyncStorage.multiSet for settings', errors));
+        await AsyncStorage.multiSet(
+            [
+                ['ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow)],
+                ['LOCATION_NAME', this.location.Name],
+                [
+                    'NOTIFICATIONS',
+                    JSON.stringify(Number(this.showNotifications)),
+                ],
+                [
+                    'NUMBER_OF_ITEMS_TO_SHOW',
+                    JSON.stringify(this.numberOfItemsToShow),
+                ],
+                [
+                    'MINUTES_PASSED_ZMAN',
+                    JSON.stringify(this.minToShowPassedZman),
+                ],
+            ],
+            errors =>
+                errors &&
+                error('Error during AsyncStorage.multiSet for settings', errors)
+        );
         log('Saved settings', this);
     }
     /**

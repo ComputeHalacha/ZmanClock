@@ -14,6 +14,17 @@ export const DaysOfWeek = Object.freeze({
     SHABBOS: 6,
 });
 
+export const WhichDaysFlags = Object.freeze({
+    SUNDAY: 1,
+    MONDAY: 2,
+    TUESDAY: 4,
+    WEDNESDAY: 8,
+    THURSDAY: 16,
+    FRIDAY: 32,
+    SHABBOS: 64,
+    YOMTOV: 128,
+});
+
 export default class AppUtils {
     static zmanTimesCache = [];
 
@@ -23,7 +34,7 @@ export default class AppUtils {
      * @param {Date} sdate
      * @param {{hour : Number, minute :Number, second: Number }} time
      * @param {Settings} settings
-     * @returns {[{zmanType:{name:String, desc: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTomorrow:Boolean}]}
+     * @returns {[{zmanType:{id:Number,offset:?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTomorrow:Boolean}]}
      */
     static getCorrectZmanTimes(sdate, time, settings) {
         const correctedTimes = [],
@@ -63,10 +74,10 @@ export default class AppUtils {
 
     /**
      * Gets the zmanim for all the types in the given list.
-     * @param {[{name:String,desc:?String,eng:?String,heb:?String}]} zmanTypes An array of ZmanTypes to get the zman for.
+     * @param {[{id:number,offset:?number, whichDaysFlags:?Number,desc:?String,eng:?String,heb:?String}]} zmanTypes An array of ZmanTypes to get the zman for.
      * @param {Date} date The secular date to get the zmanim for
      * @param {Location} location The location for which to get the zmanim
-     * @returns{[{zmanType:{name:String,desc:String,eng:String,heb:String },time:{hour:Number,minute:Number,second:Number}}]}
+     * @returns{[{zmanType:{id:number,offset:?number,desc:String,eng:String,heb:String },time:{hour:Number,minute:Number,second:Number}}]}
      */
     static getZmanTimes(zmanTypes, date, location) {
         const mem = AppUtils.zmanTimesCache.find(
@@ -74,7 +85,8 @@ export default class AppUtils {
                     Utils.isSameSdate(z.date, date) &&
                     z.location.Name === location.Name
             ),
-            zmanTimes = [];
+            zmanTimes = [],
+            whichDay = AppUtils.getWhichDays(date);
         let sunrise,
             sunset,
             suntimesMishor,
@@ -130,151 +142,202 @@ export default class AppUtils {
             });
         }
         for (let zmanType of zmanTypes) {
-            switch (zmanType.name) {
-                case 'chatzosNight':
+            const offset =
+                zmanType.offset &&
+                (!zmanType.whichDaysFlags || zmanType.whichDaysFlags & whichDay)
+                    ? zmanType.offset
+                    : 0;
+            switch (zmanType.id) {
+                case 0: // chatzosNight
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(chatzos, 720),
+                        time: Utils.addMinutes(chatzos, 720 + offset),
                     });
                     break;
-                case 'alos90':
+                case 1: // alos90
                     zmanTimes.push({
                         zmanType,
-                        time: mishorNeg90,
+                        time: offset
+                            ? Utils.addMinutes(mishorNeg90, offset)
+                            : mishorNeg90,
                     });
                     break;
-                case 'alos72':
+                case 2: // alos72
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunriseMishor, -72),
+                        time: Utils.addMinutes(sunriseMishor, -72 + offset),
                     });
                     break;
-                case 'talisTefillin':
+                case 3: //talisTefillin
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunriseMishor, -36),
+                        time: Utils.addMinutes(sunriseMishor, -36 + offset),
                     });
                     break;
-                case 'netzElevation':
+                case 4: //netzElevation
                     zmanTimes.push({
                         zmanType,
-                        time: sunrise,
+                        time: offset
+                            ? Utils.addMinutes(sunrise, offset)
+                            : sunrise,
                     });
                     break;
-                case 'netzMishor':
+                case 5: // netzMishor:
                     zmanTimes.push({
                         zmanType,
                         time: sunriseMishor,
                     });
                     break;
-                case 'szksMga':
+                case 6: //szksMga
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(
                             mishorNeg90,
-                            Math.floor(shaaZmanisMga * 3)
+                            Math.floor(shaaZmanisMga * 3) + offset
                         ),
                     });
                     break;
-                case 'szksGra':
+                case 7: //szksGra
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(
                             sunriseMishor,
-                            Math.floor(shaaZmanis * 3)
+                            Math.floor(shaaZmanis * 3) + offset
                         ),
                     });
                     break;
-                case 'sztMga':
+                case 8: // sztMga
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(
                             mishorNeg90,
-                            Math.floor(shaaZmanisMga * 4)
+                            Math.floor(shaaZmanisMga * 4) + offset
                         ),
                     });
                     break;
-                case 'sztGra':
+                case 9: //sztGra
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(
                             sunriseMishor,
-                            Math.floor(shaaZmanis * 4)
+                            Math.floor(shaaZmanis * 4) + offset
                         ),
                     });
                     break;
-                case 'chatzos':
+                case 10: //chatzos
                     zmanTimes.push({
                         zmanType,
-                        time: chatzos,
+                        time: offset
+                            ? Utils.addMinutes(chatzos, offset)
+                            : chatzos,
                     });
                     break;
-                case 'minGed':
+                case 11: //minGed
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(chatzos, shaaZmanis * 0.5),
+                        time: Utils.addMinutes(
+                            chatzos,
+                            shaaZmanis * 0.5 + offset
+                        ),
                     });
                     break;
-                case 'minKet':
-                    zmanTimes.push({
-                        zmanType,
-                        time: Utils.addMinutes(sunriseMishor, shaaZmanis * 9.5),
-                    });
-                    break;
-                case 'plag':
+                case 12: //minKet
                     zmanTimes.push({
                         zmanType,
                         time: Utils.addMinutes(
                             sunriseMishor,
-                            shaaZmanis * 10.75
+                            shaaZmanis * 9.5 + offset
                         ),
                     });
                     break;
-                case 'shkiaMishor':
+                case 13: //plag
                     zmanTimes.push({
                         zmanType,
-                        time: sunsetMishor,
+                        time: Utils.addMinutes(
+                            sunriseMishor,
+                            shaaZmanis * 10.75 + offset
+                        ),
                     });
                     break;
-                case 'shkiaElevation':
+                case 14: //shkiaMishor
                     zmanTimes.push({
                         zmanType,
-                        time: sunset,
+                        time: offset
+                            ? Utils.addMinutes(sunsetMishor, offset)
+                            : sunsetMishor,
                     });
                     break;
-                case 'tzais45':
+                case 15: //shkiaElevation
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunset, 45),
+                        time: offset
+                            ? Utils.addMinutes(sunset, offset)
+                            : sunset,
                     });
                     break;
-                case 'tzais50':
+                case 16: // tzais45
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunset, 50),
+                        time: Utils.addMinutes(sunset, 45 + offset),
                     });
                     break;
-                case 'tzais72':
+                case 17: //tzais50
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunset, 72),
+                        time: Utils.addMinutes(sunset, 50 + offset),
                     });
                     break;
-                case 'tzais72Zmaniot':
+                case 18: //tzais72
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunset, shaaZmanis * 1.2),
+                        time: Utils.addMinutes(sunset, 72 + offset),
                     });
                     break;
-                case 'tzais72ZmaniotMA':
+                case 19: //tzais72Zmaniot
                     zmanTimes.push({
                         zmanType,
-                        time: Utils.addMinutes(sunset, shaaZmanisMga * 1.2),
+                        time: Utils.addMinutes(
+                            sunset,
+                            shaaZmanis * 1.2 + offset
+                        ),
+                    });
+                    break;
+                case 20: //tzais72ZmaniotMA
+                    zmanTimes.push({
+                        zmanType,
+                        time: Utils.addMinutes(
+                            sunset,
+                            shaaZmanisMga * 1.2 + offset
+                        ),
                     });
                     break;
             }
         }
         return zmanTimes;
+    }
+    /**
+     * Get the WhichDaysFlags for the given secular date
+     * @param {Date} date
+     */
+    static getWhichDays(date) {
+        switch (date.getDay()) {
+            case DaysOfWeek.SUNDAY:
+                return WhichDaysFlags.SUNDAY;
+            case DaysOfWeek.MONDAY:
+                return WhichDaysFlags.MONDAY;
+            case DaysOfWeek.TUESDAY:
+                return WhichDaysFlags.TUESDAY;
+            case DaysOfWeek.WEDNESDAY:
+                return WhichDaysFlags.WEDNESDAY;
+            case DaysOfWeek.THURSDAY:
+                return WhichDaysFlags.THURSDAY;
+            case DaysOfWeek.FRIDAY:
+                return WhichDaysFlags.FRIDAY;
+            case DaysOfWeek.SHABBOS:
+                return WhichDaysFlags.SHABBOS;
+            default:
+                return 0;
+        }
     }
 
     /**
@@ -286,9 +349,9 @@ export default class AppUtils {
     static getBasicShulZmanim(sdate, location) {
         const zmanim = AppUtils.getZmanTimes(
             [
-                { name: 'chatzos' },
-                { name: 'alos90' },
-                { name: 'shkiaElevation' },
+                { id: 10 }, //Chatzos hayom
+                { id: 2 }, //alos90
+                { id: 15 }, //shkiaElevation,
             ],
             sdate,
             location
@@ -323,5 +386,21 @@ export default class AppUtils {
         ) {
             NavigationBarAndroid.changeSystemHomeSettings();
         }
+    }
+
+    /**
+     * Compares two zmanim for showing to see if they are the same
+     * @param {{id:Number,offset:?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }} zman1
+     * @param {{id:Number,offset:?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }} zman2
+     */
+    static IsSameZmanToShow(zman1, zman2) {
+        return (
+            zman1.id === zman2.id &&
+            zman1.desc === zman2.desc &&
+            zman1.eng === zman2.eng &&
+            zman1.heb === zman2.heb &&
+            (zman1.offset || 0) === (zman2.offset || 0) &&
+            (zman1.whichDaysFlags || 0) === (zman2.whichDaysFlags || 0)
+        );
     }
 }
