@@ -3,6 +3,7 @@ import Zmanim from './JCal/Zmanim';
 import Location from './JCal/Location';
 import Settings from './Settings';
 import NavigationBarAndroid from './NavigationBar';
+import jDate from './JCal/jDate';
 
 export const DaysOfWeek = Object.freeze({
     SUNDAY: 0,
@@ -32,18 +33,25 @@ export default class AppUtils {
      * Returns the date corrected time of the given zmanim on the given date at the given location
      * If the zman is after or within 30 minutes of the given time, this days zman is returned, othwise tomorrows zman is returned.
      * @param {Date} sdate
+     * @param {jDate} jdate
      * @param {{hour : Number, minute :Number, second: Number }} time
      * @param {Settings} settings
      * @returns {[{zmanType:{id:Number,offset:?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTomorrow:Boolean}]}
      */
-    static getCorrectZmanTimes(sdate, time, settings) {
+    static getCorrectZmanTimes(sdate, jdate, time, settings) {
         const correctedTimes = [],
             zmanTypes = settings.zmanimToShow,
             location = settings.location,
-            zmanTimes = AppUtils.getZmanTimes(zmanTypes, sdate, location),
+            zmanTimes = AppUtils.getZmanTimes(
+                zmanTypes,
+                sdate,
+                jdate,
+                location
+            ),
             TomorrowTimes = AppUtils.getZmanTimes(
                 zmanTypes,
                 Utils.addDaysToSdate(sdate, 1),
+                jdate.addDays(1),
                 location
             );
 
@@ -76,17 +84,18 @@ export default class AppUtils {
      * Gets the zmanim for all the types in the given list.
      * @param {[{id:number,offset:?number, whichDaysFlags:?Number,desc:?String,eng:?String,heb:?String}]} zmanTypes An array of ZmanTypes to get the zman for.
      * @param {Date} date The secular date to get the zmanim for
+     * @param {jDate} jdate The jewish date to get the zmanim for
      * @param {Location} location The location for which to get the zmanim
      * @returns{[{zmanType:{id:number,offset:?number,desc:String,eng:String,heb:String },time:{hour:Number,minute:Number,second:Number}}]}
      */
-    static getZmanTimes(zmanTypes, date, location) {
+    static getZmanTimes(zmanTypes, date, jdate, location) {
         const mem = AppUtils.zmanTimesCache.find(
                 z =>
                     Utils.isSameSdate(z.date, date) &&
                     z.location.Name === location.Name
             ),
             zmanTimes = [],
-            whichDay = AppUtils.getWhichDays(date);
+            whichDay = AppUtils.getWhichDays(date, jdate, location);
         let sunrise,
             sunset,
             suntimesMishor,
@@ -144,7 +153,7 @@ export default class AppUtils {
         for (let zmanType of zmanTypes) {
             const offset =
                 zmanType.offset &&
-                (!zmanType.whichDaysFlags || zmanType.whichDaysFlags & whichDay)
+                ((!zmanType.whichDaysFlags) || (zmanType.whichDaysFlags & whichDay))
                     ? zmanType.offset
                     : 0;
             switch (zmanType.id) {
@@ -185,7 +194,9 @@ export default class AppUtils {
                 case 5: // netzMishor:
                     zmanTimes.push({
                         zmanType,
-                        time: sunriseMishor,
+                        time: offset
+                        ? Utils.addMinutes(sunriseMishor, offset)
+                        : sunriseMishor,
                     });
                     break;
                 case 6: //szksMga
@@ -318,8 +329,13 @@ export default class AppUtils {
     /**
      * Get the WhichDaysFlags for the given secular date
      * @param {Date} date
+     * @param {jDate} jdate
+     * @param {Location} location
      */
-    static getWhichDays(date) {
+    static getWhichDays(date, jdate, location) {
+        if (jdate.isYomTov(location.Israel)) {
+            return WhichDaysFlags.YOMTOV;
+        }
         switch (date.getDay()) {
             case DaysOfWeek.SUNDAY:
                 return WhichDaysFlags.SUNDAY;
@@ -335,9 +351,8 @@ export default class AppUtils {
                 return WhichDaysFlags.FRIDAY;
             case DaysOfWeek.SHABBOS:
                 return WhichDaysFlags.SHABBOS;
-            default:
-                return 0;
         }
+        return 0;
     }
 
     /**
@@ -346,7 +361,7 @@ export default class AppUtils {
      * @param {Location} location
      * @returns {{chatzosHayom:{hour:Number,minute:Number,second:Number}, chatzosHalayla:{hour:Number,minute:Number,second:Number}, alos:{hour:Number,minute:Number,second:Number}, shkia:{hour:Number,minute:Number,second:Number} }}
      */
-    static getBasicShulZmanim(sdate, location) {
+    static getBasicShulZmanim(sdate, jdate, location) {
         const zmanim = AppUtils.getZmanTimes(
             [
                 { id: 10 }, //Chatzos hayom
@@ -354,6 +369,7 @@ export default class AppUtils {
                 { id: 15 }, //shkiaElevation,
             ],
             sdate,
+            jdate,
             location
         );
         return {

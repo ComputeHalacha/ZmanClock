@@ -57,8 +57,8 @@ export default class App extends PureComponent {
             jdate = Utils.isTimeAfter(sunset, nowTime)
                 ? new jDate(Utils.addDaysToSdate(sd, 1))
                 : new jDate(sd),
-            zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, settings);
-        this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
+            zmanTimes = AppUtils.getCorrectZmanTimes(sd,jdate, nowTime, settings);
+        this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate,location);
         this.needsNotificationsRefresh = true;
         this.state = { settings, zmanTimes, sd, nowTime, sunset, jdate };
     }
@@ -163,9 +163,9 @@ export default class App extends PureComponent {
                     ? new jDate(Utils.addDaysToSdate(sd, 1))
                     : new jDate(sd),
                 location = this.state.settings.location,
-                zmanTimes = AppUtils.getCorrectZmanTimes(sd, nowTime, this.state.settings);
+                zmanTimes = AppUtils.getCorrectZmanTimes(sd, jdate, nowTime, this.state.settings);
             this.setState({ zmanTimes, sd, nowTime, sunset, jdate });
-            this.shulZmanim = AppUtils.getBasicShulZmanim(sd, location);
+            this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate,location);
         }
         this.setNotifications();
     }

@@ -330,12 +330,48 @@ export default class jDate {
     specialDays(israel, hebrew) {
         return getSpecialDays(this, israel, hebrew);
     }
-    
+
     /**
      * Gets a string with the name of a major holidays or fast
      */
     majorHoliday(israel, hebrew) {
         return getMajorHoliday(this, israel, hebrew);
+    }
+
+    /**
+     * Returns true if this day is yomtov or chol hamoed
+     * @param {Boolean} israel
+     */
+    isYomTovOrCholHamoed(israel) {
+        return (
+            this.isYomTov(israel) ||
+            (this.Month === 1 && [16, 17, 18, 19, 20].includes(this.Day)) ||
+            (this.Month === 7 && [16, 17, 18, 19, 20, 21].includes(this.Day))
+        );
+    }
+
+    /**
+     * Returns true if this day is yomtov
+     * @param {Boolean} israel
+     */
+    isYomTov(israel) {
+        const day = this.Day;
+        switch (this.Month) {
+            case 1:
+                if (day === 15 || day === 21) return true;
+                if (!israel && (day === 16 || day === 22)) return true;
+                break;
+            case 3:
+                if (day === 6 || (!israel && day === 7)) return true;
+                break;
+            case 7:
+                if ([1, 2, 10, 15, 22].includes(day)) {
+                    return true;
+                }
+                if (!israel && (day === 16 || day === 23)) return true;
+                break;
+        }
+        return false;
     }
 
     /**Is the current Jewish Date the day before a yomtov that contains a Friday?*/

@@ -22,7 +22,7 @@ export default function getNotifications(jdate, sdate, time, location) {
             chatzosHalayla,
             alos,
             shkia,
-        } = AppUtils.getBasicShulZmanim(sdate, location),
+        } = AppUtils.getBasicShulZmanim(sdate,jdate, location),
         isAfterChatzosHayom = Utils.isTimeAfter(chatzosHayom, time),
         isAfterChatzosHalayla =
             Utils.isTimeAfter(chatzosHalayla, time) ||
@@ -33,11 +33,7 @@ export default function getNotifications(jdate, sdate, time, location) {
         isNightTime = !isDaytime,
         isMorning = isDaytime && !isAfterChatzosHayom,
         isAfternoon = isDaytime && isAfterChatzosHayom,
-        isYomTov =
-            (month === 1 && day > 14 && day < 22) ||
-            (month === 3 && day === 6) ||
-            (month === 7 &&
-                [1, 2, 10, 15, 16, 17, 18, 19, 20, 21, 22].includes(day)),
+        isYomTov =jdate.isYomTovOrCholHamoed(location.Israel),
         isLeapYear = jDate.isJdLeapY(jdate.Year),
         noTachnun =
             isAfternoon && (dow === DaysOfWeek.FRIDAY || day === 29),
