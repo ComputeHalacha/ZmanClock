@@ -16,62 +16,17 @@ import { range, setDefault } from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
 import { Locations } from '../Code/Locations';
 import { openSystemTimeSettings } from '../Code/SystemTime';
-import { version } from '../../package.json';
 import { ZmanTypes } from '../Code/ZmanTypes';
 
-export default class SettingsDrawer extends PureComponent {
+export default class CustomZmanim extends PureComponent {
     constructor(props) {
         super(props);
         this.onChangeSettings = this.onChangeSettings.bind(this);
     }
     onChangeSettings(values) {
-        const {
-                zmanimToShow,
-                location,
-                showNotifications,
-                numberOfItemsToShow,
-                minToShowPassedZman,
-            } = values,
-            settings = this.props.settings.clone();
-        if (zmanimToShow) {
-            settings.zmanimToShow = zmanimToShow;
-        }
-        if (location) {
-            settings.location = location;
-        }
-        settings.showNotifications = setDefault(
-            showNotifications,
-            settings.showNotifications
-        );
-        settings.numberOfItemsToShow = setDefault(
-            numberOfItemsToShow,
-            settings.numberOfItemsToShow
-        );
-        settings.minToShowPassedZman = setDefault(
-            minToShowPassedZman,
-            settings.minToShowPassedZman
-        );
-
         this.props.changeSettings(settings);
     }
-    openAddCustomZmanim() {
-        throw new Error("Method not implemented.");
-    }
     render() {
-        const {
-                zmanimToShow,
-                location,
-                showNotifications,
-                numberOfItemsToShow,
-                minToShowPassedZman,
-            } = this.props.settings,
-            fullZmanTypeList = [...ZmanTypes];
-        //Add any custom zmanim that have been added
-        for (let zt of zmanimToShow) {
-            if (zt.offset) {
-                fullZmanTypeList.push(zt);
-            }
-        }
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
@@ -137,23 +92,6 @@ export default class SettingsDrawer extends PureComponent {
                                     styles.selectMultipleSelectedLabelStyle
                                 }
                             />
-                        </View>
-                        <View style={{ margin: 10 }}>
-                            <TouchableHighlight
-                                onPress={() => this.openAddCustomZmanim()}>
-                                <View style={styles.setTimeView}>
-                                    <Text style={styles.labelCheckbox}>
-                                        הוסף זמן
-                                    </Text>
-                                    <Image
-                                        style={{ width: 35, height: 35 }}
-                                        source={{
-                                            uri:
-                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==',
-                                        }}
-                                    />
-                                </View>
-                            </TouchableHighlight>
                         </View>
                         <Text style={styles.label}>העדפות כלליות</Text>
                         <View style={styles.checkboxView}>
@@ -250,7 +188,7 @@ export default class SettingsDrawer extends PureComponent {
                 </View>
             </View>
         );
-    } 
+    }
 }
 
 const styles = StyleSheet.create({
