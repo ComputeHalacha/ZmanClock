@@ -156,7 +156,12 @@ export default class Zmanim {
     }
 
     static getCandleLightingFromSunTimes(sunTimes, location) {
-        return Utils.addMinutes(sunTimes.sunset, -location.CandleLighting);
+        return Zmanim.getCandleLightingFromSunset(sunTimes.sunset, location);
+    }
+
+    
+    static getCandleLightingFromSunset(sunset, location) {
+        return Utils.addMinutes(sunset, -location.CandleLighting);
     }
 
     static dayOfYear(date) {

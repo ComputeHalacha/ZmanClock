@@ -153,7 +153,7 @@ export default class AppUtils {
         for (let zmanType of zmanTypes) {
             const offset =
                 zmanType.offset &&
-                ((!zmanType.whichDaysFlags) || (zmanType.whichDaysFlags & whichDay))
+                (!zmanType.whichDaysFlags || zmanType.whichDaysFlags & whichDay)
                     ? zmanType.offset
                     : 0;
             switch (zmanType.id) {
@@ -195,8 +195,8 @@ export default class AppUtils {
                     zmanTimes.push({
                         zmanType,
                         time: offset
-                        ? Utils.addMinutes(sunriseMishor, offset)
-                        : sunriseMishor,
+                            ? Utils.addMinutes(sunriseMishor, offset)
+                            : sunriseMishor,
                     });
                     break;
                 case 6: //szksMga
@@ -322,6 +322,21 @@ export default class AppUtils {
                         ),
                     });
                     break;
+                case 21: //candleLighting
+                    if (jdate.hasCandleLighting()) {
+                        zmanTimes.push({
+                            zmanType,
+                            time: Utils.addMinutes(
+                                Zmanim.getCandleLightingFromSunset(
+                                    sunset,
+                                    location
+                                ),
+                                offset
+                            ),
+                        });
+                    }
+
+                    break;
             }
         }
         return zmanTimes;
@@ -367,6 +382,7 @@ export default class AppUtils {
                 { id: 10 }, //Chatzos hayom
                 { id: 2 }, //alos90
                 { id: 15 }, //shkiaElevation,
+                { id: 21 }, //candleLighting,
             ],
             sdate,
             jdate,

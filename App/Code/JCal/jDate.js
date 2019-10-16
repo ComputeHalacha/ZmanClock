@@ -411,12 +411,14 @@ export default class jDate {
     }
 
     /**Gets the candle lighting time for the current Jewish date for the given Location object.*/
-    getCandleLighting(location) {
+    getCandleLighting(location, nullIfNoCandles) {
         if (!location) {
             throw 'To get sunrise and sunset, the location needs to be supplied';
         }
         if (this.hasCandleLighting()) {
             return Zmanim.getCandleLighting(this, location);
+        } else if (nullIfNoCandles) {
+            return null;
         } else {
             throw 'No candle lighting on ' + this.toString();
         }

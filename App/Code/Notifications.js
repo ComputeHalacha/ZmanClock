@@ -266,7 +266,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 }
             }
             if (day === 15) {
-                notifications.push('יום טוב של פסח');
+                notifications.push('יו"ט ראשון של פסח');
                 notifications.push('הלל השלם');
                 if (isAfternoon) {
                     notifications.push('מוריד הטל');
@@ -276,7 +276,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     notifications.push('שביעי של פםח');
                     if (isDaytime) notifications.push('יזכור');
                 } else {
-                    notifications.push('חול המועד פסח');
+                    notifications.push('פסח - חול המועד');
                     notifications.push('יעלה ויבא');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS)
                         notifications.push('א"א למנצח');
@@ -510,7 +510,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                     }
                     break;
                 case 15:
-                    notifications.push('יו"ט של סוכות');
+                    notifications.push('יו"ט ראשון של סוכות');
                     if (isDaytime) {
                         notifications.push('הלל השלם');
                         if (dow !== DaysOfWeek.SHABBOS) {
@@ -523,7 +523,7 @@ function getAroundTheYearNotifications(notifications, dayInfo) {
                 case 18:
                 case 19:
                 case 20:
-                    notifications.push('חול המועד');
+                    notifications.push('סוכות - חול המועד');
                     notifications.push('יעלה ויבא');
                     if (isDaytime) {
                         notifications.push('הושענות');

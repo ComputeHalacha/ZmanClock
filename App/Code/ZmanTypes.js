@@ -125,6 +125,12 @@ export const ZmanTypes = [
         eng: 'Rabbeinu Tam',
         heb: 'צה"כ ר"ת - זמניות מג"א',
     },
+    {
+        id: 21,
+        desc: 'זמן הדלקת נרות',
+        eng: 'Candle lighting time',
+        heb: 'זמן הדלקת נרות',
+    },
 ];
 
 /**
