@@ -4,6 +4,7 @@ import Location from './JCal/Location';
 import Settings from './Settings';
 import NavigationBarAndroid from './NavigationBar';
 import jDate from './JCal/jDate';
+import { ZmanTypes } from './ZmanTypes';
 
 export const DaysOfWeek = Object.freeze({
     SUNDAY: 0,
@@ -434,5 +435,13 @@ export default class AppUtils {
             (zman1.offset || 0) === (zman2.offset || 0) &&
             (zman1.whichDaysFlags || 0) === (zman2.whichDaysFlags || 0)
         );
+    }
+
+    /**
+     * Returns all available ZmanTypes - including baseTypes and custom added types
+     * @param {Settings} settings
+     */
+    static AllZmanTypes(settings) {
+        return [...ZmanTypes].concat(settings.customZmanim);
     }
 }
