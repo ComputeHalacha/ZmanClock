@@ -111,13 +111,19 @@ const styles = StyleSheet.create({
     notificationsInnerView: {
         justifyContent: 'space-around',
         flexDirection: 'row',
-        marginBottom: 10,
+        flexWrap: 'wrap',
         width: '100%',
     },
     notificationsText: {
         color: '#899',
         fontWeight: 'bold',
-        fontSize: 13
+        fontSize: 13,
+        lineHeight: 27,
+        backgroundColor:'#111120',
+        paddingRight:5,
+        paddingLeft:5,
+        marginBottom:3,
+        borderRadius:6
     },
     singleZman: {
         backgroundColor: '#111',
