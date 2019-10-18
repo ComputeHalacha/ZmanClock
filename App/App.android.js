@@ -87,7 +87,7 @@ export default class App extends PureComponent {
         if (settings.showNotifications) {
             if (this.needsNotificationsRefresh || this.isPastShulZman()) {
                 const { jdate, sd, nowTime } = this.state,
-                    notifications = getNotifications(jdate, sd, nowTime, settings.location);
+                    notifications = getNotifications(jdate, sd, nowTime, settings);
                 this.needsNotificationsRefresh = false;
                 this.setState({ notifications });
                 log('Refreshing notifications: ', jdate, sd, nowTime);

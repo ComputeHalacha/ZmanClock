@@ -17,7 +17,6 @@ import Utils from '../Code/JCal/Utils';
 import { Locations } from '../Code/Locations';
 import { openSystemTimeSettings } from '../Code/SystemTime';
 import { version } from '../../package.json';
-import { ZmanTypes } from '../Code/ZmanTypes';
 
 export default class SettingsDrawer extends PureComponent {
     constructor(props) {
@@ -31,6 +30,7 @@ export default class SettingsDrawer extends PureComponent {
                 showNotifications,
                 numberOfItemsToShow,
                 minToShowPassedZman,
+                showGaonShir
             } = values,
             settings = this.props.settings.clone();
         if (zmanimToShow) {
@@ -51,11 +51,15 @@ export default class SettingsDrawer extends PureComponent {
             minToShowPassedZman,
             settings.minToShowPassedZman
         );
+        settings.showGaonShir = setDefault(
+            showGaonShir,
+            settings.showGaonShir
+        );
 
         this.props.changeSettings(settings);
     }
     openAddCustomZmanim() {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     render() {
         const {
@@ -64,14 +68,9 @@ export default class SettingsDrawer extends PureComponent {
                 showNotifications,
                 numberOfItemsToShow,
                 minToShowPassedZman,
+                showGaonShir
             } = this.props.settings,
-            fullZmanTypeList = [...ZmanTypes];
-        //Add any custom zmanim that have been added
-        for (let zt of zmanimToShow) {
-            if (zt.offset) {
-                fullZmanTypeList.push(zt);
-            }
-        }
+            fullZmanTypeList = AppUtils.AllZmanTypes(this.props.settings);
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
@@ -214,6 +213,20 @@ export default class SettingsDrawer extends PureComponent {
                                 מספר דקות להציג זמנים שעברו:{' '}
                             </Text>
                         </View>
+                        <View style={styles.checkboxView}>
+                            <CheckBox
+                                isChecked={Boolean(showGaonShir)}
+                                onClick={() =>
+                                    this.onChangeSettings({
+                                        showGaonShir: !showGaonShir,
+                                    })
+                                }
+                                style={styles.checkbox}
+                            />
+                            <Text style={styles.labelCheckbox}>
+                                {'הצג שיר של יום של הגר"א'}
+                            </Text>
+                        </View>
                         <Text style={styles.label}>עריכת שעה</Text>
                         <Text>
                             השעה עכשיו:{' '}
@@ -250,7 +263,7 @@ export default class SettingsDrawer extends PureComponent {
                 </View>
             </View>
         );
-    } 
+    }
 }
 
 const styles = StyleSheet.create({

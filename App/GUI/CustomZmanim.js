@@ -14,8 +14,6 @@ import SelectMultiple from 'react-native-select-multiple';
 import AppUtils from '../Code/AppUtils';
 import { range, setDefault } from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
-import { Locations } from '../Code/Locations';
-import { openSystemTimeSettings } from '../Code/SystemTime';
 import { ZmanTypes } from '../Code/ZmanTypes';
 
 export default class CustomZmanim extends PureComponent {
@@ -27,71 +25,26 @@ export default class CustomZmanim extends PureComponent {
         this.props.changeSettings(settings);
     }
     render() {
+        const {
+                zmanimToShow,
+                location,
+                showNotifications,
+                numberOfItemsToShow,
+                minToShowPassedZman,
+            } = this.props.settings,
+            fullZmanTypeList = [...ZmanTypes],
+            customZmanimList = this.props.settings.CustomZmanim;        
+
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
-                    <Text style={styles.header}>הגדרות</Text>
-                    <Text
-                        style={
-                            styles.version
-                        }>{`שעון זמנים - גירסה ${version}`}</Text>
+                    <Text style={styles.header}>זמנים אחרים</Text>
                     <ScrollView contentContainerStyle={styles.inContainer}>
-                        <Text style={styles.label}>בחר מיקום</Text>
-                        <Picker
-                            style={styles.picker}
-                            itemStyle={styles.pickerItem}
-                            selectedValue={location}
-                            onValueChange={location =>
-                                this.onChangeSettings({ location })
-                            }>
-                            {Locations.map((location, i) => (
-                                <Picker.Item
-                                    key={i}
-                                    value={location}
-                                    label={location.Name}
-                                />
-                            ))}
-                        </Picker>
-                        <Text style={styles.label}>בחר איזה זמנים להציג</Text>
                         <View style={styles.scrollView}>
-                            <SelectMultiple
-                                items={fullZmanTypeList.map(zt => ({
-                                    label: zt.desc,
-                                    value: zt,
-                                }))}
-                                selectedItems={zmanimToShow.map(zts => ({
-                                    label: zts.desc,
-                                    value: zts,
-                                }))}
-                                onSelectionsChange={selected => {
-                                    this.onChangeSettings({
-                                        zmanimToShow: fullZmanTypeList.filter(
-                                            zt =>
-                                                selected.some(i =>
-                                                    AppUtils.IsSameZmanToShow(
-                                                        i.value,
-                                                        zt
-                                                    )
-                                                )
-                                        ),
-                                    });
-                                }}
-                                style={styles.selectMultipleStyle}
-                                rowStyle={styles.selectMultipleRowStyle}
-                                checkboxStyle={
-                                    styles.selectMultipleCheckboxStyle
-                                }
-                                selectedCheckboxStyle={
-                                    styles.selectMultipleSelectedCheckboxStyle
-                                }
-                                selectedRowStyle={
-                                    styles.selectMultipleSelectedRowStyle
-                                }
-                                labelStyle={styles.selectMultipleLabelStyle}
-                                selectedLabelStyle={
-                                    styles.selectMultipleSelectedLabelStyle
-                                }
-                            />
+                        {customZmanimList.map((cz, index) => 
+                            (<View key={index}>
+                                {cz.desc}
+                            </View>))}                            
                         </View>
                         <Text style={styles.label}>העדפות כלליות</Text>
                         <View style={styles.checkboxView}>
