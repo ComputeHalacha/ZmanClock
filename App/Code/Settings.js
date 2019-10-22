@@ -32,6 +32,7 @@ export default class Settings {
             getZmanType(5), //netzMishor
             getZmanType(15), //shkiaElevation
             getZmanType(17), //tzais50
+            getZmanType(21), //candleLighting
         ];
         /**
          * @property {[{id:Number, offset: Number, whichDaysFlags: Number, desc: String, eng: String, heb: String }]} customZmanim List of added zmanim
@@ -60,7 +61,7 @@ export default class Settings {
          * @property {boolean} [showGaonShir] Show the Shir Shel Yom of the Gr"a?
          */
         this.showGaonShir = setDefault(showGaonShir, true);
-        
+
     }
     clone() {
         return new Settings(
@@ -80,9 +81,9 @@ export default class Settings {
         log('started save Settings');
         await AsyncStorage.multiSet(
             [
-                ['ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow)],
-                ['CUSTOM_ZMANIM', JSON.stringify(this.customZmanim)],
-                ['LOCATION_NAME', this.location.Name],
+                [ 'ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow) ],
+                [ 'CUSTOM_ZMANIM', JSON.stringify(this.customZmanim) ],
+                [ 'LOCATION_NAME', this.location.Name ],
                 [
                     'NOTIFICATIONS',
                     JSON.stringify(Number(this.showNotifications)),
@@ -121,7 +122,7 @@ export default class Settings {
         }
         if (allKeys.includes('CUSTOM_ZMANIM')) {
             const cz = await AsyncStorage.getItem('CUSTOM_ZMANIM');
-            settings.customZmanim = JSON.parse(cz);                
+            settings.customZmanim = JSON.parse(cz);
             log('customZmanim to show from storage data', cz);
         }
         if (allKeys.includes('LOCATION_NAME')) {

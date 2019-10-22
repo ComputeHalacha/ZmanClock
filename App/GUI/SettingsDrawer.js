@@ -17,21 +17,23 @@ import Utils from '../Code/JCal/Utils';
 import { Locations } from '../Code/Locations';
 import { openSystemTimeSettings } from '../Code/SystemTime';
 import { version } from '../../package.json';
+import Settings from './../Code/Settings';
 
 export default class SettingsDrawer extends PureComponent {
     constructor(props) {
         super(props);
         this.onChangeSettings = this.onChangeSettings.bind(this);
+        this.resetSetttings = this.resetSetttings.bind(this);
     }
     onChangeSettings(values) {
         const {
-                zmanimToShow,
-                location,
-                showNotifications,
-                numberOfItemsToShow,
-                minToShowPassedZman,
-                showGaonShir
-            } = values,
+            zmanimToShow,
+            location,
+            showNotifications,
+            numberOfItemsToShow,
+            minToShowPassedZman,
+            showGaonShir
+        } = values,
             settings = this.props.settings.clone();
         if (zmanimToShow) {
             settings.zmanimToShow = zmanimToShow;
@@ -61,15 +63,19 @@ export default class SettingsDrawer extends PureComponent {
     openAddCustomZmanim() {
         throw new Error('Method not implemented.');
     }
+    resetSetttings() {
+        const settings = new Settings();
+        this.props.changeSettings(settings);
+    }
     render() {
         const {
-                zmanimToShow,
-                location,
-                showNotifications,
-                numberOfItemsToShow,
-                minToShowPassedZman,
-                showGaonShir
-            } = this.props.settings,
+            zmanimToShow,
+            location,
+            showNotifications,
+            numberOfItemsToShow,
+            minToShowPassedZman,
+            showGaonShir
+        } = this.props.settings,
             fullZmanTypeList = AppUtils.AllZmanTypes(this.props.settings);
         return (
             <View style={styles.outContainer}>
@@ -136,23 +142,6 @@ export default class SettingsDrawer extends PureComponent {
                                     styles.selectMultipleSelectedLabelStyle
                                 }
                             />
-                        </View>
-                        <View style={{ margin: 10 }}>
-                            <TouchableHighlight
-                                onPress={() => this.openAddCustomZmanim()}>
-                                <View style={styles.setTimeView}>
-                                    <Text style={styles.labelCheckbox}>
-                                        הוסף זמן
-                                    </Text>
-                                    <Image
-                                        style={{ width: 35, height: 35 }}
-                                        source={{
-                                            uri:
-                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==',
-                                        }}
-                                    />
-                                </View>
-                            </TouchableHighlight>
                         </View>
                         <Text style={styles.label}>העדפות כלליות</Text>
                         <View style={styles.checkboxView}>
@@ -232,7 +221,21 @@ export default class SettingsDrawer extends PureComponent {
                             השעה עכשיו:{' '}
                             {Utils.getTimeString(this.props.nowTime, true)}
                         </Text>
-                        <View style={{ margin: 10 }}>
+                        <View style={styles.settingsButtons}>
+                            <TouchableHighlight
+                                onPress={() => this.openAddCustomZmanim()}>
+                                <View style={styles.setTimeView}>
+                                    <Text style={styles.labelCheckbox}>
+                                        הוסף זמן
+                                    </Text>
+                                    <Image
+                                        style={{ width: 35, height: 35 }}
+                                        source={{
+                                            uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAHUSURBVDhPrVRdSwJBFN3MPiiDXjK1tKio6O8p+BsEf1+RQWDRl74VRSS7ds7de4ZxVXrpwO69587M2Tt37mzy31hxa+h2u1N3k16vNzNWwD7mvtLBvBbMI30iLIrFhAWiO5j3TgdjhzA/4CP4R/AfGC/xJTEMbNMSWZYVPxLEHM94xlhTRXwIv2lR4MwXbuU0KTlvdTqdTKK07l9Gvnawp3lcfGehJPlym3GriA/7/f4FA5ycpqmEbzBedz+DoegmOUHCxRyYqxmF3OXYBfitU/IauB0MAV6FGbOGUwnFAgTiDbcs+gA2ZEIx8CunxJivOKNipqyLnSAsi674Bvg3uYB4BeYzZ7OgqBWcDzh7bN39+OPH7XZbB6bDXAqdWCsS1skT9Sg+B+vDCIu2uQY/tdFcjP1nWCYqKLMmrfvlyG+4ZcvsKu6xAGWozLhNu0Ke2cR9ij3BUuwFTzhtIhbV1Ru5XSR2AF/bVN+xZeyQYM/Z9BINNcRA8AtizMz6UYsExFmSAW7UiYdyRBP5VbursKpZjQNAaCnnQsVj1uRxVgxS8N65aqZtLrpR/AN9uH/NFyesokkn5XLZJgtYzMzecjaDcKMEfSjGXOAP2PZhT3MqJMkvF8kx31lhwIMAAAAASUVORK5CYII='
+                                        }}
+                                    />
+                                </View>
+                            </TouchableHighlight>
                             <TouchableHighlight
                                 onPress={openSystemTimeSettings}>
                                 <View style={styles.setTimeView}>
@@ -244,6 +247,21 @@ export default class SettingsDrawer extends PureComponent {
                                         source={{
                                             uri:
                                                 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==',
+                                        }}
+                                    />
+                                </View>
+                            </TouchableHighlight>
+                            <TouchableHighlight
+                                onPress={() => this.resetSetttings()}>
+                                <View style={styles.setTimeView}>
+                                    <Text style={styles.labelCheckbox}>
+                                        אפס נתונים
+                                    </Text>
+                                    <Image
+                                        style={{ width: 35, height: 35 }}
+                                        source={{
+                                            uri:
+                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAKeSURBVDhPlZRfaNJRFMd/tYkWCgWSBm3Tn9nAlooyZGw4QSVTBDP/UC9DfBOCHgZ7qKceRRBh4oMPe5mwqRAk6GPoizLYgzENHK0/SzEfhBiBD211zuX+fs25XPuAfM8513s85557nWDOsL6+Lp6fn58ul8t9GroUV6kSlpaWbh4eHh4NBoP9YDA4RcOX4gpVkmxxcZGvamtr6yU1CWKxmOn3+w2r1Vrd3Nzs0fAIfEKz2exeWFh4S90LyeVy9w4ODvapy8O3XKlUCnBuz6nLGAyG6yKRaOL0Z3d3d2ZjY+MFrvv9/pZUKn1KvnwKvkIOjUbzzO12Z+AHZNVq9dzWIpGIWCKRHKEN7fvb7XaeLAAjCf+XbDaLFf9CGzq7U6vV2mgPTfksDodD6PV6Z6jL2O32W4lEQoh2IBA4hnO8gfby8vI3VGRsQp1ON1Cr1Z9VKtX9BwCc6/dOpzOgywwM5Qc1ScWoYxNy+Hy+PafT+Z66Q0CVNtRoNHoXlSQ0mUzatbW135lMRoo+B0z2GjV5oCrSMofH4yF3d3JyUoNKEp6cnNxG3d7eHnodqVRKTU2eVqs1FKvX60QFAsFPVJJQoVB8QN3Z2WFROUKh0EibMKg9ahIajQbZI5PJGqgkIZzDV9SVlRX+PiHxePwxKrQu7Ha7pP1YLOZB5eD25PN5cm14YJqreI7w/Mw0dCFGo9GCe2ZnZ1dp6O+U9Xp9HBXedBn+JKZJcAwwSIXNZnuHtlarJXsRPiG0fVwsFlVowz/PF7h7D8nCObAs+8hisXxCu1QqsbiXLAAjT8/lcrFzc3Mfqcuk0+lXcrmcbO71eqpwOPyaLADNZpMtFApkjeOfb1mpVD6B5zU0JA6oyAv38Q11L08ymZzCD3XHwDB/ALGG2jt4Fxh2AAAAAElFTkSuQmCC',
                                         }}
                                     />
                                 </View>
@@ -361,5 +379,12 @@ const styles = StyleSheet.create({
         padding: 2,
         backgroundColor: '#555',
         borderRadius: 5,
+    },
+    settingsButtons: {
+        margin: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        flex: 1,
+        width: '100%'
     },
 });
