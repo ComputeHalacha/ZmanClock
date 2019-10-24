@@ -4,7 +4,6 @@ import {
     Image,
     Picker,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableHighlight,
     View,
@@ -17,7 +16,8 @@ import Utils from '../Code/JCal/Utils';
 import { Locations } from '../Code/Locations';
 import { openSystemTimeSettings } from '../Code/SystemTime';
 import { version } from '../../package.json';
-import Settings from './../Code/Settings';
+import Settings from '../Code/Settings';
+import { settingsDrawerStyles } from './Styles';
 
 export default class SettingsDrawer extends PureComponent {
     constructor(props) {
@@ -27,13 +27,13 @@ export default class SettingsDrawer extends PureComponent {
     }
     onChangeSettings(values) {
         const {
-            zmanimToShow,
-            location,
-            showNotifications,
-            numberOfItemsToShow,
-            minToShowPassedZman,
-            showGaonShir
-        } = values,
+                zmanimToShow,
+                location,
+                showNotifications,
+                numberOfItemsToShow,
+                minToShowPassedZman,
+                showGaonShir,
+            } = values,
             settings = this.props.settings.clone();
         if (zmanimToShow) {
             settings.zmanimToShow = zmanimToShow;
@@ -53,10 +53,7 @@ export default class SettingsDrawer extends PureComponent {
             minToShowPassedZman,
             settings.minToShowPassedZman
         );
-        settings.showGaonShir = setDefault(
-            showGaonShir,
-            settings.showGaonShir
-        );
+        settings.showGaonShir = setDefault(showGaonShir, settings.showGaonShir);
 
         this.props.changeSettings(settings);
     }
@@ -69,14 +66,15 @@ export default class SettingsDrawer extends PureComponent {
     }
     render() {
         const {
-            zmanimToShow,
-            location,
-            showNotifications,
-            numberOfItemsToShow,
-            minToShowPassedZman,
-            showGaonShir
-        } = this.props.settings,
-            fullZmanTypeList = AppUtils.AllZmanTypes(this.props.settings);
+                zmanimToShow,
+                location,
+                showNotifications,
+                numberOfItemsToShow,
+                minToShowPassedZman,
+                showGaonShir,
+            } = this.props.settings,
+            fullZmanTypeList = AppUtils.AllZmanTypes(this.props.settings),
+            styles = settingsDrawerStyles;
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
@@ -231,7 +229,8 @@ export default class SettingsDrawer extends PureComponent {
                                     <Image
                                         style={{ width: 35, height: 35 }}
                                         source={{
-                                            uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAHUSURBVDhPrVRdSwJBFN3MPiiDXjK1tKio6O8p+BsEf1+RQWDRl74VRSS7ds7de4ZxVXrpwO69587M2Tt37mzy31hxa+h2u1N3k16vNzNWwD7mvtLBvBbMI30iLIrFhAWiO5j3TgdjhzA/4CP4R/AfGC/xJTEMbNMSWZYVPxLEHM94xlhTRXwIv2lR4MwXbuU0KTlvdTqdTKK07l9Gvnawp3lcfGehJPlym3GriA/7/f4FA5ycpqmEbzBedz+DoegmOUHCxRyYqxmF3OXYBfitU/IauB0MAV6FGbOGUwnFAgTiDbcs+gA2ZEIx8CunxJivOKNipqyLnSAsi674Bvg3uYB4BeYzZ7OgqBWcDzh7bN39+OPH7XZbB6bDXAqdWCsS1skT9Sg+B+vDCIu2uQY/tdFcjP1nWCYqKLMmrfvlyG+4ZcvsKu6xAGWozLhNu0Ke2cR9ij3BUuwFTzhtIhbV1Ru5XSR2AF/bVN+xZeyQYM/Z9BINNcRA8AtizMz6UYsExFmSAW7UiYdyRBP5VbursKpZjQNAaCnnQsVj1uRxVgxS8N65aqZtLrpR/AN9uH/NFyesokkn5XLZJgtYzMzecjaDcKMEfSjGXOAP2PZhT3MqJMkvF8kx31lhwIMAAAAASUVORK5CYII='
+                                            uri:
+                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAHUSURBVDhPrVRdSwJBFN3MPiiDXjK1tKio6O8p+BsEf1+RQWDRl74VRSS7ds7de4ZxVXrpwO69587M2Tt37mzy31hxa+h2u1N3k16vNzNWwD7mvtLBvBbMI30iLIrFhAWiO5j3TgdjhzA/4CP4R/AfGC/xJTEMbNMSWZYVPxLEHM94xlhTRXwIv2lR4MwXbuU0KTlvdTqdTKK07l9Gvnawp3lcfGehJPlym3GriA/7/f4FA5ycpqmEbzBedz+DoegmOUHCxRyYqxmF3OXYBfitU/IauB0MAV6FGbOGUwnFAgTiDbcs+gA2ZEIx8CunxJivOKNipqyLnSAsi674Bvg3uYB4BeYzZ7OgqBWcDzh7bN39+OPH7XZbB6bDXAqdWCsS1skT9Sg+B+vDCIu2uQY/tdFcjP1nWCYqKLMmrfvlyG+4ZcvsKu6xAGWozLhNu0Ke2cR9ij3BUuwFTzhtIhbV1Ru5XSR2AF/bVN+xZeyQYM/Z9BINNcRA8AtizMz6UYsExFmSAW7UiYdyRBP5VbursKpZjQNAaCnnQsVj1uRxVgxS8N65aqZtLrpR/AN9uH/NFyesokkn5XLZJgtYzMzecjaDcKMEfSjGXOAP2PZhT3MqJMkvF8kx31lhwIMAAAAASUVORK5CYII=',
                                         }}
                                     />
                                 </View>
@@ -283,108 +282,3 @@ export default class SettingsDrawer extends PureComponent {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    outContainer: {
-        flex: 1,
-        backgroundColor: '#222',
-    },
-    container: {
-        flex: 1,
-        borderWidth: 1,
-        borderColor: '#444',
-        borderRadius: 6,
-    },
-    inContainer: {
-        alignContent: 'flex-start',
-        alignItems: 'flex-start',
-    },
-    header: {
-        color: '#aac',
-        fontSize: 20,
-        backgroundColor: '#444',
-        width: '100%',
-        padding: 10,
-    },
-    version: {
-        color: '#E7C45D',
-        fontSize: 12,
-        textAlign: 'center',
-        padding: 5,
-    },
-    close: {
-        color: '#99a',
-        fontSize: 15,
-        marginTop: 25,
-        backgroundColor: '#444',
-        width: '100%',
-        textAlign: 'center',
-        padding: 10,
-    },
-    label: {
-        color: '#99f',
-        width: '100%',
-        fontWeight: 'bold',
-        margin: 10,
-    },
-    selectMultipleStyle: { backgroundColor: '#333' },
-    selectMultipleRowStyle: { backgroundColor: '#333', flex: 1 },
-    selectMultipleCheckboxStyle: { backgroundColor: '#333' },
-    selectMultipleSelectedCheckboxStyle: { backgroundColor: '#888' },
-    selectMultipleSelectedRowStyle: { backgroundColor: '#222322' },
-    selectMultipleLabelStyle: { color: '#777' },
-    selectMultipleSelectedLabelStyle: { color: '#eee' },
-    checkbox: {
-        margin: 5,
-        minWidth: 37,
-    },
-    picker: {
-        height: 50,
-        width: '100%',
-        backgroundColor: '#444',
-    },
-    pickerItem: {
-        backgroundColor: '#000',
-        color: '#999',
-    },
-    numberPicker: {
-        height: 50,
-        width: 60,
-        backgroundColor: '#444',
-        marginBottom: 5,
-        alignItems: 'center',
-    },
-    checkboxView: {
-        flexDirection: 'row',
-    },
-    numBoxView: {
-        flexDirection: 'row-reverse',
-        justifyContent: 'space-between',
-    },
-    scrollView: {
-        flex: 1,
-        borderRadius: 5,
-        backgroundColor: '#333',
-        width: '90%',
-        marginLeft: 10,
-        marginRight: 10,
-        padding: 5,
-    },
-    labelCheckbox: {
-        color: '#777',
-        margin: 5,
-    },
-    setTimeView: {
-        flexDirection: 'row',
-        padding: 2,
-        backgroundColor: '#555',
-        borderRadius: 5,
-    },
-    settingsButtons: {
-        margin: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        flex: 1,
-        width: '100%'
-    },
-});

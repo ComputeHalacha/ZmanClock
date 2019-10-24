@@ -3,7 +3,6 @@ import {
     ToolbarAndroid,
     StatusBar,
     DrawerLayoutAndroid,
-    StyleSheet,
     Text,
     View
 } from 'react-native';
@@ -18,6 +17,7 @@ import AppUtils from './Code/AppUtils';
 import getNotifications from './Code/Notifications';
 import Settings from './Code/Settings';
 import { log } from './Code/GeneralUtils';
+import {appStyles} from './GUI/Styles';
 
 export default class App extends PureComponent {
     constructor(props) {
@@ -194,8 +194,9 @@ export default class App extends PureComponent {
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
         this.setState({ settings, sd: null });
     }
-    render() {
+    render() {        
         log('Rendering');
+        const styles = appStyles;
         return (
             <DrawerLayoutAndroid
                 drawerWidth={400}
@@ -230,23 +231,3 @@ export default class App extends PureComponent {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    headerView: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#000'
-    },
-    headerTextName: {
-        flex: 1,
-        textAlign: 'center',
-        fontSize: 13,
-        color: '#557'
-    },
-    toolbarAndroid: {
-        height: 40,
-        backgroundColor: '#000',
-        flex: 0
-    },
-});
