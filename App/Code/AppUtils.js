@@ -49,7 +49,7 @@ export default class AppUtils {
                 jdate,
                 location
             ),
-            TomorrowTimes = AppUtils.getZmanTimes(
+            tomorrowTimes = AppUtils.getZmanTimes(
                 zmanTypes,
                 Utils.addDaysToSdate(sdate, 1),
                 jdate.addDays(1),
@@ -64,9 +64,11 @@ export default class AppUtils {
                 diff.sign < 1 &&
                 Utils.totalMinutes(diff) >= settings.minToShowPassedZman
             ) {
-                oTime = TomorrowTimes.find(t => t.zmanType === zt.zmanType)
-                    .time;
-                isTomorrow = true;
+                const tom = tomorrowTimes.find(t => t.zmanType === zt.zmanType);
+                if (tom && tom.time) {
+                    oTime = tom.time;
+                    isTomorrow = true;
+                }
             }
             correctedTimes.push({
                 zmanType: zt.zmanType,
@@ -336,7 +338,6 @@ export default class AppUtils {
                             ),
                         });
                     }
-
                     break;
             }
         }
