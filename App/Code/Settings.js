@@ -1,8 +1,9 @@
 import Location from './JCal/Location';
 import { AsyncStorage } from 'react-native';
 import { findLocation } from './Locations';
-import { log, error, setDefault } from './GeneralUtils';
+import { log, warn, error, setDefault, isNumber } from './GeneralUtils';
 import { getZmanType } from './ZmanTypes';
+import AppUtils from './AppUtils';
 
 export default class Settings {
     /**
@@ -61,7 +62,6 @@ export default class Settings {
          * @property {boolean} [showGaonShir] Show the Shir Shel Yom of the Gr"a?
          */
         this.showGaonShir = setDefault(showGaonShir, true);
-
     }
     clone() {
         return new Settings(
@@ -81,9 +81,9 @@ export default class Settings {
         log('started save Settings');
         await AsyncStorage.multiSet(
             [
-                [ 'ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow) ],
-                [ 'CUSTOM_ZMANIM', JSON.stringify(this.customZmanim) ],
-                [ 'LOCATION_NAME', this.location.Name ],
+                ['ZMANIM_TO_SHOW', JSON.stringify(this.zmanimToShow)],
+                ['CUSTOM_ZMANIM', JSON.stringify(this.customZmanim)],
+                ['LOCATION_NAME', this.location.Name],
                 [
                     'NOTIFICATIONS',
                     JSON.stringify(Number(this.showNotifications)),
@@ -96,10 +96,7 @@ export default class Settings {
                     'MINUTES_PASSED_ZMAN',
                     JSON.stringify(this.minToShowPassedZman),
                 ],
-                [
-                    'SHIR_GAON',
-                    JSON.stringify(Number(this.showGaonShir)),
-                ],
+                ['SHIR_GAON', JSON.stringify(Number(this.showGaonShir))],
             ],
             errors =>
                 errors &&
@@ -116,39 +113,136 @@ export default class Settings {
             allKeys = await AsyncStorage.getAllKeys();
         log('all storage keys', allKeys);
         if (allKeys.includes('ZMANIM_TO_SHOW')) {
-            const zts = await AsyncStorage.getItem('ZMANIM_TO_SHOW');
-            settings.zmanimToShow = JSON.parse(zts);
-            log('zmanimToShow to show from storage data', zts);
+            try {
+                const zts = await AsyncStorage.getItem('ZMANIM_TO_SHOW'),
+                    i = JSON.parse(zts);
+                if (i && Array.isArray(i) && i.length) {
+                    settings.zmanimToShow = i;
+                    log('zmanimToShow to show from storage data', zts);
+                } else {
+                    warn(
+                        'Invalid or empty zmanimToShow in storage data variable: ' +
+                            zts
+                    );
+                }
+            } catch (e) {
+                error(
+                    'Failed to load zmanimToShow array from storage data:',
+                    e
+                );
+            }
         }
         if (allKeys.includes('CUSTOM_ZMANIM')) {
-            const cz = await AsyncStorage.getItem('CUSTOM_ZMANIM');
-            settings.customZmanim = JSON.parse(cz);
-            log('customZmanim to show from storage data', cz);
+            try {
+                const cz = await AsyncStorage.getItem('CUSTOM_ZMANIM'),
+                    i = JSON.parse(cz);
+                if (i && Array.isArray(i) && i.length) {
+                    settings.customZmanim = i;
+                    log('customZmanim to show from storage data', cz);
+                } else {
+                    warn(
+                        'Invalid or empty customZmanim in storage data variable: ' +
+                            cz
+                    );
+                }
+            } catch (e) {
+                error(
+                    'Failed to load customZmanim array from storage data:',
+                    e
+                );
+            }
         }
         if (allKeys.includes('LOCATION_NAME')) {
-            const locationName = await AsyncStorage.getItem('LOCATION_NAME');
-            settings.location = findLocation(locationName);
-            log('location from storage data', locationName);
+            try {
+                const locationName = await AsyncStorage.getItem(
+                        'LOCATION_NAME'
+                    ),
+                    i = findLocation(locationName);
+                if (i && i.Latitude) {
+                    settings.location = i;
+                    log('location from storage data', locationName);
+                } else {
+                    warn(
+                        'Invalid or empty location in storage data variable: ' +
+                            locationName
+                    );
+                }
+            } catch (e) {
+                error('Failed to load location from storage data:', e);
+            }
         }
         if (allKeys.includes('NOTIFICATIONS')) {
-            const sn = await AsyncStorage.getItem('NOTIFICATIONS');
-            settings.showNotifications = Boolean(JSON.parse(sn));
-            log('showNotifications from storage data', sn);
+            try {
+                const sn = await AsyncStorage.getItem('NOTIFICATIONS');
+                if (sn) {
+                    settings.showNotifications = Boolean(JSON.parse(sn));
+                    log('showNotifications from storage data', sn);
+                } else {
+                    warn(
+                        'Invalid showNotifications in storage data variable: ' +
+                            sn
+                    );
+                }
+            } catch (e) {
+                error('Failed to load showNotifications from storage data:', e);
+            }
         }
         if (allKeys.includes('NUMBER_OF_ITEMS_TO_SHOW')) {
-            const ni = await AsyncStorage.getItem('NUMBER_OF_ITEMS_TO_SHOW');
-            settings.numberOfItemsToShow = JSON.parse(ni);
-            log('numberOfItemsToShow from storage data', ni);
+            try {
+                const ni = await AsyncStorage.getItem(
+                        'NUMBER_OF_ITEMS_TO_SHOW'
+                    ),
+                    i = JSON.parse(ni);
+                if (isNumber(i)) {
+                    settings.numberOfItemsToShow = i;
+                    log('numberOfItemsToShow from storage data', i);
+                } else {
+                    warn(
+                        'Invalid numberOfItemsToShow in storage data variable: ' +
+                            ni
+                    );
+                }
+            } catch (e) {
+                error(
+                    'Failed to load numberOfItemsToShow from storage data:',
+                    e
+                );
+            }
         }
         if (allKeys.includes('MINUTES_PASSED_ZMAN')) {
-            const mpz = await AsyncStorage.getItem('MINUTES_PASSED_ZMAN');
-            settings.minToShowPassedZman = JSON.parse(mpz);
-            log('minToShowPassedZman from storage data', mpz);
+            try {
+                const mpz = await AsyncStorage.getItem('MINUTES_PASSED_ZMAN'),
+                    i = JSON.parse(mpz);
+                if (isNumber(i)) {
+                    settings.minToShowPassedZman = i;
+                    log('minToShowPassedZman from storage data', mpz);
+                } else {
+                    warn(
+                        'Invalid minToShowPassedZman in storage data variable: ' +
+                            mpz
+                    );
+                }
+            } catch (e) {
+                error(
+                    'Failed to load minToShowPassedZman from storage data:',
+                    e
+                );
+            }
         }
         if (allKeys.includes('SHIR_GAON')) {
-            const sn = await AsyncStorage.getItem('SHIR_GAON');
-            settings.showGaonShir = Boolean(JSON.parse(sn));
-            log('showGaonShir from storage data', sn);
+            try {
+                const sn = await AsyncStorage.getItem('SHIR_GAON');
+                if (sn) {
+                    settings.showGaonShir = Boolean(JSON.parse(sn));
+                    log('showGaonShir from storage data', sn);
+                } else {
+                    warn(
+                        'Invalid showGaonShir in storage data variable: ' + sn
+                    );
+                }
+            } catch (e) {
+                error('Failed to load showGaonShir from storage data:', e);
+            }
         }
         return settings;
     }
