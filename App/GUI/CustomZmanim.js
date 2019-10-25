@@ -13,7 +13,7 @@ import AppUtils from '../Code/AppUtils';
 import { range } from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
 import { ZmanTypes } from '../Code/ZmanTypes';
-import { customZmanimStyles } from './Styles';
+import getStyle from './Styles/Styles';
 
 export default class CustomZmanim extends PureComponent {
     constructor(props) {
@@ -30,10 +30,11 @@ export default class CustomZmanim extends PureComponent {
                 showNotifications,
                 numberOfItemsToShow,
                 minToShowPassedZman,
+                theme,
             } = this.props.settings,
             fullZmanTypeList = [...ZmanTypes],
             customZmanimList = this.props.settings.CustomZmanim,
-            styles = customZmanimStyles;
+            styles = getStyle(theme, 'customZmanim');
 
         return (
             <View style={styles.outContainer}>
@@ -108,7 +109,7 @@ export default class CustomZmanim extends PureComponent {
                         <Text>
                             השעה עכשיו:{' '}
                             {Utils.getTimeString(this.props.nowTime, true)}
-                        </Text>                        
+                        </Text>
                     </ScrollView>
                     <Text
                         style={styles.close}

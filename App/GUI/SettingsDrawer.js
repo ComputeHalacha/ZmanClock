@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import CheckBox from 'react-native-check-box';
 import SelectMultiple from 'react-native-select-multiple';
+import SwitchToggle from 'react-native-switch-toggle';
 import AppUtils from '../Code/AppUtils';
 import { range, setDefault } from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
@@ -17,14 +18,19 @@ import { Locations } from '../Code/Locations';
 import { openSystemTimeSettings } from '../Code/SystemTime';
 import { version } from '../../package.json';
 import Settings from '../Code/Settings';
-import { settingsDrawerStyles } from './Styles';
+import getStyle from './Styles/Styles';
 
 export default class SettingsDrawer extends PureComponent {
     constructor(props) {
         super(props);
         this.onChangeSettings = this.onChangeSettings.bind(this);
-        this.resetSetttings = this.resetSetttings.bind(this);
+        this.resetSettings = this.resetSettings.bind(this);
+        this.state = { theme: props.settings.theme };
     }
+    /**
+     *
+     * @param {object} values
+     */
     onChangeSettings(values) {
         const {
                 zmanimToShow,
@@ -33,6 +39,7 @@ export default class SettingsDrawer extends PureComponent {
                 numberOfItemsToShow,
                 minToShowPassedZman,
                 showGaonShir,
+                theme,
             } = values,
             settings = this.props.settings.clone();
         if (zmanimToShow) {
@@ -54,13 +61,17 @@ export default class SettingsDrawer extends PureComponent {
             settings.minToShowPassedZman
         );
         settings.showGaonShir = setDefault(showGaonShir, settings.showGaonShir);
+        if (theme) {
+            settings.theme = theme;
+            this.setState({ theme });
+        }
 
         this.props.changeSettings(settings);
     }
     openAddCustomZmanim() {
         throw new Error('Method not implemented.');
     }
-    resetSetttings() {
+    resetSettings() {
         const settings = new Settings();
         this.props.changeSettings(settings);
     }
@@ -74,7 +85,8 @@ export default class SettingsDrawer extends PureComponent {
                 showGaonShir,
             } = this.props.settings,
             fullZmanTypeList = AppUtils.AllZmanTypes(this.props.settings),
-            styles = settingsDrawerStyles;
+            styles = getStyle(this.state.theme, 'settingsDrawer'),
+            otherTheme = this.state.theme === 'dark' ? 'light' : 'dark';
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
@@ -214,6 +226,20 @@ export default class SettingsDrawer extends PureComponent {
                                 {'הצג שיר של יום של הגר"א'}
                             </Text>
                         </View>
+                        <View style={styles.checkboxView}>
+                        <Text style={styles.labelCheckbox}>
+                                רקע בהיר
+                            </Text>
+                            <SwitchToggle
+                                switchOn={(this.state.theme === 'dark')}
+                                onPress={() =>
+                                    this.onChangeSettings({ theme: otherTheme })
+                                }
+                            />
+                            <Text style={styles.labelCheckbox}>
+                                רקע כהה
+                            </Text>
+                        </View>
                         <Text style={styles.label}>עריכת שעה</Text>
                         <Text>
                             השעה עכשיו:{' '}
@@ -251,7 +277,7 @@ export default class SettingsDrawer extends PureComponent {
                                 </View>
                             </TouchableHighlight>
                             <TouchableHighlight
-                                onPress={() => this.resetSetttings()}>
+                                onPress={() => this.resetSettings()}>
                                 <View style={styles.setTimeView}>
                                     <Text style={styles.labelCheckbox}>
                                         אפס נתונים

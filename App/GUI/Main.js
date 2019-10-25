@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Text, View, ScrollView } from 'react-native';
 import Utils from '../Code/JCal/Utils';
-import { mainStyles } from './Styles';
+import getStyle from './Styles/Styles';
 
 export default class Main extends PureComponent {
     constructor(props) {
@@ -105,7 +105,7 @@ export default class Main extends PureComponent {
     }
 
     render() {
-        const styles = mainStyles;
+        const styles = getStyle(this.props.settings.theme, 'main');
         return (
             <View style={styles.container}>
                 <Text style={styles.dateText}>

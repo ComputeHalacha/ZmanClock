@@ -4,7 +4,7 @@ import {
     StatusBar,
     DrawerLayoutAndroid,
     Text,
-    View
+    View,
 } from 'react-native';
 import KeepAwake from 'react-native-keep-awake';
 import NavigationBarAndroid from './Code/NavigationBar';
@@ -17,7 +17,7 @@ import AppUtils from './Code/AppUtils';
 import getNotifications from './Code/Notifications';
 import Settings from './Code/Settings';
 import { log } from './Code/GeneralUtils';
-import {appStyles} from './GUI/Styles';
+import getStyle from './GUI/Styles/Styles';
 
 export default class App extends PureComponent {
     constructor(props) {
@@ -57,28 +57,46 @@ export default class App extends PureComponent {
             jdate = Utils.isTimeAfter(sunset, nowTime)
                 ? new jDate(Utils.addDaysToSdate(sd, 1))
                 : new jDate(sd),
-            zmanTimes = AppUtils.getCorrectZmanTimes(sd,jdate, nowTime, settings);
-        this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate,location);
+            zmanTimes = AppUtils.getCorrectZmanTimes(
+                sd,
+                jdate,
+                nowTime,
+                settings
+            ),
+            styles = getStyle('dark', 'app');
+        this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate, location);
         this.needsNotificationsRefresh = true;
-        this.state = { settings, zmanTimes, sd, nowTime, sunset, jdate };
+        this.state = {
+            settings,
+            zmanTimes,
+            sd,
+            nowTime,
+            sunset,
+            jdate,
+            styles,
+        };
     }
     async getStorageData() {
-        const settings = await Settings.getSettings();
+        const settings = await Settings.getSettings(),
+            styles = getStyle(settings.theme, 'app');
         //Cause a notifications refresh
         this.needsNotificationsRefresh = settings.showNotifications;
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
-        this.setState({ settings, sd: null });
+        this.setState({ settings, styles, sd: null });
     }
     needsZmanRefresh(sd, nowTime) {
-        if (!this.state.sd ||
+        if (
+            !this.state.sd ||
             sd.getDate() !== this.state.sd.getDate() ||
-            this.state.zmanTimes.some(zt =>
-                !zt.isTomorrow &&
-                Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
-                this.state.settings.minToShowPassedZman)) {
+            this.state.zmanTimes.some(
+                zt =>
+                    !zt.isTomorrow &&
+                    Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
+                        this.state.settings.minToShowPassedZman
+            )
+        ) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -87,13 +105,20 @@ export default class App extends PureComponent {
         if (settings.showNotifications) {
             if (this.needsNotificationsRefresh || this.isPastShulZman()) {
                 const { jdate, sd, nowTime } = this.state,
-                    notifications = getNotifications(jdate, sd, nowTime, settings);
+                    notifications = getNotifications(
+                        jdate,
+                        sd,
+                        nowTime,
+                        settings
+                    );
                 this.needsNotificationsRefresh = false;
                 this.setState({ notifications });
                 log('Refreshing notifications: ', jdate, sd, nowTime);
             }
-        }
-        else if (this.state.notifications && this.state.notifications.length) {
+        } else if (
+            this.state.notifications &&
+            this.state.notifications.length
+        ) {
             //If setting is off, hide all notifications
             this.setState({ notifications: [] });
         }
@@ -114,8 +139,7 @@ export default class App extends PureComponent {
             }
             log('Refreshing notifications due to shkia.');
             return true;
-        }
-        else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
+        } else if (chatzosHayom && Utils.isTimeAfter(chatzosHayom, nowTime)) {
             //We only want to refresh the notifications one time
             this.shulZmanim.chatzosHayom = null;
             //Nullify passed zmanim, we are refreshing anyway.
@@ -125,8 +149,7 @@ export default class App extends PureComponent {
             }
             log('Refreshing notifications due to chatzos hayom.');
             return true;
-        }
-        else if (alos && Utils.isTimeAfter(alos, nowTime)) {
+        } else if (alos && Utils.isTimeAfter(alos, nowTime)) {
             //We only want to refresh the notifications one time
             this.shulZmanim.alos = null;
             //Nullify passed zmanim, we are refreshing anyway.
@@ -135,8 +158,10 @@ export default class App extends PureComponent {
             }
             log('Refreshing notifications due to alos.');
             return true;
-        }
-        else if (chatzosHalayla && Utils.isTimeAfter(chatzosHalayla, nowTime)) {
+        } else if (
+            chatzosHalayla &&
+            Utils.isTimeAfter(chatzosHalayla, nowTime)
+        ) {
             //We only want to refresh the notifications one time
             this.shulZmanim.chatzosHalayla = null;
             log('Refreshing notifications due to chatzosHalayla.');
@@ -150,30 +175,36 @@ export default class App extends PureComponent {
         if (!this.needsZmanRefresh(sd, nowTime)) {
             log('Refreshing just times');
             let { jdate, sunset } = this.state;
-            if (Utils.isSameSdate(jdate.getDate(), sd) &&
-                Utils.isTimeAfter(sunset, nowTime)) {
+            if (
+                Utils.isSameSdate(jdate.getDate(), sd) &&
+                Utils.isTimeAfter(sunset, nowTime)
+            ) {
                 jdate = jdate.addDays(1);
             }
             this.setState({ sd, nowTime, jdate });
-        }
-        else {
+        } else {
             log('Refreshing all zmanim');
-            const sunset = Zmanim.getSunTimes(sd, this.state.settings.location).sunset,
+            const sunset = Zmanim.getSunTimes(sd, this.state.settings.location)
+                    .sunset,
                 jdate = Utils.isTimeAfter(sunset, nowTime)
                     ? new jDate(Utils.addDaysToSdate(sd, 1))
                     : new jDate(sd),
                 location = this.state.settings.location,
-                zmanTimes = AppUtils.getCorrectZmanTimes(sd, jdate, nowTime, this.state.settings);
+                zmanTimes = AppUtils.getCorrectZmanTimes(
+                    sd,
+                    jdate,
+                    nowTime,
+                    this.state.settings
+                );
             this.setState({ zmanTimes, sd, nowTime, sunset, jdate });
-            this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate,location);
+            this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate, location);
         }
         this.setNotifications();
     }
     toggleDrawer() {
         if (this.isDrawerOpen) {
             this.closeDrawer();
-        }
-        else {
+        } else {
             this.openDrawer();
         }
     }
@@ -194,22 +225,24 @@ export default class App extends PureComponent {
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
         this.setState({ settings, sd: null });
     }
-    render() {        
+    render() {
         log('Rendering');
-        const styles = appStyles;
+        const { styles } = this.state;
         return (
             <DrawerLayoutAndroid
                 drawerWidth={400}
-                onDrawerOpen={() => this.isDrawerOpen = true}
-                onDrawerClose={() => this.isDrawerOpen = false}
-                renderNavigationView={() =>
+                onDrawerOpen={() => (this.isDrawerOpen = true)}
+                onDrawerClose={() => (this.isDrawerOpen = false)}
+                renderNavigationView={() => (
                     <SettingsDrawer
                         close={this.closeDrawer}
                         changeSettings={this.changeSettings}
                         settings={this.state.settings}
                         nowTime={this.state.nowTime}
-                        drawerPosition={DrawerLayoutAndroid.positions.Right} />}
-                ref={(drawer) => this.drawer = drawer}>
+                        drawerPosition={DrawerLayoutAndroid.positions.Right}
+                    />
+                )}
+                ref={drawer => (this.drawer = drawer)}>
                 <KeepAwake />
                 <StatusBar hidden={true} />
                 <ToolbarAndroid
@@ -226,7 +259,8 @@ export default class App extends PureComponent {
                     zmanTimes={this.state.zmanTimes}
                     nowTime={this.state.nowTime}
                     notifications={this.state.notifications}
-                    settings={this.state.settings} />
+                    settings={this.state.settings}
+                />
             </DrawerLayoutAndroid>
         );
     }

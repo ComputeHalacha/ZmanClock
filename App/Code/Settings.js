@@ -15,6 +15,7 @@ export default class Settings {
      * @param {number} [numberOfItemsToShow] Number of zmanim to show on the main screen
      * @param {number} [minToShowPassedZman] Number of minutes to continue showing zmanim that have passed
      * @param {boolean} [showGaonShir] Show the Shir Shel Yom of the Gr"a?
+     * @param {string} [theme] The name of the theme
      */
     constructor(
         zmanimToShow,
@@ -23,7 +24,8 @@ export default class Settings {
         showNotifications,
         numberOfItemsToShow,
         minToShowPassedZman,
-        showGaonShir
+        showGaonShir,
+        theme
     ) {
         /**
          * @property {[{id:Number, offset: ?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }]} zmanimToShow List of which zmanim to show
@@ -62,6 +64,10 @@ export default class Settings {
          * @property {boolean} [showGaonShir] Show the Shir Shel Yom of the Gr"a?
          */
         this.showGaonShir = setDefault(showGaonShir, true);
+        /**
+         * @property {string} [theme] name of the style theme
+         */
+        this.theme = theme || 'dark';
     }
     clone() {
         return new Settings(
@@ -71,7 +77,8 @@ export default class Settings {
             this.showNotifications,
             this.numberOfItemsToShow,
             this.minToShowPassedZman,
-            this.showGaonShir
+            this.showGaonShir,
+            this.theme
         );
     }
     /**
@@ -96,7 +103,8 @@ export default class Settings {
                     'MINUTES_PASSED_ZMAN',
                     JSON.stringify(this.minToShowPassedZman),
                 ],
-                ['SHIR_GAON', JSON.stringify(Number(this.showGaonShir))],
+                ['SHIR_GAON', JSON.stringify(Number(this.showGaonShir))],                
+                ['THEME_NAME', this.theme],
             ],
             errors =>
                 errors &&
@@ -242,6 +250,21 @@ export default class Settings {
                 }
             } catch (e) {
                 error('Failed to load showGaonShir from storage data:', e);
+            }
+        }
+        if (allKeys.includes('THEME_NAME')) {
+            try {
+                const tn = await AsyncStorage.getItem('THEME_NAME');
+                if (tn) {
+                    settings.theme = tn;
+                    log('theme from storage data', tn);
+                } else {
+                    warn(
+                        'Invalid or missing theme in storage data variable: ' + tn
+                    );
+                }
+            } catch (e) {
+                error('Failed to load theme from storage data:', e);
             }
         }
         return settings;
