@@ -43,6 +43,8 @@ export default class AppUtils {
         const correctedTimes = [],
             zmanTypes = settings.zmanimToShow,
             location = settings.location,
+            tomorrowJd = jdate.addDays(1),
+            tomorrowSd = Utils.addDaysToSdate(sdate, 1),
             zmanTimes = AppUtils.getZmanTimes(
                 zmanTypes,
                 sdate,
@@ -50,9 +52,9 @@ export default class AppUtils {
                 location
             ),
             tomorrowTimes = AppUtils.getZmanTimes(
-                zmanTypes,
-                Utils.addDaysToSdate(sdate, 1),
-                jdate.addDays(1),
+                zmanTypes.filter(zt => zt.id !== 21), //Candle lighting tomorrow is never shown...
+                tomorrowSd,
+                tomorrowJd,
                 location
             );
 
