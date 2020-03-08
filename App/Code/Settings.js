@@ -16,6 +16,7 @@ export default class Settings {
      * @param {number} [minToShowPassedZman] Number of minutes to continue showing zmanim that have passed
      * @param {boolean} [showGaonShir] Show the Shir Shel Yom of the Gr"a?
      * @param {string} [theme] The name of the theme
+     * @param {boolean} [showDafYomi] Show the Daf Yomi?
      */
     constructor(
         zmanimToShow,
@@ -25,7 +26,8 @@ export default class Settings {
         numberOfItemsToShow,
         minToShowPassedZman,
         showGaonShir,
-        theme
+        theme,
+        showDafYomi
     ) {
         /**
          * @property {[{id:Number, offset: ?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }]} zmanimToShow List of which zmanim to show
@@ -68,6 +70,11 @@ export default class Settings {
          * @property {string} [theme] name of the style theme
          */
         this.theme = theme || 'dark';
+        /**
+         * @property {boolean} [showDafYomi] Show the Shir Shel Yom of the Gr"a?
+         */
+        this.showDafYomi = setDefault(showDafYomi, true);
+        
     }
     clone() {
         return new Settings(
@@ -78,7 +85,8 @@ export default class Settings {
             this.numberOfItemsToShow,
             this.minToShowPassedZman,
             this.showGaonShir,
-            this.theme
+            this.theme,
+            this.showDafYomi
         );
     }
     /**
@@ -105,6 +113,7 @@ export default class Settings {
                 ],
                 ['SHIR_GAON', JSON.stringify(Number(this.showGaonShir))],                
                 ['THEME_NAME', this.theme],
+                ['DAF_YOMI', JSON.stringify(Number(this.showDafYomi))],                
             ],
             errors =>
                 errors &&
@@ -265,6 +274,21 @@ export default class Settings {
                 }
             } catch (e) {
                 error('Failed to load theme from storage data:', e);
+            }
+        }
+        if (allKeys.includes('DAF_YOMI')) {
+            try {
+                const sn = await AsyncStorage.getItem('DAF_YOMI');
+                if (sn) {
+                    settings.showDafYomi = Boolean(JSON.parse(sn));
+                    log('showDafYomi from storage data', sn);
+                } else {
+                    warn(
+                        'Invalid showDafYomi in storage data variable: ' + sn
+                    );
+                }
+            } catch (e) {
+                error('Failed to load showDafYomi from storage data:', e);
             }
         }
         return settings;
