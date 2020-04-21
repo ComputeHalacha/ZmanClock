@@ -37,22 +37,28 @@ export default class AppUtils {
      * @param {jDate} jdate
      * @param {{hour : Number, minute :Number, second: Number }} time
      * @param {Settings} settings
+     * @param {{hour : Number, minute :Number, second: Number }} sunset
      * @returns {[{zmanType:{id:Number,offset:?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String },time:{hour : Number, minute :Number, second: Number }, isTomorrow:Boolean}]}
      */
-    static getCorrectZmanTimes(sdate, jdate, time, settings) {
+    static getCorrectZmanTimes(sdate, jdate, time, settings, sunset) {
         const correctedTimes = [],
             zmanTypes = settings.zmanimToShow,
             location = settings.location,
             tomorrowJd = jdate.addDays(1),
             tomorrowSd = Utils.addDaysToSdate(sdate, 1),
-            zmanTimes = AppUtils.getZmanTimes(
-                zmanTypes,
+            /*  Candle lighting is not shown after sunset. 
+                This solves the issue of Candle lighting showing as having "passed 20 minutes ago" 
+                Thursday evening after sunset - which shows as hasCandleLighting = true 
+                as it is already Friday... */                
+            zmanTimes = AppUtils.getZmanTimes(                
+                zmanTypes.filter(zt => zt.id !== 21 || Utils.isTimeAfter(time, sunset)),
                 sdate,
                 jdate,
                 location
             ),
             tomorrowTimes = AppUtils.getZmanTimes(
-                zmanTypes.filter(zt => zt.id !== 21), //Candle lighting tomorrow is never shown...
+                //Candle lighting tomorrow is never shown...
+                zmanTypes.filter(zt => zt.id !== 21), 
                 tomorrowSd,
                 tomorrowJd,
                 location

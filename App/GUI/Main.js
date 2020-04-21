@@ -65,7 +65,7 @@ export default class Main extends PureComponent {
                             ? styles.zmanTypeNameTextWas
                             : styles.zmanTypeNameText
                     }>
-                    {`${zt.isTomorrow && zt.time.hour > 2 ? 'מחר ' : ''}בשעה: `}
+                    {`${zt.time && zt.isTomorrow && zt.time.hour > 2 ? 'מחר ' : ''}בשעה: `}
                     <Text
                         style={
                             isWithin10

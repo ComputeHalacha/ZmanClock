@@ -2,16 +2,86 @@ import Zmanim from './Zmanim';
 import jDate from './jDate';
 import Location from './Location';
 
-export default class Utils {    
-    static jMonthsEng = ['', 'Nissan', 'Iyar', 'Sivan', 'Tamuz', 'Av', 'Ellul', 'Tishrei', 'Cheshvan', 'Kislev', 'Teves', 'Shvat', 'Adar', 'Adar Sheini'];
-    static jMonthsHeb = ['', 'ניסן', 'אייר', 'סיון', 'תמוז', 'אב', 'אלול', 'תשרי', 'חשון', 'כסלו', 'טבת', 'שבט', 'אדר', 'אדר שני'];
-    static sMonthsEng = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    static dowEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Erev Shabbos', 'Shabbos Kodesh'];
-    static dowHeb = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'ערב שבת קודש', 'שבת קודש'];
+export default class Utils {
+    static jMonthsEng = [
+        '',
+        'Nissan',
+        'Iyar',
+        'Sivan',
+        'Tamuz',
+        'Av',
+        'Ellul',
+        'Tishrei',
+        'Cheshvan',
+        'Kislev',
+        'Teves',
+        'Shvat',
+        'Adar',
+        'Adar Sheini',
+    ];
+    static jMonthsHeb = [
+        '',
+        'ניסן',
+        'אייר',
+        'סיון',
+        'תמוז',
+        'אב',
+        'אלול',
+        'תשרי',
+        'חשון',
+        'כסלו',
+        'טבת',
+        'שבט',
+        'אדר',
+        'אדר שני',
+    ];
+    static sMonthsEng = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+    ];
+    static dowEng = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Erev Shabbos',
+        'Shabbos Kodesh',
+    ];
+    static dowHeb = [
+        'יום ראשון',
+        'יום שני',
+        'יום שלישי',
+        'יום רביעי',
+        'יום חמישי',
+        'ערב שבת קודש',
+        'שבת קודש',
+    ];
     static jsd = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
     static jtd = ['י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
     static jhd = ['ק', 'ר', 'ש', 'ת'];
-    static jsnum = ['', 'אחד', 'שנים', 'שלשה', 'ארבעה', 'חמשה', 'ששה', 'שבעה', 'שמונה', 'תשעה'];
+    static jsnum = [
+        '',
+        'אחד',
+        'שנים',
+        'שלשה',
+        'ארבעה',
+        'חמשה',
+        'ששה',
+        'שבעה',
+        'שמונה',
+        'תשעה',
+    ];
     static jtnum = ['', 'עשר', 'עשרים', 'שלושים', 'ארבעים'];
 
     /**
@@ -48,23 +118,20 @@ export default class Utils {
 
         if (n == 15) {
             retval += 'טו';
-        }
-        else if (n == 16) {
+        } else if (n == 16) {
             retval += 'טז';
-        }
-        else {
+        } else {
             if (n > 9) {
                 retval += Utils.jtd[Utils.toInt((n - (n % 10)) / 10) - 1];
             }
-            if ((n % 10) > 0) {
+            if (n % 10 > 0) {
                 retval += Utils.jsd[(n % 10) - 1];
             }
         }
-        if (number > 999 && (number % 1000 < 10)) {
+        if (number > 999 && number % 1000 < 10) {
             retval = '\'' + retval;
-        }
-        else if (retval.length > 1) {
-            retval = (retval.slice(0, -1) + '"' + retval[retval.length - 1]);
+        } else if (retval.length > 1) {
+            retval = retval.slice(0, -1) + '"' + retval[retval.length - 1];
         }
         return retval;
     }
@@ -76,14 +143,20 @@ export default class Utils {
      * @param {Boolean} dontCapitalize
      */
     static toStringDate(date, hideDayOfWeek, dontCapitalize) {
-        return (hideDayOfWeek ? (dontCapitalize ? 't' : 'T') :
-            Utils.dowEng[date.getDay()] + ', t') +
+        return (
+            (hideDayOfWeek
+                ? dontCapitalize
+                    ? 't'
+                    : 'T'
+                : Utils.dowEng[date.getDay()] + ', t') +
             'he ' +
-            Utils.toSuffixed(date.getDate()) + ' of ' +
-            Utils.sMonthsEng[date.getMonth()] + ' ' +
-            date.getFullYear().toString();
+            Utils.toSuffixed(date.getDate()) +
+            ' of ' +
+            Utils.sMonthsEng[date.getMonth()] +
+            ' ' +
+            date.getFullYear().toString()
+        );
     }
-
 
     /**
      * Add two character suffix to number. e.g. 21st, 102nd, 93rd, 500th
@@ -92,7 +165,7 @@ export default class Utils {
     static toSuffixed(num) {
         const t = num.toString();
         let suffix = 'th';
-        if (t.length === 1 || (t[t.length - 2] !== '1')) {
+        if (t.length === 1 || t[t.length - 2] !== '1') {
             switch (t[t.length - 1]) {
                 case '1':
                     suffix = 'st';
@@ -117,13 +190,13 @@ export default class Utils {
     }
 
     /**
-    * Get day of week using Javascripts getDay function.
-    * Important note: months starts at 1 not 0 like javascript
-    * The DOW returned has Sunday = 0
-    * @param {Number} year
-    * @param {Number} month
-    * @param {Number} day
-    */
+     * Get day of week using Javascripts getDay function.
+     * Important note: months starts at 1 not 0 like javascript
+     * The DOW returned has Sunday = 0
+     * @param {Number} year
+     * @param {Number} month
+     * @param {Number} day
+     */
     static getSdDOW(year, month, day) {
         return new Date(year, month - 1, day).getDay();
     }
@@ -136,7 +209,11 @@ export default class Utils {
      */
     static fixTime(time) {
         //make a copy - javascript sends object parameters by reference
-        const result = { hour: time.hour, minute: time.minute, second: time.second };
+        const result = {
+            hour: time.hour,
+            minute: time.minute,
+            second: time.second,
+        };
         while (result.second >= 60) {
             result.minute += 1;
             result.second -= 60;
@@ -163,35 +240,36 @@ export default class Utils {
     }
 
     /**
-    * Add the given number of minutes to the given time.
-    * The argument needs to be an object in the format {hour : 12, minute : 42, second : 18 }
-    *
-    * @param {{hour:Number, minute:Number, second:Number}} time
-    * @param {Number} minutes
-    */
+     * Add the given number of minutes to the given time.
+     * The argument needs to be an object in the format {hour : 12, minute : 42, second : 18 }
+     *
+     * @param {{hour:Number, minute:Number, second:Number}} time
+     * @param {Number} minutes
+     */
     static addMinutes(time, minutes) {
-        return Utils.fixTime(
-            {
+        return (
+            time &&
+            Utils.fixTime({
                 hour: time.hour,
                 minute: time.minute + minutes,
-                second: time.second
-            });
+                second: time.second,
+            })
+        );
     }
 
     /**
-    * Add the given number of seconds to the given time.
-    * The argument needs to be an object in the format {hour : 12, minute :42, second : 18}
-    *
-    * @param {{hour:Number, minute:Number, second:Number}} time
-    * @param {Number} seconds
-    */
+     * Add the given number of seconds to the given time.
+     * The argument needs to be an object in the format {hour : 12, minute :42, second : 18}
+     *
+     * @param {{hour:Number, minute:Number, second:Number}} time
+     * @param {Number} seconds
+     */
     static addSeconds(time, seconds) {
-        return Utils.fixTime(
-            {
-                hour: time.hour,
-                minute: time.minute,
-                second: time.second + seconds
-            });
+        return Utils.fixTime({
+            hour: time.hour,
+            minute: time.minute,
+            second: time.second + seconds,
+        });
     }
 
     /**
@@ -210,14 +288,17 @@ export default class Utils {
             time = Utils.fixTime({
                 hour: 0,
                 minute: 0,
-                second: earlySec <= laterSec
-                    ? laterSec - earlySec
-                    : showNegative ? (earlySec - laterSec) : ((86400 - earlySec) + laterSec)
+                second:
+                    earlySec <= laterSec
+                        ? laterSec - earlySec
+                        : showNegative
+                        ? earlySec - laterSec
+                        : 86400 - earlySec + laterSec,
             });
 
         return {
             ...time,
-            sign: (earlySec <= laterSec || !showNegative) ? 1 : -1
+            sign: earlySec <= laterSec || !showNegative ? 1 : -1,
         };
     }
 
@@ -226,7 +307,7 @@ export default class Utils {
      * @param {{hour:Number, minute:Number, second:Number}} time An object in the format {hour : 12, minute :42, second : 18}
      */
     static totalMinutes(time) {
-        return (time.hour * 60) + time.minute;
+        return time ? time.hour * 60 + time.minute : 0;
     }
 
     /**
@@ -234,7 +315,7 @@ export default class Utils {
      * @param {{hour:Number, minute:Number, second:Number}} time An object in the format {hour : 12, minute :42, second : 18}
      */
     static totalSeconds(time) {
-        return (Utils.totalMinutes(time) * 60) + time.second;
+        return time ? Utils.totalMinutes(time) * 60 + time.second : 0;
     }
 
     /**
@@ -246,7 +327,7 @@ export default class Utils {
         return {
             hour: sdate.getHours(),
             minute: sdate.getMinutes(),
-            second: sdate.getSeconds()
+            second: sdate.getSeconds(),
         };
     }
 
@@ -272,15 +353,79 @@ export default class Utils {
             if (t.length) {
                 t += ' ';
             }
-            t += `${time.minute.toString()} ${time.minute === 1 ? 'דקה' : 'דקות'}`;
+            t += `${time.minute.toString()} ${
+                time.minute === 1 ? 'דקה' : 'דקות'
+            }`;
         }
         if (time.second > 0) {
             if (t.length) {
                 t += ' ';
             }
-            t += `${Math.trunc(time.second).toString()} ${time.second === 1 ? 'שנייה' : 'שניות'}`;
+            t += `${Math.trunc(time.second).toString()} ${
+                time.second === 1 ? 'שנייה' : 'שניות'
+            }`;
         }
         return t;
+    }
+
+    /**
+     * Returns the nusach for Sefiras Ha'omer for the given day and minhag
+     * @param {number} dayOfOmer The day of the Omer for which to get the nusach for
+     * @param {'ashkenaz'|'sefard'|'sefardi'} nusach Should it be La'Omer ("sefard") or Ba'Omer ("ashkenaz") or "sefardi" (Eidot Hamizrach)?
+     */
+    static getOmerNusach(dayOfOmer, nusach) {
+        const weeks = Utils.toInt(dayOfOmer / 7),
+            days = dayOfOmer % 7;
+        let txt = 'היום ';
+
+        if (dayOfOmer === 1) {
+            txt += 'יום אחד ';
+        } else {
+            if (dayOfOmer === 2) {
+                txt += 'שני ';
+            } else {
+                if (dayOfOmer === 10) {
+                    txt += 'עשרה ';
+                } else {
+                    txt += Utils.jsnum[Utils.toInt(dayOfOmer % 10)] + ' ';
+                    if (dayOfOmer > 10) {
+                        if (dayOfOmer > 20 && dayOfOmer % 10 > 0) {
+                            txt += 'ו';
+                        }
+                        txt += Utils.jtnum[Utils.toInt(dayOfOmer / 10)] + ' ';
+                    }
+                }
+            }
+            txt += (dayOfOmer >= 11 ? 'יום' : 'ימים') + ' ';
+
+            if (nusach === 'sefardi') {
+                txt += 'לעומר' + ' ';
+            }
+
+            if (dayOfOmer >= 7) {
+                txt += 'שהם ';
+                if (weeks === 1) {
+                    txt += 'שבוע אחד ';
+                } else if (weeks === 2) {
+                    txt += 'שני שבועות ';
+                } else if (weeks > 0) {
+                    txt += Utils.jsnum[Utils.toInt(weeks)] + ' שבועות ';
+                }
+                if (days === 1) {
+                    txt += 'ויום אחד ';
+                } else if (days === 2) {
+                    txt += 'ושני ימים ';
+                } else if (days > 0) {
+                    txt += 'ו' + Utils.jsnum[days] + ' ימים ';
+                }
+            }
+        }
+        if (nusach === 'sefard') {
+            txt += 'לעומר';
+        } else if (nusach === 'ashkenaz') {
+            txt += 'בעומר';
+        }
+        return txt;
     }
 
     /**
@@ -291,23 +436,43 @@ export default class Utils {
      */
     static getTimeString(time, army, roundUp) {
         const round = roundUp ? Math.ceil : Math.floor;
-        time = { hour: round(time.hour), minute: round(time.minute), second: round(time.second) };
+        time = {
+            hour: round(time.hour),
+            minute: round(time.minute),
+            second: round(time.second),
+        };
         if (army) {
-            return (time.sign && time.sign < 0 ? '-' : '') +
+            return (
+                (time.sign && time.sign < 0 ? '-' : '') +
                 (time.hour.toString() +
                     ':' +
-                    (time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()) +
+                    (time.minute < 10
+                        ? '0' + time.minute.toString()
+                        : time.minute.toString()) +
                     ':' +
-                    (time.second < 10 ? '0' + time.second.toString() : time.second.toString()));
-        }
-        else {
-            return (time.sign && time.sign < 0 ? '-' : '') +
-                (time.hour <= 12 ? (time.hour == 0 ? 12 : time.hour) : time.hour - 12).toString() +
+                    (time.second < 10
+                        ? '0' + time.second.toString()
+                        : time.second.toString()))
+            );
+        } else {
+            return (
+                (time.sign && time.sign < 0 ? '-' : '') +
+                (time.hour <= 12
+                    ? time.hour == 0
+                        ? 12
+                        : time.hour
+                    : time.hour - 12
+                ).toString() +
                 ':' +
-                (time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()) +
+                (time.minute < 10
+                    ? '0' + time.minute.toString()
+                    : time.minute.toString()) +
                 ':' +
-                (time.second < 10 ? '0' + time.second.toString() : time.second.toString()) +
-                (time.hour < 12 ? ' AM' : ' PM');
+                (time.second < 10
+                    ? '0' + time.second.toString()
+                    : time.second.toString()) +
+                (time.hour < 12 ? ' AM' : ' PM')
+            );
         }
     }
 
@@ -319,29 +484,32 @@ export default class Utils {
         const date = new Date(),
             jan = new Date(date.getFullYear(), 0, 1),
             jul = new Date(date.getFullYear(), 6, 1);
-        return -Utils.toInt(Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset()) / 60);
+        return -Utils.toInt(
+            Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset()) / 60
+        );
     }
 
     /** Determines if the given date is within DST on the users system */
     static isDateDST(date) {
-        return (-Utils.toInt(date.getTimezoneOffset() / 60)) !== Utils.currUtcOffset();
+        return (
+            -Utils.toInt(date.getTimezoneOffset() / 60) !==
+            Utils.currUtcOffset()
+        );
     }
 
-    /** 
-     * Determines if the given date is within DST in the given location 
-     * Note: This may not be correct if the user has set the Location to a 
-     * time zone outside Israel or the USA which is not the current system time zone. 
+    /**
+     * Determines if the given date is within DST in the given location
+     * Note: This may not be correct if the user has set the Location to a
+     * time zone outside Israel or the USA which is not the current system time zone.
      */
     static isDST(location, date) {
         //If the current system time zone is the same as the given locations time zone
         if (location.UTCOffset === Utils.currUtcOffset()) {
-            //We can use the system data to determine if the given date is within DST 
+            //We can use the system data to determine if the given date is within DST
             return Utils.isDateDST(date);
-        }
-        else if (location.Israel) {
+        } else if (location.Israel) {
             return Utils.isIsrael_DST(date);
-        }
-        else {
+        } else {
             return Utils.isUSA_DST(date);
         }
     }
@@ -358,29 +526,28 @@ export default class Utils {
 
         if (month < 3 || month == 12) {
             return false;
-        }
-        else if (month > 3 && month < 11) {
+        } else if (month > 3 && month < 11) {
             return true;
         }
 
         //DST starts at 2 AM on the second Sunday in March
-        else if (month === 3) { //March
+        else if (month === 3) {
+            //March
             //Gets day of week on March 1st
             const firstDOW = Utils.getSdDOW(year, 3, 1),
                 //Gets date of second Sunday
-                targetDate = firstDOW == 0 ? 8 : ((7 - (firstDOW + 7) % 7)) + 8;
+                targetDate = firstDOW == 0 ? 8 : 7 - ((firstDOW + 7) % 7) + 8;
 
-            return (day > targetDate || (day === targetDate && hour >= 2));
+            return day > targetDate || (day === targetDate && hour >= 2);
         }
-        //DST ends at 2 AM on the first Sunday in November
-        else //dt.Month == 11 / November
-        {
+        //DST ends at 2 AM on the first Sunday in November //dt.Month == 11 / November
+        else {
             //Gets day of week on November 1st
             const firstDOW = Utils.getSdDOW(year, 11, 1),
                 //Gets date of first Sunday
-                targetDate = firstDOW === 0 ? 1 : ((7 - (firstDOW + 7) % 7)) + 1;
+                targetDate = firstDOW === 0 ? 1 : 7 - ((firstDOW + 7) % 7) + 1;
 
-            return (day < targetDate || (day === targetDate && hour < 2));
+            return day < targetDate || (day === targetDate && hour < 2);
         }
     }
 
@@ -397,22 +564,21 @@ export default class Utils {
 
         if (month > 10 || month < 3) {
             return false;
-        }
-        else if (month > 3 && month < 10) {
+        } else if (month > 3 && month < 10) {
             return true;
         }
         //DST starts at 2 AM on the Friday before the last Sunday in March
-        else if (month === 3) { //March
+        else if (month === 3) {
+            //March
             //Gets date of the Friday before the last Sunday
-            const lastFriday = (31 - Utils.getSdDOW(year, 3, 31)) - 2;
-            return (day > lastFriday || (day === lastFriday && hour >= 2));
+            const lastFriday = 31 - Utils.getSdDOW(year, 3, 31) - 2;
+            return day > lastFriday || (day === lastFriday && hour >= 2);
         }
-        //DST ends at 2 AM on the last Sunday in October
-        else //dt.Month === 10 / October
-        {
+        //DST ends at 2 AM on the last Sunday in October //dt.Month === 10 / October
+        else {
             //Gets date of last Sunday in October
             const lastSunday = 31 - Utils.getSdDOW(year, 10, 31);
-            return (day < lastSunday || (day === lastSunday && hour < 2));
+            return day < lastSunday || (day === lastSunday && hour < 2);
         }
     }
 
@@ -431,7 +597,7 @@ export default class Utils {
      * @param {Number} days
      */
     static addDaysToSdate(sdate, days) {
-        return new Date(sdate.valueOf() + (8.64E7 * days));
+        return new Date(sdate.valueOf() + 8.64e7 * days);
     }
     /**
      * Compares two js dates to se if they both refer to the same day - time is ignored.
@@ -439,7 +605,9 @@ export default class Utils {
      * @param {Date} sdate2
      */
     static isSameSdate(sdate1, sdate2) {
-        return sdate1 && sdate2 && sdate1.toDateString() === sdate2.toDateString();
+        return (
+            sdate1 && sdate2 && sdate1.toDateString() === sdate2.toDateString()
+        );
     }
     /**
      * Compares two jDates to se if they both refer to the same day - time is ignored.
@@ -447,7 +615,13 @@ export default class Utils {
      * @param {jDate} jdate2
      */
     static isSameJdate(jdate1, jdate2) {
-        return jdate1 && jdate2 && jdate1.Abs && jdate2.Abs && jdate1.Abs === jdate2.Abs;
+        return (
+            jdate1 &&
+            jdate2 &&
+            jdate1.Abs &&
+            jdate2.Abs &&
+            jdate1.Abs === jdate2.Abs
+        );
     }
     /**
      * Compares two jDates to see if they both refer to the same Jewish Month.
@@ -455,8 +629,7 @@ export default class Utils {
      * @param {jDate} jdate2
      */
     static isSameJMonth(jdate1, jdate2) {
-        return jdate1.Month === jdate2.Month &&
-            jdate1.Year === jdate2.Year;
+        return jdate1.Month === jdate2.Month && jdate1.Year === jdate2.Year;
     }
     /**
      * Compares two dates to se if they both refer to the same Secular Month.
@@ -464,8 +637,10 @@ export default class Utils {
      * @param {Date} sdate2
      */
     static isSameSMonth(sdate1, sdate2) {
-        return sdate1.getMonth() === sdate2.getMonth() &&
-            sdate1.getFullYear() === sdate2.getFullYear();
+        return (
+            sdate1.getMonth() === sdate2.getMonth() &&
+            sdate1.getFullYear() === sdate2.getFullYear()
+        );
     }
     /**
      * Determines if the time of the given Date() is after sunset at the given Location

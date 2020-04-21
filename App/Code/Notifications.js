@@ -32,6 +32,9 @@ export default function getNotifications(jdate, sdate, time, settings) {
         isAfterShkia = Utils.isTimeAfter(shkia, time),
         isDaytime = isAfterAlos && !isAfterShkia,
         isNightTime = !isDaytime,
+        isNotBeinHasmashos =
+            isDaytime ||
+            Utils.isTimeAfter(Utils.addMinutes(shkia, 18), time),
         isMorning = isDaytime && !isAfterChatzosHayom,
         isAfternoon = isDaytime && isAfterChatzosHayom,
         isYomTov = jdate.isYomTovOrCholHamoed(location.Israel),
@@ -80,6 +83,17 @@ export default function getNotifications(jdate, sdate, time, settings) {
     }
     if (showDafYomi) {
         notifications.push(jdate.getDafyomiHeb());
+    }
+
+    //If it is after the earliest Nacht during Sefiras Ha'omer
+    if (
+        isNotBeinHasmashos &&
+        ((month === 1 && day > 15) || month === 2 || (month === 3 && day < 6))
+    ) {
+        const dayOfSefirah = jdate.getDayOfOmer();
+        if (dayOfSefirah > 0) {
+            notifications.push(Utils.getOmerNusach(dayOfSefirah, "ashkenaz"));
+        }
     }
 
     //return only unique values
@@ -158,7 +172,7 @@ function getShabbosNotifications(notifications, dayInfo, showGaonShir) {
         notifications.push(
             "פרקי אבות - " +
                 PirkeiAvos.getPrakim(jdate, true)
-                    .map(s => `פרק ${Utils.toJNum(s)}`)
+                    .map((s) => `פרק ${Utils.toJNum(s)}`)
                     .join(" ו")
         );
     }
@@ -261,8 +275,6 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
             dayInfo.noTachnun = true;
             if (day > 15) {
                 notifications.push("מוריד הטל");
-                if (isNightTime)
-                    notifications.push(`${Utils.toJNum(day - 15)} בעומר`);
             }
             if (dow !== DaysOfWeek.SHABBOS && day > 15 && day !== 21) {
                 notifications.push("ותן ברכה");
@@ -384,8 +396,6 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
             }
             break;
         case 2: //Iyar
-            if (isNightTime)
-                notifications.push(`${Utils.toJNum(day + 15)} בעומר`);
             if (day <= 15) {
                 notifications.push("מוריד הטל");
                 if (dow !== DaysOfWeek.SHABBOS) {
@@ -416,9 +426,6 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
             }
             break;
         case 3: //Sivan
-            if (day < 6 && isNightTime) {
-                notifications.push(`${Utils.toJNum(day + 44)} בעומר`);
-            }
             if (day < 13) {
                 dayInfo.noTachnun = true;
             }

@@ -61,7 +61,8 @@ export default class App extends PureComponent {
                 sd,
                 jdate,
                 nowTime,
-                settings
+                settings,
+                sunset
             ),
             styles = getStyle('dark', 'app');
         this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate, location);
@@ -194,7 +195,8 @@ export default class App extends PureComponent {
                     sd,
                     jdate,
                     nowTime,
-                    this.state.settings
+                    this.state.settings,
+                    sunset
                 );
             this.setState({ zmanTimes, sd, nowTime, sunset, jdate });
             this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate, location);
