@@ -33,7 +33,7 @@ export default function getNotifications(jdate, sdate, time, settings) {
         isDaytime = isAfterAlos && !isAfterShkia,
         isNightTime = !isDaytime,
         isNotBeinHasmashos =
-            isDaytime ||
+            !isAfterShkia ||
             Utils.isTimeAfter(Utils.addMinutes(shkia, 18), time),
         isMorning = isDaytime && !isAfterChatzosHayom,
         isAfternoon = isDaytime && isAfterChatzosHayom,
