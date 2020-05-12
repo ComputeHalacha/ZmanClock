@@ -3,7 +3,6 @@ import { AsyncStorage } from 'react-native';
 import { findLocation } from './Locations';
 import { log, warn, error, setDefault, isNumber } from './GeneralUtils';
 import { getZmanType } from './ZmanTypes';
-import AppUtils from './AppUtils';
 
 export default class Settings {
     /**
