@@ -207,7 +207,9 @@ export default class jDate {
     }
     /**Gets the number of days separating this Jewish Date and the given one.
      *
-     * If the given date is before this one, the number will be negative.*/
+     * If the given date is before this one, the number will be negative.
+     * @param {jDate} jd
+     * */
     diffDays(jd) {
         return jd.Abs - this.Abs;
     }
@@ -218,7 +220,9 @@ export default class jDate {
      *
      * jDate.toJDate(5777, 6, 29).diffMonths(jDate.toJDate(5778, 7, 1)) will return 1 even though they are a day apart.
      *
-     * If the given date is before this one, the number will be negative.*/
+     * If the given date is before this one, the number will be negative.
+     * @param {jDate} jd 
+     * */
     diffMonths(jd) {
         let month = jd.Month,
             year = jd.Year,
@@ -253,12 +257,17 @@ export default class jDate {
      *
      * jDate.toJDate(5777, 6, 29).diffYears(jDate.toJDate(5778, 7, 1)) will return 1 even though they are a day apart.
      *
-     * If the given date is before this one, the number will be negative.*/
+     * If the given date is before this one, the number will be negative.
+     * @param {jDate} jd*/
     diffYears(jd) {
         return jd.Year - this.Year;
     }
 
-    /**Returns the current Jewish date in the format: Thursday, the 3rd of Kislev 5776.*/
+    /**
+     * Returns the current Jewish date in the format: Thursday, the 3rd of Kislev 5776.
+     * @param {boolean} hideDayOfWeek
+     * @param {boolean} dontCapitalize
+     */
     toString(hideDayOfWeek, dontCapitalize) {
         return (
             (hideDayOfWeek

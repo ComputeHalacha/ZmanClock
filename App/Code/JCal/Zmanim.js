@@ -31,20 +31,20 @@ export default class Zmanim {
         }
 
         let sunrise, sunset,
-            zeninthDeg = 90, zenithMin = 50, lonHour = 0, longitude = 0, latitude = 0,
+            zenithDeg = 90, zenithMin = 50, lonHour = 0, longitude = 0, latitude = 0,
             cosLat = 0, sinLat = 0, cosZen = 0, sinDec = 0, cosDec = 0,
             xmRise = 0, xmSet = 0, xlRise = 0, xlSet = 0, aRise = 0, aSet = 0, ahrRise = 0, ahrSet = 0,
             hRise = 0, hSet = 0, tRise = 0, tSet = 0, utRise = 0, utSet = 0;
 
         const day = Zmanim.dayOfYear(date),
             earthRadius = 6356900,
-            zenithAtElevation = Zmanim.degToDec(zeninthDeg, zenithMin) +
+            zenithAtElevation = Zmanim.degToDec(zenithDeg, zenithMin) +
                 Zmanim.radToDeg(Math.acos(earthRadius / (earthRadius +
                     (considerElevation ? location.Elevation : 0))));
 
-        zeninthDeg = Math.floor(zenithAtElevation);
-        zenithMin = (zenithAtElevation - zeninthDeg) * 60;
-        cosZen = Math.cos(0.01745 * Zmanim.degToDec(zeninthDeg, zenithMin));
+        zenithDeg = Math.floor(zenithAtElevation);
+        zenithMin = (zenithAtElevation - zenithDeg) * 60;
+        cosZen = Math.cos(0.01745 * Zmanim.degToDec(zenithDeg, zenithMin));
         longitude = location.Longitude;
         lonHour = longitude / 15;
         latitude = location.Latitude;
@@ -99,11 +99,18 @@ export default class Zmanim {
         return { sunrise: sunrise, sunset: sunset };
     }
 
+    /**
+     * @param {jDate | Date} date
+     * @param {Location} location
+     */
     static getChatzos(date, location) {
         return Zmanim.getChatzosFromSuntimes(
             Zmanim.getSunTimes(date, location, false));
     }
 
+    /**
+     * @param {{ sunrise: any; sunset: any; }} sunTimes
+     */
     static getChatzosFromSuntimes(sunTimes) {
         const rise = sunTimes.sunrise,
             set = sunTimes.sunset;
@@ -115,12 +122,21 @@ export default class Zmanim {
         return Utils.addSeconds(rise, chatz);
     }
 
+    /**
+     * @param {jDate | Date} date
+     * @param {Location} location
+     * @param {any} offset
+     */
     static getShaaZmanis(date, location, offset) {
         return Zmanim.getShaaZmanisFromSunTimes(
             Zmanim.getSunTimes(date, location, false),
             offset);
     }
 
+    /**
+     * @param {{ sunrise: any; sunset: any; }} sunTimes
+     * @param {number} [offset]
+     */
     static getShaaZmanisFromSunTimes(sunTimes, offset) {
         let rise = sunTimes.sunrise,
             set = sunTimes.sunset;
@@ -137,6 +153,10 @@ export default class Zmanim {
         return (Utils.totalSeconds(set) - Utils.totalSeconds(rise)) / 720;
     }
 
+    /**
+     * @param {{ sunrise: any; sunset: any; }} sunTimes
+     * @param {boolean} israel
+     */
     static getShaaZmanisMga(sunTimes, israel) {
         const minutes = israel ? 90 : 72;
         let rise = Utils.addMinutes(sunTimes.sunrise, -minutes),
@@ -149,21 +169,36 @@ export default class Zmanim {
         return (Utils.totalSeconds(set) - Utils.totalSeconds(rise)) / 720;
     }
 
+    /**
+     * @param {jDate | Date} date
+     * @param {Location} location
+     */
     static getCandleLighting(date, location) {
         return Zmanim.getCandleLightingFromSunTimes(
             Zmanim.getSunTimes(date, location),
             location);
     }
 
+    /**
+     * @param {{ sunrise?: { hour: number; minute: number; second: number; }; sunset: any; }} sunTimes
+     * @param {any} location
+     */
     static getCandleLightingFromSunTimes(sunTimes, location) {
         return Zmanim.getCandleLightingFromSunset(sunTimes.sunset, location);
     }
 
     
+    /**
+     * @param {{ hour: number; minute: number; second: number; }} sunset
+     * @param {Location} location
+     */
     static getCandleLightingFromSunset(sunset, location) {
         return Utils.addMinutes(sunset, -location.CandleLighting);
     }
 
+    /**
+     * @param {Date} date
+     */
     static dayOfYear(date) {
         const month = date.getMonth(),
             isLeap = () => Utils.isSecularLeapYear(date.getFullYear()),
@@ -171,26 +206,47 @@ export default class Zmanim {
         return yearDay[month + 1] + date.getDate() + ((month > 1 && isLeap()) ? 1 : 0);
     }
 
+    /**
+     * @param {number} deg
+     * @param {number} min
+     */
     static degToDec(deg, min) {
         return (deg + min / 60);
     }
 
+    /**
+     * @param {number} x
+     */
     static M(x) {
         return (0.9856 * x - 3.251);
     }
 
+    /**
+     * @param {number} x
+     */
     static L(x) {
         return (x + 1.916 * Math.sin(0.01745 * x) + 0.02 * Math.sin(2 * 0.01745 * x) + 282.565);
     }
 
+    /**
+     * @param {number} x
+     */
     static adj(x) {
         return (-0.06571 * x - 6.62);
     }
 
+    /**
+     * @param {number} rad
+     */
     static radToDeg(rad) {
         return 57.29578 * rad;
     }
 
+    /**
+     * @param {number} time
+     * @param {Date} date
+     * @param {Location} location
+     */
     static timeAdj(time, date, location) {
         if (time < 0) {
             time += 24;

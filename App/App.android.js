@@ -20,6 +20,9 @@ import { log } from './Code/GeneralUtils';
 import getStyle from './GUI/Styles/Styles';
 
 export default class App extends PureComponent {
+    /**
+     * @param {any} props
+     */
     constructor(props) {
         super(props);
 
@@ -85,8 +88,15 @@ export default class App extends PureComponent {
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
         this.setState({ settings, styles, sd: null });
     }
+    /**
+     * @param {Date} sd
+     * @param {{ hour: number; minute: number; second: number; }} nowTime
+     */
     needsZmanRefresh(sd, nowTime) {
         if (
+            /**
+             * @param {{ isTomorrow: any; time: { hour: number; minute: number; second: number; }; }} zt
+             */
             !this.state.sd ||
             sd.getDate() !== this.state.sd.getDate() ||
             this.state.zmanTimes.some(
@@ -220,6 +230,9 @@ export default class App extends PureComponent {
         //refresh notifications
         this.needsNotificationsRefresh = this.state.settings.showNotifications;
     }
+    /**
+     * @param {Settings} settings
+     */
     changeSettings(settings) {
         log('changed settings:', settings);
         settings.save();

@@ -62,8 +62,8 @@ export default class Location {
     }
 
     static getCandles(location) {
-        if (location.candleLighting) {
-            return location.candleLighting;
+        if (location.CandleLighting) {
+            return location.CandleLighting;
         }
         else if (!location.Israel) {
             return 18;
