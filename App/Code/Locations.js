@@ -84,6 +84,8 @@ export const Locations = [
     new Location('חשמונאים', true, 31.93, -35.02, 2, 255),
     new Location('לניאדו / נתניה', true, 32.33, -34.87, 2, 26),
     new Location('פומפדיתא', false, 35.00, -44.21, 3, 0),
+    new Location('Lakewood NJ', false, 40.1, 74.23, -5, 20, 180),
+    new Location('Brooklyn NY', false, 40.7, 74, -5, 20, 180),
 ];
 Locations.sort(function (a, b) { return (a.Name > b.Name) ? 1 : ((b.Name > a.Name) ? -1 : 0); });
 

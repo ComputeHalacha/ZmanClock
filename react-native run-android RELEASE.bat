@@ -16,7 +16,7 @@ ECHO "The release build has been copied to the ./lastestAPK directory"
 PAUSE
 
 ECHO "Before installing app: "
-ECHO "1. Set developer mode to on. "
+ECHO "1. Set developer mode to on. (click 7 times on Build Number in Settings/About Device)"
 ECHO "2. Turn on developer debug mode. "
 ECHO "3. In Settings/SecuritySet lock screen to 'None'. "
 ECHO "4. In Settings/Developer Options, set to never close screen when plugged in. "
