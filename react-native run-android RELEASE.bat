@@ -32,6 +32,7 @@ adb install latestAPK/app-release.apk
 ECHO "The app has been installed on the device"
 PAUSE
 
+
 @REM Make the app the device owner ********************************************************************************************
 adb shell dpm set-device-owner com.zmanclock/.DeviceReceiver
 ECHO "The app has been set as the device owner"
