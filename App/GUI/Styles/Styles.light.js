@@ -186,12 +186,13 @@ export default {
         selectMultipleSelectedLabelStyle: { color: '#111111' },
         checkbox: {
             margin: 5,
-            minWidth: 37,
+            minWidth: 50,
         },
         picker: {
             height: 50,
             width: '100%',
             backgroundColor: '#BBBBBB',
+            color: '#888888',
         },
         pickerItem: {
             backgroundColor: '#FFFFFF',
@@ -208,8 +209,11 @@ export default {
             flexDirection: 'row',
         },
         numBoxView: {
-            flexDirection: 'row-reverse',
+            flexDirection: 'row',
             justifyContent: 'space-between',
+            width: '100%',
+            padding: 10,
+            marginBottom: 10,
         },
         scrollView: {
             flex: 1,

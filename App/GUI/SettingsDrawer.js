@@ -96,11 +96,32 @@ export default class SettingsDrawer extends PureComponent {
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
-                    <Text style={styles.header}>הגדרות</Text>
+                    <Text style={styles.header}>
+                        {english ? 'Settings' : 'הגדרות'}
+                    </Text>
                     <Text style={styles.version}>{`${
                         english ? 'Zman Clock Version' : 'שעון זמנים - גירסה'
                     } ${version}`}</Text>
                     <ScrollView contentContainerStyle={styles.inContainer}>
+                        <Text style={styles.label}>
+                            {english ? 'Choose app language' : 'בחר שפה'}
+                        </Text>
+                        <View style={styles.checkboxView}>
+                            <Text style={styles.labelCheckbox}>
+                                {english ? 'Hebrew' : 'עברית'}
+                            </Text>
+                            <SwitchToggle
+                                switchOn={english}
+                                onPress={() =>
+                                    this.onChangeSettings({
+                                        english: !english,
+                                    })
+                                }
+                            />
+                            <Text style={styles.labelCheckbox}>
+                                {english ? 'English' : 'אנגלית'}
+                            </Text>
+                        </View>
                         <Text style={styles.label}>
                             {english ? 'Choose your location' : 'בחר מיקום'}
                         </Text>
@@ -110,7 +131,8 @@ export default class SettingsDrawer extends PureComponent {
                             selectedValue={location}
                             onValueChange={(location) =>
                                 this.onChangeSettings({ location })
-                            }>
+                            }
+                        >
                             {Locations.map((location, i) => (
                                 <Picker.Item
                                     key={i}
@@ -119,20 +141,6 @@ export default class SettingsDrawer extends PureComponent {
                                 />
                             ))}
                         </Picker>
-                        <View style={styles.checkboxView}>
-                            <CheckBox
-                                isChecked={Boolean(english)}
-                                onClick={() =>
-                                    this.onChangeSettings({
-                                        english: !english,
-                                    })
-                                }
-                                style={styles.checkbox}
-                            />
-                            <Text style={styles.labelCheckbox}>
-                                {english ? 'English' : 'אנגלית'}
-                            </Text>
-                        </View>
                         <Text style={styles.label}>
                             {english
                                 ? 'Choose which Zmanim to show'
@@ -141,11 +149,11 @@ export default class SettingsDrawer extends PureComponent {
                         <View style={styles.scrollView}>
                             <SelectMultiple
                                 items={fullZmanTypeList.map((zt) => ({
-                                    label: zt.desc,
+                                    label: english ? zt.eng : zt.desc,
                                     value: zt,
                                 }))}
                                 selectedItems={zmanimToShow.map((zts) => ({
-                                    label: zts.desc,
+                                    label: english ? zts.eng : zts.desc,
                                     value: zts,
                                 }))}
                                 onSelectionsChange={(selected) => {
@@ -198,6 +206,11 @@ export default class SettingsDrawer extends PureComponent {
                             </Text>
                         </View>
                         <View style={styles.numBoxView}>
+                            <Text style={styles.labelCheckbox}>
+                                {english
+                                    ? 'Number of items to show: '
+                                    : ': מקסימום פרטים להציג במסך'}
+                            </Text>
                             <Picker
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
@@ -206,7 +219,8 @@ export default class SettingsDrawer extends PureComponent {
                                     this.onChangeSettings({
                                         numberOfItemsToShow,
                                     })
-                                }>
+                                }
+                            >
                                 {range(1, 10).map((num) => (
                                     <Picker.Item
                                         key={num}
@@ -215,13 +229,13 @@ export default class SettingsDrawer extends PureComponent {
                                     />
                                 ))}
                             </Picker>
-                            <Text style={styles.labelCheckbox}>
-                                {english
-                                    ? 'Number of items to show: '
-                                    : ': מקסימום פרטים להציג במסך'}
-                            </Text>
                         </View>
                         <View style={styles.numBoxView}>
+                            <Text style={styles.labelCheckbox}>
+                                {english
+                                    ? 'Number of minutes to show past items: '
+                                    : 'מספר דקות להציג זמנים שעברו: '}
+                            </Text>
                             <Picker
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
@@ -230,7 +244,8 @@ export default class SettingsDrawer extends PureComponent {
                                     this.onChangeSettings({
                                         minToShowPassedZman,
                                     })
-                                }>
+                                }
+                            >
                                 {range(0, 60).map((num) => (
                                     <Picker.Item
                                         key={num}
@@ -239,11 +254,6 @@ export default class SettingsDrawer extends PureComponent {
                                     />
                                 ))}
                             </Picker>
-                            <Text style={styles.labelCheckbox}>
-                                {english
-                                    ? 'Number of minutes to show past items: '
-                                    : 'מספר דקות להציג זמנים שעברו: '}
-                            </Text>
                         </View>
                         <View style={styles.checkboxView}>
                             <CheckBox
@@ -257,7 +267,7 @@ export default class SettingsDrawer extends PureComponent {
                             />
                             <Text style={styles.labelCheckbox}>
                                 {english
-                                    ? 'Show the Shir Shel Yo of the Gr"a'
+                                    ? 'Show the Shir Shel Yom of the Gr"a'
                                     : 'הצג שיר של יום של הגר"א'}
                             </Text>
                         </View>
@@ -275,8 +285,13 @@ export default class SettingsDrawer extends PureComponent {
                                 {english ? 'Show Daf Yomi' : 'הצג דף היומי'}
                             </Text>
                         </View>
+                        <Text style={styles.label}>
+                            {english ? 'Choose app color theme' : 'בחר צבע רקע'}
+                        </Text>
                         <View style={styles.checkboxView}>
-                            <Text style={styles.labelCheckbox}>רקע בהיר</Text>
+                            <Text style={styles.labelCheckbox}>
+                                {english ? 'Light Theme' : 'רקע בהיר'}
+                            </Text>
                             <SwitchToggle
                                 switchOn={this.state.theme === 'dark'}
                                 onPress={() =>
@@ -287,20 +302,43 @@ export default class SettingsDrawer extends PureComponent {
                                 {english ? 'Dark Theme' : 'רקע כהה'}
                             </Text>
                         </View>
-                        <Text style={styles.label}>עריכת שעה</Text>
-                        <Text>
-                            {english ? 'The time is now: ' : 'השעה עכשיו: '}
-                            {Utils.getTimeString(
-                                this.props.nowTime,
-                                location.Israel
-                            )}
+                        <Text style={styles.label}>
+                            {english ? 'Change System Time' : 'עריכת שעה'}
                         </Text>
-                        <View style={styles.settingsButtons}>
+                        <View style={styles.checkboxView}>
+                            <Text style={styles.labelCheckbox}>
+                                {english ? 'The time is now: ' : 'השעה עכשיו: '}
+                                {Utils.getTimeString(
+                                    this.props.nowTime,
+                                    location.Israel
+                                )}
+                            </Text>
                             <TouchableHighlight
-                                onPress={() => this.openAddCustomZmanim()}>
+                                onPress={openSystemTimeSettings}
+                            >
                                 <View style={styles.setTimeView}>
                                     <Text style={styles.labelCheckbox}>
-                                        הוסף זמן
+                                        {english ? 'Set Time' : 'עריכת שעון'}
+                                    </Text>
+                                    <Image
+                                        style={{ width: 35, height: 35 }}
+                                        source={{
+                                            uri:
+                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==',
+                                        }}
+                                    />
+                                </View>
+                            </TouchableHighlight>
+                        </View>
+                        <View style={styles.settingsButtons}>
+                            <TouchableHighlight
+                                onPress={() => this.openAddCustomZmanim()}
+                            >
+                                <View style={styles.setTimeView}>
+                                    <Text style={styles.labelCheckbox}>
+                                        {english
+                                            ? 'Add Custom Zman'
+                                            : 'הוסף זמן'}
                                     </Text>
                                     <Image
                                         style={{ width: 35, height: 35 }}
@@ -312,25 +350,13 @@ export default class SettingsDrawer extends PureComponent {
                                 </View>
                             </TouchableHighlight>
                             <TouchableHighlight
-                                onPress={openSystemTimeSettings}>
+                                onPress={() => this.resetSettings()}
+                            >
                                 <View style={styles.setTimeView}>
                                     <Text style={styles.labelCheckbox}>
-                                        עריכת שעון
-                                    </Text>
-                                    <Image
-                                        style={{ width: 35, height: 35 }}
-                                        source={{
-                                            uri:
-                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==',
-                                        }}
-                                    />
-                                </View>
-                            </TouchableHighlight>
-                            <TouchableHighlight
-                                onPress={() => this.resetSettings()}>
-                                <View style={styles.setTimeView}>
-                                    <Text style={styles.labelCheckbox}>
-                                        אפס נתונים
+                                        {english
+                                            ? 'Reset Settings'
+                                            : 'איפוס הגדרות'}
                                     </Text>
                                     <Image
                                         style={{ width: 35, height: 35 }}
@@ -350,7 +376,8 @@ export default class SettingsDrawer extends PureComponent {
                             AppUtils.changeSystemHomeSettings(
                                 this.props.settings
                             )
-                        }>
+                        }
+                    >
                         {english ? 'Close' : 'סגור'} X
                     </Text>
                 </View>
