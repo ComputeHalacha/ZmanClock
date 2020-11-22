@@ -1,11 +1,13 @@
 import React, { PureComponent } from 'react';
 import {
-    ToolbarAndroid,
     StatusBar,
     DrawerLayoutAndroid,
     Text,
     View,
+    ToolbarAndroid,
+    Dimensions,
 } from 'react-native';
+//import ToolbarAndroid from '@react-native-community/toolbar-android';
 import KeepAwake from 'react-native-keep-awake';
 import NavigationBarAndroid from './Code/NavigationBar';
 import jDate from './Code/JCal/jDate';
@@ -18,6 +20,8 @@ import getNotifications from './Code/Notifications';
 import Settings from './Code/Settings';
 import { log } from './Code/GeneralUtils';
 import getStyle from './GUI/Styles/Styles';
+
+const screenWidth = Math.round(Dimensions.get('window').width);
 
 export default class App extends PureComponent {
     /**
@@ -36,7 +40,6 @@ export default class App extends PureComponent {
         this.closeDrawer = this.closeDrawer.bind(this);
         this.changeSettings = this.changeSettings.bind(this);
         this.isPastShulZman = this.isPastShulZman.bind(this);
-
         this.setInitialData();
     }
     componentDidMount() {
@@ -100,7 +103,7 @@ export default class App extends PureComponent {
             !this.state.sd ||
             sd.getDate() !== this.state.sd.getDate() ||
             this.state.zmanTimes.some(
-                zt =>
+                (zt) =>
                     !zt.isTomorrow &&
                     Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
                         this.state.settings.minToShowPassedZman
@@ -241,23 +244,35 @@ export default class App extends PureComponent {
         this.setState({ settings, sd: null });
     }
     render() {
-        log('Rendering');
-        const { styles } = this.state;
+        const {
+            styles,
+            settings,
+            nowTime,
+            jdate,
+            sd,
+            zmanTimes,
+            notifications,
+        } = this.state;
+        const { english } = settings;
         return (
             <DrawerLayoutAndroid
-                drawerWidth={400}
+                drawerWidth={parseInt(screenWidth * 0.9)}
                 onDrawerOpen={() => (this.isDrawerOpen = true)}
                 onDrawerClose={() => (this.isDrawerOpen = false)}
                 renderNavigationView={() => (
                     <SettingsDrawer
                         close={this.closeDrawer}
                         changeSettings={this.changeSettings}
-                        settings={this.state.settings}
-                        nowTime={this.state.nowTime}
-                        drawerPosition={DrawerLayoutAndroid.positions.Right}
+                        settings={settings}
+                        nowTime={nowTime}
+                        drawerPosition={
+                            english
+                                ? DrawerLayoutAndroid.positions.Left
+                                : DrawerLayoutAndroid.positions.Right
+                        }
                     />
                 )}
-                ref={drawer => (this.drawer = drawer)}>
+                ref={(drawer) => (this.drawer = drawer)}>
                 <KeepAwake />
                 <StatusBar hidden={true} />
                 <ToolbarAndroid
@@ -265,16 +280,17 @@ export default class App extends PureComponent {
                     onTouchStart={() => this.toggleDrawer()}>
                     <View style={styles.headerView}>
                         <Text style={styles.headerTextName}>
-                            {this.state.settings.location.Name}
+                            {settings.location.Name}
                         </Text>
                     </View>
                 </ToolbarAndroid>
                 <Main
-                    jdate={this.state.jdate}
-                    zmanTimes={this.state.zmanTimes}
-                    nowTime={this.state.nowTime}
-                    notifications={this.state.notifications}
-                    settings={this.state.settings}
+                    jdate={jdate}
+                    sdate={sd}
+                    zmanTimes={zmanTimes}
+                    nowTime={nowTime}
+                    notifications={notifications}
+                    settings={settings}
                 />
             </DrawerLayoutAndroid>
         );

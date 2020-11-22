@@ -16,6 +16,7 @@ export default class Settings {
      * @param {boolean} [showGaonShir] Show the Shir Shel Yom of the Gr"a?
      * @param {string} [theme] The name of the theme
      * @param {boolean} [showDafYomi] Show the Daf Yomi?
+     * @param {boolean} [english] Show in English?
      */
     constructor(
         zmanimToShow,
@@ -26,7 +27,8 @@ export default class Settings {
         minToShowPassedZman,
         showGaonShir,
         theme,
-        showDafYomi
+        showDafYomi,
+        english
     ) {
         /**
          * @property {[{id:Number, offset: ?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }]} zmanimToShow List of which zmanim to show
@@ -70,10 +72,13 @@ export default class Settings {
          */
         this.theme = theme || 'dark';
         /**
-         * @property {boolean} [showDafYomi] Show the Shir Shel Yom of the Gr"a?
+         * @property {boolean} [showDafYomi] Show Daf Yomi?
          */
         this.showDafYomi = setDefault(showDafYomi, true);
-        
+        /**
+         * @property {boolean} [english] Should the language be English?
+         */
+        this.english = !!english;
     }
     clone() {
         return new Settings(
@@ -85,7 +90,8 @@ export default class Settings {
             this.minToShowPassedZman,
             this.showGaonShir,
             this.theme,
-            this.showDafYomi
+            this.showDafYomi,
+            this.english
         );
     }
     /**
@@ -110,11 +116,12 @@ export default class Settings {
                     'MINUTES_PASSED_ZMAN',
                     JSON.stringify(this.minToShowPassedZman),
                 ],
-                ['SHIR_GAON', JSON.stringify(Number(this.showGaonShir))],                
+                ['SHIR_GAON', JSON.stringify(Number(this.showGaonShir))],
                 ['THEME_NAME', this.theme],
-                ['DAF_YOMI', JSON.stringify(Number(this.showDafYomi))],                
+                ['DAF_YOMI', JSON.stringify(Number(this.showDafYomi))],
+                ['ENGLISH', JSON.stringify(Number(this.english))],
             ],
-            errors =>
+            (errors) =>
                 errors &&
                 error('Error during AsyncStorage.multiSet for settings', errors)
         );
@@ -268,7 +275,8 @@ export default class Settings {
                     log('theme from storage data', tn);
                 } else {
                     warn(
-                        'Invalid or missing theme in storage data variable: ' + tn
+                        'Invalid or missing theme in storage data variable: ' +
+                            tn
                     );
                 }
             } catch (e) {
@@ -282,12 +290,23 @@ export default class Settings {
                     settings.showDafYomi = Boolean(JSON.parse(sn));
                     log('showDafYomi from storage data', sn);
                 } else {
-                    warn(
-                        'Invalid showDafYomi in storage data variable: ' + sn
-                    );
+                    warn('Invalid showDafYomi in storage data variable: ' + sn);
                 }
             } catch (e) {
                 error('Failed to load showDafYomi from storage data:', e);
+            }
+        }
+        if (allKeys.includes('ENGLISH')) {
+            try {
+                const eng = await AsyncStorage.getItem('ENGLISH');
+                if (eng) {
+                    settings.english = Boolean(JSON.parse(eng));
+                    log('English from storage data', eng);
+                } else {
+                    warn('Invalid english in storage data variable: ' + eng);
+                }
+            } catch (e) {
+                error('Failed to load English from storage data:', e);
             }
         }
         return settings;

@@ -6,18 +6,18 @@ export default {
             flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: '#000000'
+            backgroundColor: '#000000',
         },
         headerTextName: {
             flex: 1,
             textAlign: 'center',
             fontSize: 13,
-            color: '#555577'
+            color: '#555577',
         },
         toolbarAndroid: {
             height: 40,
             backgroundColor: '#000000',
-            flex: 0
+            flex: 0,
         },
     }),
     mainStyles: StyleSheet.create({
@@ -25,17 +25,19 @@ export default {
             flex: 1,
             backgroundColor: '#000000',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            width: '100%',
+            height: '100%',
         },
         scrollView: {
-            width: '90%',
-            height: '75%',
-            flex: 1
+            width: '95%',
+            height: '100%',
+            flex: 1,
         },
         notificationsView: {
             marginTop: 10,
             marginBottom: 10,
-            width: '100%'
+            width: '100%',
         },
         notificationsInnerView: {
             justifyContent: 'space-around',
@@ -48,71 +50,105 @@ export default {
             fontWeight: 'bold',
             fontSize: 13,
             lineHeight: 27,
-            backgroundColor:'#111124',
-            paddingRight:8,
-            paddingLeft:8,
-            marginBottom:3,
-            borderRadius:6
+            backgroundColor: '#111124',
+            paddingRight: 8,
+            paddingLeft: 8,
+            marginBottom: 3,
+            borderRadius: 6,
         },
         singleZman: {
             backgroundColor: '#111111',
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 7,
-            padding: 20,
+            paddingTop: 7,
+            paddingRight: 7,
+            paddingLeft: 7,
+            paddingBottom: 12,
             width: '100%',
-            marginBottom: 10,
-            minHeight: 130
+            marginBottom: 7,
+            minHeight: 130,
         },
         dateText: {
             color: '#bb8888',
             fontSize: 25,
-            textAlign: 'center'
+            textAlign: 'center',
+        },
+        sDateText: {
+            color: '#876',
+            fontSize: 15,
+            textAlign: 'center',
         },
         timeText1: {
             color: '#559955',
             fontSize: 80,
             padding: 1,
-            marginBottom: 15
+            marginBottom: 15,
+        },
+        timeText1Eng: {
+            color: '#559955',
+            fontSize: 60,
+            marginBottom: 12,
         },
         timeNowText: {
             color: '#9999ff',
             fontSize: 20,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
         },
         zmanTimeText: {
-            color: '#99bb99'
+            color: '#99bb99',
         },
         within10ZmanTimeText: {
             fontSize: 20,
             fontWeight: 'bold',
-            color: '#99bb99'
+            color: '#99bb99',
         },
         timeRemainingText: {
             fontSize: 38,
-            textAlign: 'center'
+            textAlign: 'center',
+        },
+        timeRemainingTextEng: {
+            fontSize: 30,
+            textAlign: 'center',
         },
         timeRemainingNumber: {
             color: '#ffffee',
-            fontSize: 20
+            fontSize: 20,
+        },
+        timeRemainingNumberEng: {
+            color: '#ffffee',
+            fontSize: 17,
         },
         timeRemainingLabel: {
             fontSize: 18,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+        },
+        timeRemainingLabelEng: {
+            fontSize: 15,
+            fontWeight: 'bold',
         },
         zmanTypeNameText: {
             color: '#9999ff',
-            fontSize: 22
+            fontSize: 22,
+        },
+        zmanTypeNameTextEng: {
+            color: '#9999ff',
+            fontSize: 20,
         },
         zmanTypeNameTextWas: {
             color: '#555588',
-            fontSize: 15
-        }
+            fontSize: 15,
+        },
+        zmanTypeNameTextWasEng: {
+            color: '#555588',
+            fontSize: 12,
+        },
     }),
     settingsDrawerStyles: StyleSheet.create({
         outContainer: {
             flex: 1,
             backgroundColor: '#222222',
+            padding: 5,
         },
         container: {
             flex: 1,
@@ -150,7 +186,7 @@ export default {
             color: '#9999ff',
             width: '100%',
             fontWeight: 'bold',
-            margin: 10,
+            margin: 15,
         },
         selectMultipleStyle: { backgroundColor: '#333333' },
         selectMultipleRowStyle: { backgroundColor: '#333333', flex: 1 },
@@ -210,7 +246,7 @@ export default {
             flexDirection: 'row',
             justifyContent: 'space-around',
             flex: 1,
-            width: '100%'
+            width: '100%',
         },
     }),
     customZmanimStyles: StyleSheet.create({

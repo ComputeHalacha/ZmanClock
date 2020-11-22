@@ -1,6 +1,7 @@
 import Zmanim from './Zmanim';
 import jDate from './jDate';
 import Location from './Location';
+import { log } from './../GeneralUtils';
 
 export default class Utils {
     static jMonthsEng = [
@@ -143,6 +144,7 @@ export default class Utils {
      * @param {Boolean} dontCapitalize
      */
     static toStringDate(date, hideDayOfWeek, dontCapitalize) {
+        if (!date) return;
         return (
             (hideDayOfWeek
                 ? dontCapitalize
@@ -154,6 +156,22 @@ export default class Utils {
             ' of ' +
             Utils.sMonthsEng[date.getMonth()] +
             ' ' +
+            date.getFullYear().toString()
+        );
+    }
+
+    /**
+     * Returns the javascript date in the format: 1/3/2020.
+     * @param {Date} date
+     * @param {Boolean} monthFirst
+     */
+    static toShortStringDate(date, monthFirst) {
+        if (!date) return;
+        return (
+            (monthFirst
+                ? `${date.getMonth()}/${date.getDate()}`
+                : `${date.getDate()}/${date.getMonth()}`) +
+            '/' +
             date.getFullYear().toString()
         );
     }
@@ -363,6 +381,36 @@ export default class Utils {
             }
             t += `${Math.trunc(time.second).toString()} ${
                 time.second === 1 ? 'שנייה' : 'שניות'
+            }`;
+        }
+        return t;
+    }
+
+    /**
+     * Returns the given time interval in a formatted string.
+     * @param {{hour:Number, minute:Number,second:Number,sign?: 1 | -1}} time An object in the format {hour : 23, minute :42, second: 18 }
+     */
+    static getTimeIntervalTextString(time) {
+        let t = '';
+        if (time.hour > 0) {
+            t += `${time.hour.toString()} ${
+                time.hour === 1 ? 'hour' : 'hours'
+            }`;
+        }
+        if (time.minute > 0) {
+            if (t.length) {
+                t += ' ';
+            }
+            t += `${time.minute.toString()} ${
+                time.minute === 1 ? 'minute' : 'minutes'
+            }`;
+        }
+        if (time.second > 0) {
+            if (t.length) {
+                t += ' ';
+            }
+            t += `${Math.trunc(time.second).toString()} ${
+                time.second === 1 ? 'second' : 'seconds'
             }`;
         }
         return t;

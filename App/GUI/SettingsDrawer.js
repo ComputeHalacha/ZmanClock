@@ -1,5 +1,5 @@
 /* eslint-disable react-perf/jsx-no-new-object-as-prop */
-import React, { PureComponent } from "react";
+import React, { PureComponent } from 'react';
 import {
     Image,
     Picker,
@@ -7,18 +7,18 @@ import {
     Text,
     TouchableHighlight,
     View,
-} from "react-native";
-import CheckBox from "react-native-check-box";
-import SelectMultiple from "react-native-select-multiple";
-import SwitchToggle from "react-native-switch-toggle";
-import AppUtils from "../Code/AppUtils";
-import { range, setDefault } from "../Code/GeneralUtils";
-import Utils from "../Code/JCal/Utils";
-import { Locations } from "../Code/Locations";
-import { openSystemTimeSettings } from "../Code/SystemTime";
-import { version } from "../../package.json";
-import Settings from "../Code/Settings";
-import getStyle from "./Styles/Styles";
+} from 'react-native';
+import CheckBox from 'react-native-check-box';
+import SelectMultiple from 'react-native-select-multiple';
+import SwitchToggle from 'react-native-switch-toggle';
+import AppUtils from '../Code/AppUtils';
+import { range, setDefault } from '../Code/GeneralUtils';
+import Utils from '../Code/JCal/Utils';
+import { Locations } from '../Code/Locations';
+import { openSystemTimeSettings } from '../Code/SystemTime';
+import { version } from '../../package.json';
+import Settings from '../Code/Settings';
+import getStyle from './Styles/Styles';
 
 export default class SettingsDrawer extends PureComponent {
     constructor(props) {
@@ -41,6 +41,7 @@ export default class SettingsDrawer extends PureComponent {
                 showGaonShir,
                 theme,
                 showDafYomi,
+                english,
             } = values,
             settings = this.props.settings.clone();
         if (zmanimToShow) {
@@ -67,11 +68,12 @@ export default class SettingsDrawer extends PureComponent {
             this.setState({ theme });
         }
         settings.showDafYomi = setDefault(showDafYomi, settings.showDafYomi);
+        settings.english = setDefault(english, settings.english);
 
         this.props.changeSettings(settings);
     }
     openAddCustomZmanim() {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     resetSettings() {
         const settings = new Settings();
@@ -86,25 +88,27 @@ export default class SettingsDrawer extends PureComponent {
                 minToShowPassedZman,
                 showGaonShir,
                 showDafYomi,
+                english,
             } = this.props.settings,
             fullZmanTypeList = AppUtils.AllZmanTypes(this.props.settings),
-            styles = getStyle(this.state.theme, "settingsDrawer"),
-            otherTheme = this.state.theme === "dark" ? "light" : "dark";
+            styles = getStyle(this.state.theme, 'settingsDrawer'),
+            otherTheme = this.state.theme === 'dark' ? 'light' : 'dark';
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
                     <Text style={styles.header}>הגדרות</Text>
-                    <Text
-                        style={
-                            styles.version
-                        }>{`שעון זמנים - גירסה ${version}`}</Text>
+                    <Text style={styles.version}>{`${
+                        english ? 'Zman Clock Version' : 'שעון זמנים - גירסה'
+                    } ${version}`}</Text>
                     <ScrollView contentContainerStyle={styles.inContainer}>
-                        <Text style={styles.label}>בחר מיקום</Text>
+                        <Text style={styles.label}>
+                            {english ? 'Choose your location' : 'בחר מיקום'}
+                        </Text>
                         <Picker
                             style={styles.picker}
                             itemStyle={styles.pickerItem}
                             selectedValue={location}
-                            onValueChange={location =>
+                            onValueChange={(location) =>
                                 this.onChangeSettings({ location })
                             }>
                             {Locations.map((location, i) => (
@@ -115,22 +119,40 @@ export default class SettingsDrawer extends PureComponent {
                                 />
                             ))}
                         </Picker>
-                        <Text style={styles.label}>בחר איזה זמנים להציג</Text>
+                        <View style={styles.checkboxView}>
+                            <CheckBox
+                                isChecked={Boolean(english)}
+                                onClick={() =>
+                                    this.onChangeSettings({
+                                        english: !english,
+                                    })
+                                }
+                                style={styles.checkbox}
+                            />
+                            <Text style={styles.labelCheckbox}>
+                                {english ? 'English' : 'אנגלית'}
+                            </Text>
+                        </View>
+                        <Text style={styles.label}>
+                            {english
+                                ? 'Choose which Zmanim to show'
+                                : 'בחר איזה זמנים להציג'}
+                        </Text>
                         <View style={styles.scrollView}>
                             <SelectMultiple
-                                items={fullZmanTypeList.map(zt => ({
+                                items={fullZmanTypeList.map((zt) => ({
                                     label: zt.desc,
                                     value: zt,
                                 }))}
-                                selectedItems={zmanimToShow.map(zts => ({
+                                selectedItems={zmanimToShow.map((zts) => ({
                                     label: zts.desc,
                                     value: zts,
                                 }))}
-                                onSelectionsChange={selected => {
+                                onSelectionsChange={(selected) => {
                                     this.onChangeSettings({
                                         zmanimToShow: fullZmanTypeList.filter(
-                                            zt =>
-                                                selected.some(i =>
+                                            (zt) =>
+                                                selected.some((i) =>
                                                     AppUtils.IsSameZmanToShow(
                                                         i.value,
                                                         zt
@@ -156,7 +178,9 @@ export default class SettingsDrawer extends PureComponent {
                                 }
                             />
                         </View>
-                        <Text style={styles.label}>העדפות כלליות</Text>
+                        <Text style={styles.label}>
+                            {english ? 'General Settings' : 'העדפות כלליות'}
+                        </Text>
                         <View style={styles.checkboxView}>
                             <CheckBox
                                 isChecked={Boolean(showNotifications)}
@@ -168,7 +192,9 @@ export default class SettingsDrawer extends PureComponent {
                                 style={styles.checkbox}
                             />
                             <Text style={styles.labelCheckbox}>
-                                הצג מידע יומית
+                                {english
+                                    ? 'Show daily information'
+                                    : 'הצג מידע יומית'}
                             </Text>
                         </View>
                         <View style={styles.numBoxView}>
@@ -176,12 +202,12 @@ export default class SettingsDrawer extends PureComponent {
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
                                 selectedValue={numberOfItemsToShow}
-                                onValueChange={numberOfItemsToShow =>
+                                onValueChange={(numberOfItemsToShow) =>
                                     this.onChangeSettings({
                                         numberOfItemsToShow,
                                     })
                                 }>
-                                {range(1, 10).map(num => (
+                                {range(1, 10).map((num) => (
                                     <Picker.Item
                                         key={num}
                                         value={num}
@@ -190,7 +216,9 @@ export default class SettingsDrawer extends PureComponent {
                                 ))}
                             </Picker>
                             <Text style={styles.labelCheckbox}>
-                                מקסימום פרטים להציג במסך:{" "}
+                                {english
+                                    ? 'Number of items to show: '
+                                    : ': מקסימום פרטים להציג במסך'}
                             </Text>
                         </View>
                         <View style={styles.numBoxView}>
@@ -198,12 +226,12 @@ export default class SettingsDrawer extends PureComponent {
                                 style={styles.numberPicker}
                                 itemStyle={styles.pickerItem}
                                 selectedValue={minToShowPassedZman}
-                                onValueChange={minToShowPassedZman =>
+                                onValueChange={(minToShowPassedZman) =>
                                     this.onChangeSettings({
                                         minToShowPassedZman,
                                     })
                                 }>
-                                {range(0, 60).map(num => (
+                                {range(0, 60).map((num) => (
                                     <Picker.Item
                                         key={num}
                                         value={num}
@@ -212,7 +240,9 @@ export default class SettingsDrawer extends PureComponent {
                                 ))}
                             </Picker>
                             <Text style={styles.labelCheckbox}>
-                                מספר דקות להציג זמנים שעברו:{" "}
+                                {english
+                                    ? 'Number of minutes to show past items: '
+                                    : 'מספר דקות להציג זמנים שעברו: '}
                             </Text>
                         </View>
                         <View style={styles.checkboxView}>
@@ -226,7 +256,9 @@ export default class SettingsDrawer extends PureComponent {
                                 style={styles.checkbox}
                             />
                             <Text style={styles.labelCheckbox}>
-                                {'הצג שיר של יום של הגר"א'}
+                                {english
+                                    ? 'Show the Shir Shel Yo of the Gr"a'
+                                    : 'הצג שיר של יום של הגר"א'}
                             </Text>
                         </View>
                         <View style={styles.checkboxView}>
@@ -240,23 +272,28 @@ export default class SettingsDrawer extends PureComponent {
                                 style={styles.checkbox}
                             />
                             <Text style={styles.labelCheckbox}>
-                                {'הצג דף היומי'}
+                                {english ? 'Show Daf Yomi' : 'הצג דף היומי'}
                             </Text>
                         </View>
                         <View style={styles.checkboxView}>
                             <Text style={styles.labelCheckbox}>רקע בהיר</Text>
                             <SwitchToggle
-                                switchOn={this.state.theme === "dark"}
+                                switchOn={this.state.theme === 'dark'}
                                 onPress={() =>
                                     this.onChangeSettings({ theme: otherTheme })
                                 }
                             />
-                            <Text style={styles.labelCheckbox}>רקע כהה</Text>
+                            <Text style={styles.labelCheckbox}>
+                                {english ? 'Dark Theme' : 'רקע כהה'}
+                            </Text>
                         </View>
                         <Text style={styles.label}>עריכת שעה</Text>
                         <Text>
-                            השעה עכשיו:{" "}
-                            {Utils.getTimeString(this.props.nowTime, true)}
+                            {english ? 'The time is now: ' : 'השעה עכשיו: '}
+                            {Utils.getTimeString(
+                                this.props.nowTime,
+                                location.Israel
+                            )}
                         </Text>
                         <View style={styles.settingsButtons}>
                             <TouchableHighlight
@@ -269,7 +306,7 @@ export default class SettingsDrawer extends PureComponent {
                                         style={{ width: 35, height: 35 }}
                                         source={{
                                             uri:
-                                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAHUSURBVDhPrVRdSwJBFN3MPiiDXjK1tKio6O8p+BsEf1+RQWDRl74VRSS7ds7de4ZxVXrpwO69587M2Tt37mzy31hxa+h2u1N3k16vNzNWwD7mvtLBvBbMI30iLIrFhAWiO5j3TgdjhzA/4CP4R/AfGC/xJTEMbNMSWZYVPxLEHM94xlhTRXwIv2lR4MwXbuU0KTlvdTqdTKK07l9Gvnawp3lcfGehJPlym3GriA/7/f4FA5ycpqmEbzBedz+DoegmOUHCxRyYqxmF3OXYBfitU/IauB0MAV6FGbOGUwnFAgTiDbcs+gA2ZEIx8CunxJivOKNipqyLnSAsi674Bvg3uYB4BeYzZ7OgqBWcDzh7bN39+OPH7XZbB6bDXAqdWCsS1skT9Sg+B+vDCIu2uQY/tdFcjP1nWCYqKLMmrfvlyG+4ZcvsKu6xAGWozLhNu0Ke2cR9ij3BUuwFTzhtIhbV1Ru5XSR2AF/bVN+xZeyQYM/Z9BINNcRA8AtizMz6UYsExFmSAW7UiYdyRBP5VbursKpZjQNAaCnnQsVj1uRxVgxS8N65aqZtLrpR/AN9uH/NFyesokkn5XLZJgtYzMzecjaDcKMEfSjGXOAP2PZhT3MqJMkvF8kx31lhwIMAAAAASUVORK5CYII=",
+                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAHUSURBVDhPrVRdSwJBFN3MPiiDXjK1tKio6O8p+BsEf1+RQWDRl74VRSS7ds7de4ZxVXrpwO69587M2Tt37mzy31hxa+h2u1N3k16vNzNWwD7mvtLBvBbMI30iLIrFhAWiO5j3TgdjhzA/4CP4R/AfGC/xJTEMbNMSWZYVPxLEHM94xlhTRXwIv2lR4MwXbuU0KTlvdTqdTKK07l9Gvnawp3lcfGehJPlym3GriA/7/f4FA5ycpqmEbzBedz+DoegmOUHCxRyYqxmF3OXYBfitU/IauB0MAV6FGbOGUwnFAgTiDbcs+gA2ZEIx8CunxJivOKNipqyLnSAsi674Bvg3uYB4BeYzZ7OgqBWcDzh7bN39+OPH7XZbB6bDXAqdWCsS1skT9Sg+B+vDCIu2uQY/tdFcjP1nWCYqKLMmrfvlyG+4ZcvsKu6xAGWozLhNu0Ke2cR9ij3BUuwFTzhtIhbV1Ru5XSR2AF/bVN+xZeyQYM/Z9BINNcRA8AtizMz6UYsExFmSAW7UiYdyRBP5VbursKpZjQNAaCnnQsVj1uRxVgxS8N65aqZtLrpR/AN9uH/NFyesokkn5XLZJgtYzMzecjaDcKMEfSjGXOAP2PZhT3MqJMkvF8kx31lhwIMAAAAASUVORK5CYII=',
                                         }}
                                     />
                                 </View>
@@ -284,7 +321,7 @@ export default class SettingsDrawer extends PureComponent {
                                         style={{ width: 35, height: 35 }}
                                         source={{
                                             uri:
-                                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==",
+                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAMAAAApB0NrAAABUFBMVEUAAABPT09QUFBVVVVPT09/f39PT09VVVUAAABPT09NTU1PT09PT09OTk5FRUVQUFBQUFBMTExPT09ISEhQUFBPT09QUFBRUVFQUFBQUFA/Pz9PT09QUFBOTk5OTk5NTU1PT09QUFBUVFRQUFBQUFBRUVFOTk5VVVVQUFBPT08/Pz9QUFBPT09RUVFOTk5LS0tQUFAzMzNRUVFQUFBQUFBRUVFQUFBPT09OTk5OTk5PT09QUFBRUVFbW1tQUFBQUFBRUVFRUVFPT09QUFBPT09MTExSUlJNTU1PT09mZmZOTk5RUVFRUVFQUFBQUFBPT09PT09PT09PT09RUVFOTk5PT09PT09RUVFQUFBPT09PT09OTk5PT09PT09PT09PT09QUFBcXFxQUFBPT09PT09OTk5RUVFPT09ISEhQUFBPT09QUFBRUVFPT09QUFB3d3dTx2nXAAAAb3RSTlMAEBMGOgKDAwFjIWCNRAt1ORTBDilzuFtPwgjAZl6YLoaJITafXjcPiEMErK0cWCJ4BVVptWe/vrhBtFYZDqVJWI1KWbA1IjuHBRo1L6tvvXdwl05RlleXebZ9a0BqpmeoCz/EpCpRTQecmcVIqbISLGCKAAABk0lEQVR42nXTU2MsQRDF8bPu2di2bSfXtm37//3fbmrdnZnf82lWlRpl+5ruA1eaLowpVnGCRj3HCg1eJPQgI8/UEmCGoyi6B5hpNerHND8u5GRyhZFRzG3VPAEYWlCD3CbmqipmAc63ypeeATqr170LPFpUqOsc8NTJ3AAuVSMn2XanipsR8F6nJoGh2kFZKKgqZad1SZoA6tdtb8woAnYkAc1S7D5yy7ArXQf6kzLaArrVBxQSM2ngQE1ATgn30RzQok4YVuI+bhz2BUTJGeWBMNMenwn3+fvnJMgcwkPVZX4B/4quWv5m+BC+Syr2Aj+P69Vo0WWgIE/bb+Cbq/7PG90BRuT78R04tDq/ANYkYDSnwNcv9EjaeAl7tjOwqlDmyM5aBzYl3QLoUJwVYN+OVA8wk9JZHfUjMtPAcuZspBeYd5IZA4hS4UG2y8CkNzxsOdVtvMKsNYwyZmknPWe5XCq9vo3tck0Nup8DZjyfzzcDZr4oj3v7GV/vM6dQ1+td6vaOPipW90HLNvCu5ZN3yn+wsaIKnTCzAwAAAABJRU5ErkJggg==',
                                         }}
                                     />
                                 </View>
@@ -299,7 +336,7 @@ export default class SettingsDrawer extends PureComponent {
                                         style={{ width: 35, height: 35 }}
                                         source={{
                                             uri:
-                                                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAKeSURBVDhPlZRfaNJRFMd/tYkWCgWSBm3Tn9nAlooyZGw4QSVTBDP/UC9DfBOCHgZ7qKceRRBh4oMPe5mwqRAk6GPoizLYgzENHK0/SzEfhBiBD211zuX+fs25XPuAfM8513s85557nWDOsL6+Lp6fn58ul8t9GroUV6kSlpaWbh4eHh4NBoP9YDA4RcOX4gpVkmxxcZGvamtr6yU1CWKxmOn3+w2r1Vrd3Nzs0fAIfEKz2exeWFh4S90LyeVy9w4ODvapy8O3XKlUCnBuz6nLGAyG6yKRaOL0Z3d3d2ZjY+MFrvv9/pZUKn1KvnwKvkIOjUbzzO12Z+AHZNVq9dzWIpGIWCKRHKEN7fvb7XaeLAAjCf+XbDaLFf9CGzq7U6vV2mgPTfksDodD6PV6Z6jL2O32W4lEQoh2IBA4hnO8gfby8vI3VGRsQp1ON1Cr1Z9VKtX9BwCc6/dOpzOgywwM5Qc1ScWoYxNy+Hy+PafT+Z66Q0CVNtRoNHoXlSQ0mUzatbW135lMRoo+B0z2GjV5oCrSMofH4yF3d3JyUoNKEp6cnNxG3d7eHnodqVRKTU2eVqs1FKvX60QFAsFPVJJQoVB8QN3Z2WFROUKh0EibMKg9ahIajQbZI5PJGqgkIZzDV9SVlRX+PiHxePwxKrQu7Ha7pP1YLOZB5eD25PN5cm14YJqreI7w/Mw0dCFGo9GCe2ZnZ1dp6O+U9Xp9HBXedBn+JKZJcAwwSIXNZnuHtlarJXsRPiG0fVwsFlVowz/PF7h7D8nCObAs+8hisXxCu1QqsbiXLAAjT8/lcrFzc3Mfqcuk0+lXcrmcbO71eqpwOPyaLADNZpMtFApkjeOfb1mpVD6B5zU0JA6oyAv38Q11L08ymZzCD3XHwDB/ALGG2jt4Fxh2AAAAAElFTkSuQmCC",
+                                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAKeSURBVDhPlZRfaNJRFMd/tYkWCgWSBm3Tn9nAlooyZGw4QSVTBDP/UC9DfBOCHgZ7qKceRRBh4oMPe5mwqRAk6GPoizLYgzENHK0/SzEfhBiBD211zuX+fs25XPuAfM8513s85557nWDOsL6+Lp6fn58ul8t9GroUV6kSlpaWbh4eHh4NBoP9YDA4RcOX4gpVkmxxcZGvamtr6yU1CWKxmOn3+w2r1Vrd3Nzs0fAIfEKz2exeWFh4S90LyeVy9w4ODvapy8O3XKlUCnBuz6nLGAyG6yKRaOL0Z3d3d2ZjY+MFrvv9/pZUKn1KvnwKvkIOjUbzzO12Z+AHZNVq9dzWIpGIWCKRHKEN7fvb7XaeLAAjCf+XbDaLFf9CGzq7U6vV2mgPTfksDodD6PV6Z6jL2O32W4lEQoh2IBA4hnO8gfby8vI3VGRsQp1ON1Cr1Z9VKtX9BwCc6/dOpzOgywwM5Qc1ScWoYxNy+Hy+PafT+Z66Q0CVNtRoNHoXlSQ0mUzatbW135lMRoo+B0z2GjV5oCrSMofH4yF3d3JyUoNKEp6cnNxG3d7eHnodqVRKTU2eVqs1FKvX60QFAsFPVJJQoVB8QN3Z2WFROUKh0EibMKg9ahIajQbZI5PJGqgkIZzDV9SVlRX+PiHxePwxKrQu7Ha7pP1YLOZB5eD25PN5cm14YJqreI7w/Mw0dCFGo9GCe2ZnZ1dp6O+U9Xp9HBXedBn+JKZJcAwwSIXNZnuHtlarJXsRPiG0fVwsFlVowz/PF7h7D8nCObAs+8hisXxCu1QqsbiXLAAjT8/lcrFzc3Mfqcuk0+lXcrmcbO71eqpwOPyaLADNZpMtFApkjeOfb1mpVD6B5zU0JA6oyAv38Q11L08ymZzCD3XHwDB/ALGG2jt4Fxh2AAAAAElFTkSuQmCC',
                                         }}
                                     />
                                 </View>
@@ -314,7 +351,7 @@ export default class SettingsDrawer extends PureComponent {
                                 this.props.settings
                             )
                         }>
-                        סגור X
+                        {english ? 'Close' : 'סגור'} X
                     </Text>
                 </View>
             </View>

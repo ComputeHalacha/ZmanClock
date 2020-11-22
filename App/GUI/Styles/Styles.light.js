@@ -6,18 +6,18 @@ export default {
             flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: '#FFFFFF'
+            backgroundColor: '#FFFFFF',
         },
         headerTextName: {
             flex: 1,
             textAlign: 'center',
             fontSize: 13,
-            color: '#AAAA88'
+            color: '#AAAA88',
         },
         toolbarAndroid: {
             height: 40,
             backgroundColor: '#FFFFFF',
-            flex: 0
+            flex: 0,
         },
     }),
     mainStyles: StyleSheet.create({
@@ -25,17 +25,17 @@ export default {
             flex: 1,
             backgroundColor: '#FFFFFF',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
         },
         scrollView: {
             width: '90%',
             height: '75%',
-            flex: 1
+            flex: 1,
         },
         notificationsView: {
             marginTop: 10,
             marginBottom: 10,
-            width: '100%'
+            width: '100%',
         },
         notificationsInnerView: {
             justifyContent: 'space-around',
@@ -48,66 +48,91 @@ export default {
             fontWeight: 'bold',
             fontSize: 13,
             lineHeight: 27,
-            backgroundColor:'#EEEEDB',
-            paddingRight:8,
-            paddingLeft:8,
-            marginBottom:3,
-            borderRadius:6
+            backgroundColor: '#EEEEDB',
+            paddingRight: 8,
+            paddingLeft: 8,
+            marginBottom: 3,
+            borderRadius: 6,
         },
         singleZman: {
             backgroundColor: '#EEEEEE',
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 7,
-            padding: 20,
-            width: '100%',
-            marginBottom: 10,
-            minHeight: 130
+            padding: 7,
+            marginBottom: 7,
+            minHeight: 130,
         },
         dateText: {
             color: '#447777',
             fontSize: 25,
-            textAlign: 'center'
+            textAlign: 'center',
+        },
+        sDateText: {
+            color: '#576',
+            fontSize: 15,
+            textAlign: 'center',
         },
         timeText1: {
             color: '#AA66AA',
             fontSize: 80,
             padding: 1,
-            marginBottom: 15
+            marginBottom: 15,
+        },
+        timeText1Eng: {
+            color: '#AA66AA',
+            fontSize: 60,
+            marginBottom: 12,
         },
         timeNowText: {
             color: '#666600',
             fontSize: 20,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
         },
         zmanTimeText: {
-            color: '#664466'
+            color: '#664466',
         },
         within10ZmanTimeText: {
             fontSize: 20,
             fontWeight: 'bold',
-            color: '#664466'
+            color: '#664466',
         },
         timeRemainingText: {
             fontSize: 38,
-            textAlign: 'center'
+            textAlign: 'center',
+        },
+        timeRemainingTextEng: {
+            fontSize: 30,
+            textAlign: 'center',
         },
         timeRemainingNumber: {
             color: '#000011',
-            fontSize: 20
+            fontSize: 20,
+        },
+        timeRemainingNumberEng: {
+            color: '#000011',
+            fontSize: 17,
         },
         timeRemainingLabel: {
             fontSize: 18,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
         },
         zmanTypeNameText: {
             color: '#666600',
-            fontSize: 22
+            fontSize: 22,
+        },
+        zmanTypeNameTextEng: {
+            color: '#666600',
+            fontSize: 13,
         },
         zmanTypeNameTextWas: {
             color: '#AAAA77',
-            fontSize: 15
-        }
+            fontSize: 15,
+        },
+        zmanTypeNameTextWasEng: {
+            color: '#AAAA77',
+            fontSize: 12,
+        },
     }),
     settingsDrawerStyles: StyleSheet.create({
         outContainer: {
@@ -210,7 +235,7 @@ export default {
             flexDirection: 'row',
             justifyContent: 'space-around',
             flex: 1,
-            width: '100%'
+            width: '100%',
         },
     }),
     customZmanimStyles: StyleSheet.create({

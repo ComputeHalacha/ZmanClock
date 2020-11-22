@@ -17,20 +17,24 @@ export default function getNotifications(jdate, sdate, time, settings) {
         month = jdate.Month,
         day = jdate.Day,
         dow = jdate.DayOfWeek,
-        { location, showGaonShir, showDafYomi } = settings,
-        { chatzosHayom, chatzosHalayla, alos, shkia } = AppUtils.getBasicShulZmanim(
-            sdate,
-            jdate,
-            location
-        ),
+        { location, showGaonShir, showDafYomi, english } = settings,
+        {
+            chatzosHayom,
+            chatzosHalayla,
+            alos,
+            shkia,
+        } = AppUtils.getBasicShulZmanim(sdate, jdate, location),
         isAfterChatzosHayom = Utils.isTimeAfter(chatzosHayom, time),
         isAfterChatzosHalayla =
-            Utils.isTimeAfter(chatzosHalayla, time) || (chatzosHalayla.hour > 12 && time.hour < 12), //Chatzos is before 0:00 and time is after 0:00
+            Utils.isTimeAfter(chatzosHalayla, time) ||
+            (chatzosHalayla.hour > 12 && time.hour < 12), //Chatzos is before 0:00 and time is after 0:00
         isAfterAlos = Utils.isTimeAfter(alos, time),
         isAfterShkia = Utils.isTimeAfter(shkia, time),
         isDaytime = isAfterAlos && !isAfterShkia,
         isNightTime = !isDaytime,
-        isNotBeinHasmashos = !isAfterShkia || Utils.isTimeAfter(Utils.addMinutes(shkia, 18), time),
+        isNotBeinHasmashos =
+            !isAfterShkia ||
+            Utils.isTimeAfter(Utils.addMinutes(shkia, 18), time),
         isMorning = isDaytime && !isAfterChatzosHayom,
         isAfternoon = isDaytime && isAfterChatzosHayom,
         isYomTov = jdate.isYomTovOrCholHamoed(location.Israel),
@@ -56,23 +60,49 @@ export default function getNotifications(jdate, sdate, time, settings) {
             location,
         };
     if (dow === DaysOfWeek.SHABBOS) {
-        getShabbosNotifications(notifications, dayInfo, showGaonShir);
+        getShabbosNotifications(
+            notifications,
+            dayInfo,
+            showGaonShir,
+            english,
+            location.Israel
+        );
     } else {
-        getWeekDayNotifications(notifications, dayInfo, showGaonShir);
+        getWeekDayNotifications(
+            notifications,
+            dayInfo,
+            showGaonShir,
+            english,
+            location.Israel
+        );
     }
-    getAroundTheYearNotifications(notifications, dayInfo, showGaonShir);
+    getAroundTheYearNotifications(
+        notifications,
+        dayInfo,
+        showGaonShir,
+        english,
+        location.Israel
+    );
 
     if (dayInfo.noTachnun && isDaytime && !isYomTov) {
         if (dow !== DaysOfWeek.SHABBOS) {
-            notifications.push('א"א תחנון');
+            notifications.push(english ? 'No Tachnun' : 'א"א תחנון');
         } else if (isAfternoon) {
-            notifications.push('א"א צדקתך');
-        } else if (!((month === 1 && day > 21) || month === 2 || (month === 3 && day < 6))) {
-            notifications.push('א"א אב הרחמים');
+            notifications.push(english ? 'No Tzidkascha' : 'א"א צדקתך');
+        } else if (
+            !(
+                (month === 1 && day > 21) ||
+                month === 2 ||
+                (month === 3 && day < 6)
+            )
+        ) {
+            notifications.push(english ? 'No Av Harachamim' : 'א"א אב הרחמים');
         }
     }
     if (showDafYomi) {
-        notifications.push(jdate.getDafyomiHeb());
+        notifications.push(
+            english ? jdate.getDafYomi() : jdate.getDafyomiHeb()
+        );
     }
 
     //If it is after the earliest Nacht during Sefiras Ha'omer
@@ -90,79 +120,123 @@ export default function getNotifications(jdate, sdate, time, settings) {
     return [...new Set(notifications)];
 }
 
-function getShabbosNotifications(notifications, dayInfo, showGaonShir) {
-    const { month, day, isLeapYear, isMorning, isYomTov, jdate, isDaytime, isAfternoon } = dayInfo;
+function getShabbosNotifications(
+    notifications,
+    dayInfo,
+    showGaonShir,
+    english,
+    israel
+) {
+    const {
+        month,
+        day,
+        isLeapYear,
+        isMorning,
+        isYomTov,
+        jdate,
+        isDaytime,
+        isAfternoon,
+    } = dayInfo;
     if (month === 1 && day > 7 && day < 15) {
-        notifications.push('שבת הגדול');
+        notifications.push(english ? 'Shabbos Hagadol' : 'שבת הגדול');
     } else if (month === 7 && day > 2 && day < 10) {
-        notifications.push('שבת שובה');
+        notifications.push(english ? 'Shabbos Shuva' : 'שבת שובה');
     } else if (month === 5 && day > 2 && day < 10) {
-        notifications.push('שבת חזון');
+        notifications.push(english ? 'Shabbos Chazon' : 'שבת חזון');
     } else if (
         (month === (isLeapYear ? 12 : 11) && day > 23 && day < 30) ||
         (month === (isLeapYear ? 13 : 12) && day === 1)
     ) {
-        notifications.push('פרשת שקלים');
+        notifications.push(english ? 'Parshas Shkalim' : 'פרשת שקלים');
     } else if (month === (isLeapYear ? 13 : 12) && day > 7 && day < 14) {
-        notifications.push('פרשת זכור');
+        notifications.push(english ? 'Parshas Zachor' : 'פרשת זכור');
     } else if (month === (isLeapYear ? 13 : 12) && day > 16 && day < 24) {
-        notifications.push('פרשת פרה');
+        notifications.push(english ? 'Parshas Parah' : 'פרשת פרה');
     } else if (
         (month === (isLeapYear ? 13 : 12) && day > 23 && day < 30) ||
         (month === 1 && day === 1)
     ) {
-        notifications.push('פרשת החודש');
+        notifications.push(english ? 'Parshas Hachodesh' : 'פרשת החודש');
     }
     if (isMorning && !isYomTov) {
-        notifications.push('קה"ת פרשת ' + jdate.getSedra(true).toStringHeb());
+        const sedra = jdate.getSedra(israel);
+        notifications.push(
+            english
+                ? 'Kriyas Hatorah Parshas' + sedra.toString()
+                : 'קה"ת פרשת ' + sedra.toStringHeb()
+        );
         //All months but Tishrei have Shabbos Mevarchim on the Shabbos before Rosh Chodesh
         if (month !== 6 && day > 22 && day < 30) {
             const nextMonth = jdate.addMonths(1);
             notifications.push(
-                'המולד יהיה ב' + Molad.getStringHeb(nextMonth.Year, nextMonth.Month)
+                english
+                    ? 'The molad will be ' +
+                          Molad.getString(nextMonth.Year, nextMonth.Month)
+                    : 'המולד יהיה ב' +
+                          Molad.getStringHeb(nextMonth.Year, nextMonth.Month)
             );
-            notifications.push('מברכים החודש');
+            notifications.push(english ? 'Bircas Hachodesh' : 'מברכים החודש');
             if (month !== 1 && month !== 2) {
-                notifications.push('א"א אב הרחמים');
+                notifications.push(
+                    english ? 'No Av Harachamim' : 'א"א אב הרחמים'
+                );
             }
         }
     }
     //Rosh Chodesh
     if (month !== 7 && (day === 1 || day === 30)) {
-        notifications.push('ראש חודש');
-        notifications.push('יעלה ויבא');
+        notifications.push(english ? 'Rosh Chodesh' : 'ראש חודש');
+        notifications.push(english ? 'Ya`aleh Viyavo' : 'יעלה ויבא');
         if (showGaonShir && isDaytime) {
-            notifications.push('שיר של יום - קי"ד - ברכי נפשי');
+            notifications.push(
+                english ? 'Barchi Nafshi' : 'שיר של יום - קי"ד - ברכי נפשי'
+            );
         }
         //Rosh Chodesh Teves is during Chanuka
         if (isDaytime && month !== 10 && !(month === 9 && day === 30)) {
-            notifications.push('חצי הלל');
+            notifications.push(english ? 'Chatzi Hallel' : 'חצי הלל');
         }
-        notifications.push('א"א אב הרחמים');
+        notifications.push(english ? 'No Av Harachamim' : 'א"א אב הרחמים');
     } else if (isYomTov) {
-        notifications.push('א"א אב הרחמים');
+        notifications.push(english ? 'No Av Harachamim' : 'א"א אב הרחמים');
         if (showGaonShir && isDaytime) {
             notifications.push('שיר של יום - מזמור שיר ליום השבת');
         }
     }
     //Kriyas Hatora - Shabbos by mincha - besides for Yom Kippur
     if (isAfternoon && !(month === 7 && day === 10)) {
-        notifications.push('קה"ת במנחה פרשת ' + jdate.addDays(1).getSedra(true).sedras[0].heb);
+        const sedra = jdate.addDays(1).getSedra(israel);
+        notifications.push(
+            english
+                ? 'Kriyas Hatorah Mincha Parshas ' + sedra.sedras[0].eng
+                : 'קה"ת במנחה פרשת ' + sedra.sedras[0].heb
+        );
     }
     if (
         isAfternoon &&
-        ((month === 1 && day > 21) || (month <= 6 && !(month === 5 && [8, 9].includes(day))))
+        ((month === 1 && day > 21) ||
+            (month <= 6 && !(month === 5 && [8, 9].includes(day))))
     ) {
+        const prakim = PirkeiAvos.getPrakim(jdate, israel);
         notifications.push(
-            'פרקי אבות - ' +
-                PirkeiAvos.getPrakim(jdate, true)
-                    .map((s) => `פרק ${Utils.toJNum(s)}`)
-                    .join(' ו')
+            english
+                ? 'Pirkei Avos - ' +
+                      prakim
+                          .map((s) => `Perek ${Utils.toJNum(s)}`)
+                          .join(' and ')
+                : 'פרקי אבות - ' +
+                      prakim.map((s) => `פרק ${Utils.toJNum(s)}`).join(' ו')
         );
     }
 }
 
-function getWeekDayNotifications(notifications, dayInfo, showGaonShir) {
+function getWeekDayNotifications(
+    notifications,
+    dayInfo,
+    showGaonShir,
+    english,
+    israel
+) {
     const {
         isNightTime,
         dow,
@@ -180,7 +254,9 @@ function getWeekDayNotifications(notifications, dayInfo, showGaonShir) {
     if (isNightTime && dow === DaysOfWeek.SUNDAY) {
         //הבדלה בתפילה for מוצאי שבת
         notifications.push(
-            (month === 1 && day === 15) || (month === 3 && day === 6) ? 'ותודיעינו' : 'אתה חוננתנו'
+            (month === 1 && day === 15) || (month === 3 && day === 6)
+                ? 'ותודיעינו'
+                : 'אתה חוננתנו'
         );
         //Motzai Shabbos before Yom Tov - no ויהי נועם
         if (
@@ -189,7 +265,7 @@ function getWeekDayNotifications(notifications, dayInfo, showGaonShir) {
             (month === 1 && day > 8 && day < 15) ||
             (month === 3 && day < 6)
         ) {
-            notifications.push('א"א ויהי נועם');
+            notifications.push(english ? 'No Vihi Noam' : 'א"א ויהי נועם');
         }
     }
     //אתה חוננתנו for מוצאי יו"ט
@@ -199,7 +275,7 @@ function getWeekDayNotifications(notifications, dayInfo, showGaonShir) {
             (month === 3 && day === 7) ||
             (month === 7 && [3, 11, 16, 23].includes(day)))
     ) {
-        notifications.push('אתה חוננתנו');
+        notifications.push(english ? 'Ata Chonantanu' : 'אתה חוננתנו');
     }
     //Kriyas hatorah for monday and thursday
     //when it's not chol hamoed, chanuka, purim, a fast day or rosh chodesh
@@ -209,38 +285,52 @@ function getWeekDayNotifications(notifications, dayInfo, showGaonShir) {
         (dow === DaysOfWeek.MONDAY || dow === DaysOfWeek.THURSDAY) &&
         !hasOwnKriyasHatorah(jdate, location)
     ) {
-        notifications.push('קה"ת פרשת ' + jdate.getSedra(true).toStringHeb());
+        const sedra = jdate.getSedra(israel);
+        notifications.push(
+            english
+                ? 'Kriyas Hatorah Parshas ' + sedra.toString()
+                : 'קה"ת פרשת ' + sedra.toStringHeb()
+        );
     }
     //Rosh Chodesh
     if ((month !== 7 && day === 1) || day === 30) {
         dayInfo.noTachnun = true;
-        notifications.push('ראש חודש');
-        notifications.push('יעלה ויבא');
+        notifications.push(english ? 'Rosh Chodesh' : 'ראש חודש');
+        notifications.push(english ? 'Ya`aleh Viyavo' : 'יעלה ויבא');
         if (showGaonShir && isDaytime) {
-            notifications.push('שיר של יום - קי"ד - ברכי נפשי');
+            notifications.push(
+                english ? 'Barchi Nafshi' : 'שיר של יום - קי"ד - ברכי נפשי'
+            );
         }
         //Rosh Chodesh Teves is during Chanuka
         if (isDaytime && month !== 10 && !(month === 9 && day === 30)) {
-            notifications.push('חצי הלל');
+            notifications.push(english ? 'Chatzi Hallel' : 'חצי הלל');
             if (isMorning && dow !== DaysOfWeek.SHABBOS) {
-                notifications.push('א"א למנצח');
+                notifications.push(english ? 'No Laminatzeach' : 'א"א למנצח');
             }
         }
     }
     //Yom Kippur Kattan
     else if (
         month !== 6 &&
-        ((dow < DaysOfWeek.FRIDAY && day === 29) || (dow === DaysOfWeek.THURSDAY && day === 28)) &&
+        ((dow < DaysOfWeek.FRIDAY && day === 29) ||
+            (dow === DaysOfWeek.THURSDAY && day === 28)) &&
         isAfternoon
     ) {
-        notifications.push('יו"כ קטן');
+        notifications.push(english ? 'Yom Kippur Kattan' : 'יו"כ קטן');
     }
-    if(jdate.hasEiruvTavshilin(location.Israel)) {
-        notifications.push('עירוב תבשילין');
+    if (jdate.hasEiruvTavshilin(israel)) {
+        notifications.push(english ? 'Eruv Tavshilin' : 'עירוב תבשילין');
     }
 }
 
-function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
+function getAroundTheYearNotifications(
+    notifications,
+    dayInfo,
+    showGaonShir,
+    english,
+    israel
+) {
     const {
         month,
         day,
@@ -258,74 +348,133 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
         case 1: //Nissan
             dayInfo.noTachnun = true;
             if (day > 15) {
-                notifications.push('מוריד הטל');
+                notifications.push(english ? 'Morid Hatal' : 'מוריד הטל');
             }
             if (dow !== DaysOfWeek.SHABBOS && day > 15 && day !== 21) {
-                notifications.push('ותן ברכה');
+                notifications.push(english ? 'Vesain Bracha' : 'ותן ברכה');
             }
-            if (isMorning && dow !== DaysOfWeek.SHABBOS && [14, 16, 17, 18, 19, 20].includes(day)) {
-                notifications.push('א"א מזמור לתודה');
+            if (
+                isMorning &&
+                dow !== DaysOfWeek.SHABBOS &&
+                [14, 16, 17, 18, 19, 20].includes(day)
+            ) {
+                notifications.push(
+                    english ? 'No Mizmor Lesodah' : 'א"א מזמור לתודה'
+                );
                 if (dow !== DaysOfWeek.SHABBOS) {
-                    notifications.push('א"א למנצח');
+                    notifications.push(
+                        english ? 'No Leminatzeach' : 'א"א למנצח'
+                    );
                 }
             }
             if (day === 15) {
-                notifications.push('יו"ט ראשון של פסח');
-                notifications.push('הלל השלם');
+                notifications.push(
+                    english ? 'First Day of Pesach' : 'יו"ט ראשון של פסח'
+                );
+                notifications.push(english ? 'Full Hallel' : 'הלל השלם');
                 if (isAfternoon) {
-                    notifications.push('מוריד הטל');
+                    notifications.push(english ? 'Morid Hatal' : 'מוריד הטל');
                 }
+                if (showGaonShir && isDaytime && dow !== DaysOfWeek.SHABBOS) {
+                    notifications.push('שיר של יום - קי"ד - בצאת ישראל');
+                }
+            } else if (day === 16 && !israel) {
+                notifications.push(
+                    english ? 'Second Day of Pesach' : 'יו"ט שני של פסח'
+                );
+                notifications.push(english ? 'Full Hallel' : 'הלל השלם');
+                notifications.push(english ? 'Morid Hatal' : 'מוריד הטל');
                 if (showGaonShir && isDaytime && dow !== DaysOfWeek.SHABBOS) {
                     notifications.push('שיר של יום - קי"ד - בצאת ישראל');
                 }
             } else if ([16, 17, 18, 19, 20, 21].includes(day)) {
                 if (day === 21) {
-                    notifications.push('שביעי של פםח');
+                    notifications.push(
+                        english ? 'Shvi`i Shel Pesach' : 'שביעי של פםח'
+                    );
                     if (isDaytime) {
-                        notifications.push('יזכור');
+                        if (israel) {
+                            notifications.push(english ? 'Yizkor' : 'יזכור');
+                        }
                         if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
-                            notifications.push('שיר של יום - י"ח - למנצח לעבד ה\'');
+                            notifications.push(
+                                'שיר של יום - י"ח - למנצח לעבד ה\''
+                            );
                         }
                     }
                 } else {
-                    notifications.push('פסח - חול המועד');
-                    notifications.push('יעלה ויבא');
-                    if (isMorning && dow !== DaysOfWeek.SHABBOS) notifications.push('א"א למנצח');
-                    if (showGaonShir && isDaytime && dow !== DaysOfWeek.SHABBOS) {
+                    notifications.push(
+                        english ? 'Chol Ha`moed Pesach' : 'פסח - חול המועד'
+                    );
+                    notifications.push(
+                        english ? 'Ya`aleh Viyavo' : 'יעלה ויבא'
+                    );
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS)
+                        notifications.push(
+                            english ? 'No Laminatzeach' : 'א"א למנצח'
+                        );
+                    if (
+                        showGaonShir &&
+                        isDaytime &&
+                        dow !== DaysOfWeek.SHABBOS
+                    ) {
                         switch (day) {
                             case 16:
                                 if (dow === DaysOfWeek.SUNDAY) {
-                                    notifications.push('שיר של יום - קי"ד - בצאת ישראל');
+                                    notifications.push(
+                                        'שיר של יום - קי"ד - בצאת ישראל'
+                                    );
                                 } else {
-                                    notifications.push('שיר של יום - ע"ח - משכיל לאסף');
+                                    notifications.push(
+                                        'שיר של יום - ע"ח - משכיל לאסף'
+                                    );
                                 }
                                 break;
                             case 17:
                                 if (dow === DaysOfWeek.MONDAY) {
-                                    notifications.push('שיר של יום - ע"ח - משכיל לאסף');
+                                    notifications.push(
+                                        'שיר של יום - ע"ח - משכיל לאסף'
+                                    );
                                 } else {
-                                    notifications.push('שיר של יום - פ\' - למנצח אל שושנים');
+                                    notifications.push(
+                                        'שיר של יום - פ\' - למנצח אל שושנים'
+                                    );
                                 }
                                 break;
                             case 18:
-                                if (dow === DaysOfWeek.TUESDAY || dow === DaysOfWeek.SUNDAY) {
-                                    notifications.push('שיר של יום - פ\' - למנצח אל שושנים');
+                                if (
+                                    dow === DaysOfWeek.TUESDAY ||
+                                    dow === DaysOfWeek.SUNDAY
+                                ) {
+                                    notifications.push(
+                                        'שיר של יום - פ\' - למנצח אל שושנים'
+                                    );
                                 } else {
-                                    notifications.push('שיר של יום - ק"ה - הודו לה\'');
+                                    notifications.push(
+                                        'שיר של יום - ק"ה - הודו לה\''
+                                    );
                                 }
                                 break;
                             case 19:
                                 if (dow === DaysOfWeek.THURSDAY) {
-                                    notifications.push('שיר של יום - קל"ה - הללוי-ה הללו את שם');
+                                    notifications.push(
+                                        'שיר של יום - קל"ה - הללוי-ה הללו את שם'
+                                    );
                                 } else {
-                                    notifications.push('שיר של יום - ק"ה - הודו לה\'');
+                                    notifications.push(
+                                        'שיר של יום - ק"ה - הודו לה\''
+                                    );
                                 }
                                 break;
                             case 20:
                                 if (dow === DaysOfWeek.FRIDAY) {
-                                    notifications.push('שיר של יום - ס"ו - למנצח שיר מזמור');
+                                    notifications.push(
+                                        'שיר של יום - ס"ו - למנצח שיר מזמור'
+                                    );
                                 } else {
-                                    notifications.push('שיר של יום - קל"ה - הללוי-ה הללו את שם');
+                                    notifications.push(
+                                        'שיר של יום - קל"ה - הללוי-ה הללו את שם'
+                                    );
                                 }
                                 break;
                         }
@@ -334,19 +483,35 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                 if (isDaytime) notifications.push('חצי הלל');
             }
             if (day === 22) {
-                notifications.push('איסרו חג');
+                if (israel) {
+                    notifications.push(english ? 'Isru Chag' : 'איסרו חג');
+                } else {
+                    notifications.push(
+                        english ? 'Acharon Shel Pesach' : 'אחרון של פסח'
+                    );
+                    if (isDaytime) {
+                        notifications.push(english ? 'Yizkor' : 'יזכור');
+                        notifications.push('חצי הלל');
+                    }
+                }
                 if (dow !== DaysOfWeek.SHABBOS && isMorning) {
                     notifications.push('א"א למנצח');
                 }
-            } else if (dow === DaysOfWeek.SHABBOS && [15, 16, 17, 18, 19, 20].includes(day)) {
-                notifications.push('מגילת שיר השירים');
+            } else if (
+                dow === DaysOfWeek.SHABBOS &&
+                ([15, 16, 17, 18, 19, 20, 21].includes(day) ||
+                    (!israel && day === 22))
+            ) {
+                notifications.push(
+                    english ? 'Shir Hashirim' : 'מגילת שיר השירים'
+                );
             }
             break;
         case 2: //Iyar
             if (day <= 15) {
-                notifications.push('מוריד הטל');
+                notifications.push(english ? 'Morid Hatal' : 'מוריד הטל');
                 if (dow !== DaysOfWeek.SHABBOS) {
-                    notifications.push('ותן ברכה');
+                    notifications.push(english ? 'V`sain Bracha' : 'ותן ברכה');
                 }
             }
             //Pesach Sheini and Lag Ba'Omer
@@ -358,7 +523,7 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
             ) {
                 dayInfo.noTachnun = true;
                 if (day === 14) {
-                    notifications.push('פסח שני');
+                    notifications.push(english ? 'Pesach Sheini' : 'פסח שני');
                 }
             }
             //Baha"b
@@ -366,10 +531,13 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                 isMorning &&
                 ((dow === DaysOfWeek.MONDAY && day > 3 && day < 13) ||
                     (dow === DaysOfWeek.THURSDAY && day > 6 && day < 14) ||
-                    (dow === DaysOfWeek.MONDAY && day > 10 && day < 18 && day !== 14))
+                    (dow === DaysOfWeek.MONDAY &&
+                        day > 10 &&
+                        day < 18 &&
+                        day !== 14))
             ) {
-                notifications.push('סליחות בה"ב');
-                notifications.push('אבינו מלכנו');
+                notifications.push(english ? 'Ba`hab' : 'סליחות בה"ב');
+                notifications.push(english ? 'Avinu Malkeinu' : 'אבינו מלכנו');
             }
             break;
         case 3: //Sivan
@@ -377,18 +545,26 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                 dayInfo.noTachnun = true;
             }
             if (day === 6 && isMorning) {
-                notifications.push('יום טוב של שבועות');
-                notifications.push('הלל השלם');
-                notifications.push('מגילת רות');
-                notifications.push('אקדמות');
-                notifications.push('יזכור');
+                notifications.push(english ? 'Shavuos' : 'יום טוב של שבועות');
+                notifications.push(english ? 'Full Hallel' : 'הלל השלם');
+                notifications.push(english ? 'Megilas Rus' : 'מגילת רות');
+                notifications.push(english ? 'Akdamus' : 'אקדמות');
+                if (israel) notifications.push(english ? 'Yizkor' : 'יזכור');
                 if (showGaonShir) {
                     notifications.push('שיר של יום - י"ט - ..השמים מספרים..');
                 }
             } else if (day === 7) {
-                notifications.push('איסרו חג');
-                if (isMorning && dow !== DaysOfWeek.SHABBOS) {
-                    notifications.push('א"א למנצח');
+                if (israel) {
+                    notifications.push('איסרו חג');
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS) {
+                        notifications.push('א"א למנצח');
+                    }
+                } else {
+                    notifications.push(
+                        english ? 'Shavuos Second Day' : 'יום טוב של שבועות'
+                    );
+                    notifications.push(english ? 'Full Hallel' : 'הלל השלם');
+                    notifications.push(english ? 'Yizkor' : 'יזכור');
                 }
             }
             break;
@@ -399,12 +575,16 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                     (day === 18 && dow === DaysOfWeek.SUNDAY))
             ) {
                 if (isDaytime) {
-                    notifications.push('י"ז בתמוז');
-                    notifications.push('אבינו מלכנו');
-                    notifications.push('עננו');
+                    notifications.push(
+                        english ? 'Shiva Asar B`Tamuz' : 'י"ז בתמוז'
+                    );
+                    notifications.push(
+                        english ? 'Avinu Malkeinu' : 'אבינו מלכנו'
+                    );
+                    notifications.push(english ? 'Aneinu' : 'עננו');
                 }
                 if (isMorning) {
-                    notifications.push('סליחות');
+                    notifications.push(english ? 'Selichos' : 'סליחות');
                 }
             }
             break;
@@ -415,30 +595,40 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                 (day === 9 && dow !== DaysOfWeek.SHABBOS) ||
                 (day === 10 && dow === DaysOfWeek.SUNDAY)
             ) {
-                notifications.push('תשעה באב');
+                notifications.push(english ? 'Tish B`Av' : 'תשעה באב');
                 if (isDaytime) {
-                    notifications.push('קינות');
-                    notifications.push('עננו');
+                    notifications.push(english ? 'Kinos' : 'קינות');
+                    notifications.push(english ? 'Aneinu' : 'עננו');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS) {
-                        notifications.push('א"א למנצח');
+                        notifications.push(
+                            english ? 'No Laminatzeach' : 'א"א למנצח'
+                        );
                     }
                 } else {
-                    notifications.push('מגילת איכה');
+                    notifications.push(
+                        english ? 'Megilas Eicha' : 'מגילת איכה'
+                    );
                     if (isNightTime && dow === DaysOfWeek.SUNDAY) {
-                        notifications.push('א"א ויהי נועם');
+                        notifications.push(
+                            english ? 'No Vihi Noam' : 'א"א ויהי נועם'
+                        );
                     }
                 }
                 dayInfo.noTachnun = true;
             } else if (isAfternoon && day === 14) {
                 dayInfo.noTachnun = true;
             } else if (day === 15) {
-                notifications.push('ט"ו באב');
+                notifications.push(english ? 'Tu B`Av' : 'ט"ו באב');
                 dayInfo.noTachnun = true;
             }
             break;
         case 6: //Ellul
-            notifications.push('לדוד ה\' אורי');
-            if (day > 20 && dow !== DaysOfWeek.SHABBOS && (isAfterChatzosHalayla || isMorning)) {
+            notifications.push(english ? 'L`Dovid Hashem Ori' : 'לדוד ה\' אורי');
+            if (
+                day > 20 &&
+                dow !== DaysOfWeek.SHABBOS &&
+                (isAfterChatzosHalayla || isMorning)
+            ) {
                 let startedSelichos = day >= 26;
                 if (day < 26) {
                     const daysToRH = 30 - day,
@@ -456,7 +646,7 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                     }
                 }
                 if (startedSelichos) {
-                    notifications.push('סליחות');
+                    notifications.push(english ? 'Selichos' : 'סליחות');
                 }
             }
             if (day === 29) {
@@ -465,99 +655,133 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
             break;
         case 7: //Tishrei
             if (day < 11) {
-                notifications.push('המלך הקדוש');
+                notifications.push(
+                    english ? 'Hamelech Hakadosh' : 'המלך הקדוש'
+                );
                 if (dow !== DaysOfWeek.SHABBOS && day !== 9) {
-                    notifications.push('אבינו מלכנו');
+                    notifications.push(
+                        english ? 'Avinu Malkeinu' : 'אבינו מלכנו'
+                    );
                 }
             }
             //Days of Rosh Hashana, Tzom Gedaliah and Yom Kippur are dealt with individually below.
             if (day > 4 && day < 10 && dow !== DaysOfWeek.SHABBOS) {
-                notifications.push('סליחות');
-                notifications.push('המלך המשפט');
+                notifications.push(english ? 'Selichos' : 'סליחות');
+                notifications.push(
+                    english ? 'Hamelech Hamishpat' : 'המלך המשפט'
+                );
             }
             if (dow === DaysOfWeek.SHABBOS && day > 2 && day < 10) {
-                notifications.push('שבת שובה');
+                notifications.push(english ? 'Shabbos Shuva' : 'שבת שובה');
             }
             if (day >= 10) {
                 dayInfo.noTachnun = true;
             }
             switch (day) {
                 case 1:
-                    notifications.push('ראש השנה');
+                    notifications.push(english ? 'Rosh Hashana' : 'ראש השנה');
                     if (dow !== DaysOfWeek.SHABBOS && isDaytime) {
-                        notifications.push('תקיעת שופר');
+                        notifications.push(
+                            english ? 'Tekias Shofar' : 'תקיעת שופר'
+                        );
                         if (showGaonShir) {
-                            notifications.push('שיר של יום - פ"א - למנצח על הגתית');
+                            notifications.push(
+                                'שיר של יום - פ"א - למנצח על הגתית'
+                            );
                         }
                         if (isAfternoon) {
-                            notifications.push('תשליך');
+                            notifications.push(english ? 'Tashlich' : 'תשליך');
                         }
                     }
                     break;
                 case 2:
-                    notifications.push('ראש השנה');
+                    notifications.push(english ? 'Rosh Hashana' : 'ראש השנה');
                     if (isDaytime) {
-                        notifications.push('תקיעת שופר');
+                        notifications.push(
+                            english ? 'Tekias Shofar' : 'תקיעת שופר'
+                        );
                         if (showGaonShir) {
-                            notifications.push('שיר של יום - פ"א - למנצח על הגתית');
+                            notifications.push(
+                                'שיר של יום - פ"א - למנצח על הגתית'
+                            );
                         }
                         if (dow === DaysOfWeek.SUNDAY && isAfternoon) {
-                            notifications.push('תשליך');
+                            notifications.push(english ? 'Tashlich' : 'תשליך');
                         }
                     }
                     break;
                 case 3:
                     if (dow !== DaysOfWeek.SHABBOS) {
                         if (isDaytime) {
-                            notifications.push('צום גדליה');
-                            notifications.push('עננו');
+                            notifications.push(
+                                english ? 'Fast of Tzom Gedalya' : 'צום גדליה'
+                            );
+                            notifications.push(english ? 'Aneinu' : 'עננו');
                         }
                         if (isAfterChatzosHalayla || isMorning) {
-                            notifications.push('סליחות');
+                            notifications.push(english ? 'Selichos' : 'סליחות');
                         }
-                        notifications.push('המלך המשפט');
+                        notifications.push(
+                            english ? 'Hamelech Hamishpat' : 'המלך המשפט'
+                        );
                     }
                     break;
                 case 4:
                     if (dow === DaysOfWeek.SUNDAY) {
                         if (isDaytime) {
-                            notifications.push('צום גדליה');
-                            notifications.push('עננו');
+                            notifications.push(
+                                english ? 'Fast of Tzom Gedalya' : 'צום גדליה'
+                            );
+                            notifications.push(english ? 'Aneinu' : 'עננו');
                         }
                         if (isAfterChatzosHalayla || isMorning) {
-                            notifications.push('סליחות');
+                            notifications.push(english ? 'Selichos' : 'סליחות');
                         }
-                        notifications.push('המלך המשפט');
+                        notifications.push(
+                            english ? 'Hamelech Hamishpat' : 'המלך המשפט'
+                        );
                     } else if (dow !== DaysOfWeek.SHABBOS) {
-                        notifications.push('המלך המשפט');
+                        notifications.push(
+                            english ? 'Hamelech Hamishpat' : 'המלך המשפט'
+                        );
                         if (isAfterChatzosHalayla || isMorning) {
-                            notifications.push('סליחות');
+                            notifications.push(english ? 'Selichos' : 'סליחות');
                         }
                     }
                     break;
                 case 9:
-                    notifications.push('ערב יום כיפור');
+                    notifications.push(
+                        english ? 'Erev Yom Kippur' : 'ערב יום כיפור'
+                    );
                     if (isMorning) {
-                        notifications.push('א"א מזמור לתודה');
+                        notifications.push(
+                            english ? 'No Mizmor L`Sodah' : 'א"א מזמור לתודה'
+                        );
                         if (dow !== DaysOfWeek.SHABBOS) {
-                            notifications.push('א"א למנצח');
+                            notifications.push(
+                                english ? 'No Laminatzeach' : 'א"א למנצח'
+                            );
                         }
                         if (dow === DaysOfWeek.FRIDAY) {
-                            notifications.push('אבינו מלכנו');
+                            notifications.push(
+                                english ? 'Avinu Malkeinu' : 'אבינו מלכנו'
+                            );
                         }
                     } else if (isAfternoon) {
-                        notifications.push('ודוי בעמידה');
+                        notifications.push(english ? 'Vidduy' : 'ודוי בעמידה');
                     }
                     if (isDaytime && dow !== DaysOfWeek.FRIDAY) {
-                        notifications.push('א"א אבינו מלכנו');
+                        notifications.push(
+                            english ? 'No Avinu Malkeinu' : 'א"א אבינו מלכנו'
+                        );
                     }
                     dayInfo.noTachnun = true;
                     break;
                 case 10:
-                    notifications.push('יום הכיפורים');
+                    notifications.push(english ? 'Yom Kippur' : 'יום הכיפורים');
                     notifications.push('לפני ה\' תטהרו');
                     if (isDaytime) {
-                        notifications.push('יזכור');
+                        notifications.push(english ? 'Yizkor' : 'יזכור');
                         if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
                             notifications.push('שיר של יום - ל"ב - לדוד משכיל');
                         }
@@ -568,17 +792,31 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                     }
                     break;
                 case 15:
-                    notifications.push('יו"ט ראשון של סוכות');
+                    notifications.push(
+                        english ? 'First day of Sukkos' : 'יו"ט ראשון של סוכות'
+                    );
                     if (isDaytime) {
-                        notifications.push('הלל השלם');
+                        notifications.push(
+                            english ? 'Full Hallel' : 'הלל השלם'
+                        );
                         if (dow !== DaysOfWeek.SHABBOS) {
-                            notifications.push('הושענות - למען אמתך');
-                            notifications.push('קה קלי');
+                            notifications.push(
+                                english
+                                    ? 'Hoshanos - למען אמתך'
+                                    : 'הושענות - למען אמתך'
+                            );
+                            notifications.push(english ? 'Kah Keli' : 'קה קלי');
                             if (showGaonShir) {
-                                notifications.push('שיר של יום - ע"ו - למנצח בנגינות מזמור');
+                                notifications.push(
+                                    'שיר של יום - ע"ו - למנצח בנגינות מזמור'
+                                );
                             }
                         } else {
-                            notifications.push('הושענות - אום נצורה');
+                            notifications.push(
+                                english
+                                    ? 'Hoshanos - אום נצורה'
+                                    : 'הושענות - אום נצורה'
+                            );
                         }
                     }
                     break;
@@ -587,56 +825,113 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                 case 18:
                 case 19:
                 case 20:
-                    notifications.push('סוכות - חול המועד');
-                    notifications.push('יעלה ויבא');
+                    if (day === 16 && !israel) {
+                        notifications.push(
+                            english
+                                ? 'Second day of Sukkos'
+                                : 'סוכות - יום טוב שני'
+                        );
+                    } else if (!israel) {
+                        notifications.push(
+                            english ? 'Chol Hamoed Sukkos' : 'סוכות - חול המועד'
+                        );
+                        notifications.push(
+                            english ? 'Ya`aleh V`yavo' : 'יעלה ויבא'
+                        );
+                    }
                     if (isDaytime) {
                         notifications.push('הלל השלם');
                         switch (day) {
                             case 16:
                                 notifications.push(
                                     'הושענות - ' +
-                                        (dow === DaysOfWeek.SUNDAY ? 'למען אמתך' : 'אבן שתיה')
+                                        (dow === DaysOfWeek.SUNDAY
+                                            ? 'למען אמתך'
+                                            : 'אבן שתיה')
                                 );
-                                if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
-                                    notifications.push('שיר של יום - כ"ט - ..הבו לה\' בני אלים');
+                                if (
+                                    showGaonShir &&
+                                    dow !== DaysOfWeek.SHABBOS
+                                ) {
+                                    notifications.push(
+                                        'שיר של יום - כ"ט - ..הבו לה\' בני אלים'
+                                    );
                                 }
                                 break;
                             case 17:
                                 notifications.push(
-                                    'הושענות - ' +
-                                        (dow === DaysOfWeek.SHABBOS ? 'אום נצורה' : 'אערוך שועי')
+                                    (english ? 'Hoshanos' : 'הושענות') +
+                                        ' - ' +
+                                        (dow === DaysOfWeek.SHABBOS
+                                            ? 'אום נצורה'
+                                            : 'אערוך שועי')
                                 );
-                                if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
-                                    notifications.push('שיר של יום - נ\' - מזמור לאסף');
+                                if (
+                                    showGaonShir &&
+                                    dow !== DaysOfWeek.SHABBOS
+                                ) {
+                                    notifications.push(
+                                        'שיר של יום - נ\' - מזמור לאסף'
+                                    );
                                 }
                                 break;
                             case 18:
                                 if (dow === DaysOfWeek.SUNDAY) {
-                                    notifications.push('הושענות - אערוך שועי');
-                                    if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
-                                        notifications.push('שיר של יום - נ\' - מזמור לאסף');
+                                    notifications.push(
+                                        (english ? 'Hoshanos' : 'הושענות') +
+                                            ' - אערוך שועי'
+                                    );
+                                    if (
+                                        showGaonShir &&
+                                        dow !== DaysOfWeek.SHABBOS
+                                    ) {
+                                        notifications.push(
+                                            'שיר של יום - נ\' - מזמור לאסף'
+                                        );
                                     }
                                 } else {
                                     if (dow === DaysOfWeek.TUESDAY) {
-                                        notifications.push('הושענות - אבן שתיה');
+                                        notifications.push(
+                                            (english ? 'Hoshanos' : 'הושענות') +
+                                                ' - אבן שתיה'
+                                        );
                                     } else if (dow === DaysOfWeek.THURSDAY) {
-                                        notifications.push('הושענות - אום אני חומה');
+                                        notifications.push(
+                                            (english ? 'Hoshanos' : 'הושענות') +
+                                                ' - אום אני חומה'
+                                        );
                                     } else if (dow === DaysOfWeek.FRIDAY) {
-                                        notifications.push('הושענות - א-ל למושעות');
+                                        notifications.push(
+                                            (english ? 'Hoshanos' : 'הושענות') +
+                                                ' - א-ל למושעות'
+                                        );
                                     }
-                                    if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
-                                        notifications.push('שיר של יום - צ"ד - ..מי יקום לי..');
+                                    if (
+                                        showGaonShir &&
+                                        dow !== DaysOfWeek.SHABBOS
+                                    ) {
+                                        notifications.push(
+                                            'שיר של יום - צ"ד - ..מי יקום לי..'
+                                        );
                                     }
                                 }
                                 break;
                             case 19:
                                 notifications.push(
-                                    'הושענות - ' +
-                                        (dow === DaysOfWeek.SHABBOS ? 'אום נצורה' : 'א-ל למושעות')
+                                    (english ? 'Hoshanos' : 'הושענות') +
+                                        ' - ' +
+                                        (dow === DaysOfWeek.SHABBOS
+                                            ? 'אום נצורה'
+                                            : 'א-ל למושעות')
                                 );
-                                if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
+                                if (
+                                    showGaonShir &&
+                                    dow !== DaysOfWeek.SHABBOS
+                                ) {
                                     if (dow === DaysOfWeek.MONDAY) {
-                                        notifications.push('שיר של יום - צ"ד - ..מי יקום לי..');
+                                        notifications.push(
+                                            'שיר של יום - צ"ד - ..מי יקום לי..'
+                                        );
                                     } else {
                                         notifications.push(
                                             'שיר של יום - צ"ד - א-ל נקמות.. ישרי לב'
@@ -646,12 +941,20 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                                 break;
                             case 20:
                                 notifications.push(
-                                    'הושענות - ' +
-                                        (dow === DaysOfWeek.SHABBOS ? 'אום נצורה' : 'אדון המושיע')
+                                    (english ? 'Hoshanos' : 'הושענות') +
+                                        ' - ' +
+                                        (dow === DaysOfWeek.SHABBOS
+                                            ? 'אום נצורה'
+                                            : 'אדון המושיע')
                                 );
-                                if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
+                                if (
+                                    showGaonShir &&
+                                    dow !== DaysOfWeek.SHABBOS
+                                ) {
                                     if (dow === DaysOfWeek.THURSDAY) {
-                                        notifications.push('שיר של יום - פ"א - למנצח על הגתית');
+                                        notifications.push(
+                                            'שיר של יום - פ"א - למנצח על הגתית'
+                                        );
                                     } else {
                                         notifications.push(
                                             'שיר של יום - צ"ד - א-ל נקמות.. ישרי לב'
@@ -663,50 +966,88 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                     }
                     break;
                 case 21:
-                    notifications.push('הושעה רבה');
-                    notifications.push('יעלה ויבא');
+                    notifications.push(english ? 'Hoshana Raba' : 'הושעה רבה');
+                    notifications.push(
+                        english ? 'Ya`aleh V`yavo' : 'יעלה ויבא'
+                    );
                     if (isNightTime) {
-                        notifications.push('משנה תורה');
+                        notifications.push(
+                            english ? 'Mishneh Torah' : 'משנה תורה'
+                        );
                     } else {
-                        notifications.push('הושענות - הושעה רבה');
-                        notifications.push('הלל השלם');
+                        notifications.push(
+                            (english ? 'Hoshanos' : 'הושענות') + ' - הושעה רבה'
+                        );
+                        notifications.push(
+                            english ? 'Full Hallel' : 'הלל השלם'
+                        );
                         if (showGaonShir) {
                             if (dow === DaysOfWeek.FRIDAY) {
-                                notifications.push('שיר של יום - פ"ב - מזמור לאסף');
+                                notifications.push(
+                                    'שיר של יום - פ"ב - מזמור לאסף'
+                                );
                             } else {
-                                notifications.push('שיר של יום - פ"א - למנצח על הגתית');
+                                notifications.push(
+                                    'שיר של יום - פ"א - למנצח על הגתית'
+                                );
                             }
                         }
                     }
                     break;
                 case 22:
-                    notifications.push('שמיני עצרת - שמחת תורה');
-                    notifications.push('הקפות');
+                    notifications.push(
+                        english ? 'Shmini Atzeres' : 'שמיני עצרת'
+                    );
+                    if (israel) {
+                        notifications.push('Simchas Torah', 'שמחת תורה');
+                        notifications.push('Hakafos', 'הקפות');
+                    }
                     if (isDaytime) {
-                        notifications.push('הלל השלם');
-                        notifications.push('יזכור');
-                        notifications.push('תפילת גשם');
+                        notifications.push(
+                            english ? 'Full Hallel' : 'הלל השלם'
+                        );
+                        notifications.push(english ? 'Yizkor' : 'יזכור');
+                        notifications.push(
+                            english ? 'Tefilas Geshem' : 'תפילת גשם'
+                        );
                         notifications.push('משיב הרוח ומוריד הגשם');
                         if (showGaonShir && dow !== DaysOfWeek.SHABBOS) {
-                            notifications.push('שיר של יום - י"ב - למנצח על השמינית');
+                            notifications.push(
+                                'שיר של יום - י"ב - למנצח על השמינית'
+                            );
                         }
                     }
                     break;
             }
             if (day === 23) {
-                notifications.push('איסרו חג');
-                if (isNightTime) {
-                    notifications.push('חורף טוב');
-                } else if (dow !== DaysOfWeek.SHABBOS && isMorning) {
-                    notifications.push('א"א למנצח');
+                if (!israel) {
+                    notifications.push('Simchas Torah', 'שמחת תורה');
+                    notifications.push('Hakafos', 'הקפות');
+                    notifications.push(english ? 'Full Hallel' : 'הלל השלם');
+                } else {
+                    notifications.push('איסרו חג');
+                    if (isNightTime) {
+                        notifications.push('חורף טוב');
+                    } else if (dow !== DaysOfWeek.SHABBOS && isMorning) {
+                        notifications.push('א"א למנצח');
+                    }
                 }
-            } else if (dow === DaysOfWeek.SHABBOS && [15, 17, 18, 19, 20].includes(day)) {
-                notifications.push('מגילת קהלת');
+            } else if (
+                dow === DaysOfWeek.SHABBOS &&
+                [15, 17, 18, 19, 20].includes(day)
+            ) {
+                notifications.push(english ? 'Megilas Koheles' : 'מגילת קהלת');
             }
             if (day < 22) {
-                notifications.push('לדוד ה\' אורי');
+                notifications.push(
+                    english ? 'L`Dovid Hashem Ori' : 'לדוד ה\' אורי'
+                );
             } else if (day > 22) {
-                notifications.push('משיב הרוח ומוריד הגשם');
+                notifications.push(
+                    english
+                        ? 'Mashiv Haruach U`Morid Hageshem'
+                        : 'משיב הרוח ומוריד הגשם'
+                );
             }
             break;
         case 8: //Cheshvan
@@ -716,30 +1057,51 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                     (dow === DaysOfWeek.THURSDAY && day > 6 && day < 14) ||
                     (dow === DaysOfWeek.MONDAY && day > 10 && day < 18))
             ) {
-                notifications.push('סליחות בה"ב');
-                notifications.push('אבינו מלכנו');
+                notifications.push(english ? 'Ba`Hab' : 'סליחות בה"ב');
+                notifications.push(english ? 'Avinu Malkeinu' : 'אבינו מלכנו');
             }
             if (day <= 22) {
-                notifications.push('משיב הרוח ומוריד הגשם');
+                notifications.push(
+                    english
+                        ? 'Mashiv Haruach U`Morid Hageshem'
+                        : 'משיב הרוח ומוריד הגשם'
+                );
             }
             if (day >= 7 && dow !== DaysOfWeek.SHABBOS) {
-                notifications.push('ותן טל ומטר');
+                notifications.push(
+                    english ? 'V`sain Tal U`matar' : 'ותן טל ומטר'
+                );
             }
             break;
         case 9: //Kislev
             if (day <= 7 && dow !== DaysOfWeek.SHABBOS) {
-                notifications.push('ותן טל ומטר');
-            } else if (day === 24 && dow !== DaysOfWeek.SHABBOS && isAfternoon) {
+                notifications.push(
+                    english ? 'V`sain Tal U`matar' : 'ותן טל ומטר'
+                );
+            } else if (
+                day === 24 &&
+                dow !== DaysOfWeek.SHABBOS &&
+                isAfternoon
+            ) {
                 dayInfo.noTachnun = true;
             } else if (day >= 25) {
                 dayInfo.noTachnun = true;
-                notifications.push('חנוכה');
-                notifications.push('על הניסים');
+                notifications.push(english ? 'Chanukah' : 'חנוכה');
+                notifications.push(english ? 'Al Hanissim' : 'על הניסים');
                 if (isDaytime) {
-                    notifications.push('הלל השלם');
-                    if (isMorning && dow !== DaysOfWeek.SHABBOS) notifications.push('א"א למנצח');
-                    if (showGaonShir && day !== 30 && dow !== DaysOfWeek.SHABBOS) {
-                        notifications.push('שיר של יום - ל\' - מזמור שיר חנוכת הבית');
+                    notifications.push(english ? 'Full Hallel' : 'הלל השלם');
+                    if (isMorning && dow !== DaysOfWeek.SHABBOS)
+                        notifications.push(
+                            english ? 'No Laminatzeach' : 'א"א למנצח'
+                        );
+                    if (
+                        showGaonShir &&
+                        day !== 30 &&
+                        dow !== DaysOfWeek.SHABBOS
+                    ) {
+                        notifications.push(
+                            'שיר של יום - ל\' - מזמור שיר חנוכת הבית'
+                        );
                     }
                 }
             }
@@ -747,42 +1109,61 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
         case 10: //Teves
             if (day <= (jDate.isShortKislev(jdate.Year) ? 3 : 2)) {
                 dayInfo.noTachnun = true;
-                notifications.push('חנוכה');
-                notifications.push('על הניסים');
+                notifications.push(english ? 'Chanukah' : 'חנוכה');
+                notifications.push(english ? 'Al Hanissim' : 'על הניסים');
                 if (isDaytime) {
-                    notifications.push('הלל השלם');
+                    notifications.push(english ? 'Full Hallel' : 'הלל השלם');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS) {
-                        notifications.push('א"א למנצח');
+                        notifications.push(
+                            english ? 'No Laminatzeach' : 'א"א למנצח'
+                        );
                         if (day !== 1 && showGaonShir) {
-                            notifications.push('שיר של יום - ל\' - מזמור שיר חנוכת הבית');
+                            notifications.push(
+                                'שיר של יום - ל\' - מזמור שיר חנוכת הבית'
+                            );
                         }
                     }
                 }
             } else if (day === 10 && isDaytime) {
-                notifications.push('עשרה בטבת');
+                notifications.push(
+                    english ? 'Fast of Asara B`Teves' : 'עשרה בטבת'
+                );
                 if (isMorning) {
-                    notifications.push('סליחות');
+                    notifications.push(english ? 'Selichos' : 'סליחות');
                 }
-                notifications.push('אבינו מלכנו');
-                notifications.push('עננו');
+                notifications.push(english ? 'Avinu Malkeinu' : 'אבינו מלכנו');
+                notifications.push(english ? 'Aneinu' : 'עננו');
             }
             break;
         case 11: //Shvat
             if (day === 14 && isAfternoon) dayInfo.noTachnun = true;
             if (day === 15) {
                 dayInfo.noTachnun = true;
-                notifications.push('ט"ו בשבט');
+                notifications.push(english ? 'Tu B`Shvat' : 'ט"ו בשבט');
             }
             break;
         case 12:
         case 13:
             if (month === 12 && isLeapYear) {
                 //Adar Rishon in a leap year
-                if (((day === 13 && isAfternoon) || [14, 15].includes(day)) && isDaytime) {
-                    notifications.push(day === 14 ? 'פורים קטן' : 'שןשן פורים קטן');
+                if (
+                    ((day === 13 && isAfternoon) || [14, 15].includes(day)) &&
+                    isDaytime
+                ) {
+                    notifications.push(
+                        day === 14
+                            ? english
+                                ? 'Purim Katan'
+                                : 'פורים קטן'
+                            : english
+                            ? 'Shushan Purim Katan'
+                            : 'שושן פורים קטן'
+                    );
                     dayInfo.noTachnun = true;
                     if (isMorning && dow !== DaysOfWeek.SHABBOS) {
-                        notifications.push('א"א למנצח');
+                        notifications.push(
+                            english ? 'No Laminatzeach' : 'א"א למנצח'
+                        );
                     }
                 }
             } else {
@@ -793,40 +1174,66 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                         (day === 13 && dow !== DaysOfWeek.SHABBOS))
                 ) {
                     if (isMorning) {
-                        notifications.push('תענית אסתר');
-                        notifications.push('סליחות');
+                        notifications.push(
+                            english ? 'Fast of Ta`anis Esther' : 'תענית אסתר'
+                        );
+                        notifications.push(english ? 'Selichos' : 'סליחות');
                     }
-                    notifications.push('אבינו מלכנו');
-                    notifications.push('עננו');
+                    notifications.push(
+                        english ? 'Avinu Malkeinu' : 'אבינו מלכנו'
+                    );
+                    notifications.push(english ? 'Aneinu' : 'עננו');
                 } else {
                     //Only ירושלים says על הניסים on ט"ו
                     const isYerushalayim = location.Name === 'ירושלים';
                     if (day === 14) {
                         dayInfo.noTachnun = true;
                         if (isMorning && dow !== DaysOfWeek.SHABBOS) {
-                            notifications.push('א"א למנצח');
+                            notifications.push(
+                                english ? 'No Laminatzeach' : 'א"א למנצח'
+                            );
                         }
                         if (!isYerushalayim) {
-                            notifications.push('פורים');
-                            notifications.push('על הניסים');
-                            notifications.push('מגילת אסתר');
+                            notifications.push(english ? 'Purim' : 'פורים');
+                            notifications.push(
+                                english ? 'Al Hanissim' : 'על הניסים'
+                            );
+                            notifications.push(
+                                english ? 'Megilas Esther' : 'מגילת אסתר'
+                            );
                             if (showGaonShir) {
-                                notifications.push('שיר של יום - כ"ב - למנצח על אילת השחר');
+                                notifications.push(
+                                    'שיר של יום - כ"ב - למנצח על אילת השחר'
+                                );
                             }
                         } else {
-                            notifications.push('פורים דפרזים');
+                            notifications.push(
+                                english ? 'Purim D`Prazim' : 'פורים דפרזים'
+                            );
                         }
                     } else if (day === 15) {
                         dayInfo.noTachnun = true;
                         if (isMorning && dow !== DaysOfWeek.SHABBOS) {
-                            notifications.push('א"א למנצח');
+                            notifications.push(
+                                english ? 'No Laminatzeach' : 'א"א למנצח'
+                            );
                         }
                         if (isYerushalayim) {
-                            notifications.push('פורים');
-                            notifications.push('על הניסים');
-                            notifications.push('מגילת אסתר');
-                            if (showGaonShir && isDaytime && dow !== DaysOfWeek.SHABBOS) {
-                                notifications.push('שיר של יום - כ"ב - למנצח על אילת השחר');
+                            notifications.push(english ? 'Purim' : 'פורים');
+                            notifications.push(
+                                english ? 'Al Hanissim' : 'על הניסים'
+                            );
+                            notifications.push(
+                                english ? 'Megilas Esther' : 'מגילת אסתר'
+                            );
+                            if (
+                                showGaonShir &&
+                                isDaytime &&
+                                dow !== DaysOfWeek.SHABBOS
+                            ) {
+                                notifications.push(
+                                    'שיר של יום - כ"ב - למנצח על אילת השחר'
+                                );
                             }
                         } else if (
                             [
@@ -841,10 +1248,16 @@ function getAroundTheYearNotifications(notifications, dayInfo, showGaonShir) {
                                 'לוד',
                             ].includes(location.Name)
                         ) {
-                            notifications.push('פורים דמוקפין');
-                            notifications.push('(מגילת אסתר)');
+                            notifications.push(
+                                english ? 'Purim D`Mukafin' : 'פורים דמוקפין'
+                            );
+                            notifications.push(
+                                english ? '(Megilas Esther)' : '(מגילת אסתר)'
+                            );
                         } else {
-                            notifications.push('שושן פורים');
+                            notifications.push(
+                                english ? 'Shushan Purim' : 'שושן פורים'
+                            );
                         }
                     }
                 }
@@ -867,11 +1280,18 @@ function hasOwnKriyasHatorah(jdate, location) {
         case 5:
             return Day === 9 || (DayOfWeek === 0 && Day === 10);
         case 7:
-            return [3, 16, 17, 18, 19, 20, 21].includes(Day) || (DayOfWeek === 0 && Day === 4);
+            return (
+                [3, 16, 17, 18, 19, 20, 21].includes(Day) ||
+                (DayOfWeek === 0 && Day === 4)
+            );
         case 9:
             return Day >= 25;
         case 10:
-            return Day === 10 || Day < 3 || (Day === 3 && jDate.isShortKislev(jdate.Year));
+            return (
+                Day === 10 ||
+                Day < 3 ||
+                (Day === 3 && jDate.isShortKislev(jdate.Year))
+            );
         case 12:
         case 13:
             return (

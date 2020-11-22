@@ -9,8 +9,9 @@ export default class Main extends PureComponent {
         this.displaySingleZman = this.displaySingleZman.bind(this);
         this.getNotificationsView = this.getNotificationsView.bind(this);
     }
-    displaySingleZman(zt, index, styles) {
-        if (index >= this.props.settings.numberOfItemsToShow) return null;
+    displaySingleZman(zt, index, styles, itemHeight) {
+        const { english, numberOfItemsToShow, location } = this.props.settings;
+        if (index >= numberOfItemsToShow) return null;
         const timeDiff = Utils.timeDiff(
                 this.props.nowTime,
                 zt.time,
@@ -20,14 +21,6 @@ export default class Main extends PureComponent {
             minutes = Utils.totalMinutes(timeDiff),
             minutesFrom10 = 10 - minutes,
             isWithin10 = !was && !zt.isTomorrow && minutes < 10,
-            itemHeight =
-                Math.trunc(
-                    100 /
-                        Math.min(
-                            Number(this.props.settings.numberOfItemsToShow),
-                            Number(this.props.zmanTimes.length)
-                        )
-                ) - 2,
             timeRemainingColor = was
                 ? '#844'
                 : isWithin10
@@ -41,38 +34,58 @@ export default class Main extends PureComponent {
                 style={[styles.singleZman, { height: `${itemHeight}%` }]}>
                 <Text
                     style={[
-                        styles.timeRemainingLabel,
-                        {
-                            color: was ? '#550' : '#99f',
-                            fontSize: 15,
-                        },
+                        english
+                            ? styles.timeRemainingLabelEng
+                            : styles.timeRemainingLabel,
+                        { color: was ? '#550' : '#99f' },
                     ]}>
-                    <Text style={styles.timeRemainingNumber}>
-                        {zt.zmanType.heb}
+                    <Text
+                        style={
+                            english
+                                ? styles.timeRemainingNumberEng
+                                : styles.timeRemainingNumber
+                        }>
+                        {english ? zt.zmanType.eng : zt.zmanType.heb}
                     </Text>
-                    {`  ${was ? 'עבר לפני' : 'בעוד'}:`}
+                    {english
+                        ? `  ${was ? 'passed' : 'in'}:`
+                        : `  ${was ? 'עבר לפני' : 'בעוד'}:`}
                 </Text>
                 <Text
                     style={[
-                        styles.timeRemainingText,
+                        english
+                            ? styles.timeRemainingTextEng
+                            : styles.timeRemainingText,
                         { color: timeRemainingColor },
                     ]}>
-                    {Utils.getTimeIntervalTextStringHeb(timeDiff)}
+                    {english
+                        ? Utils.getTimeIntervalTextString(timeDiff)
+                        : Utils.getTimeIntervalTextStringHeb(timeDiff)}
                 </Text>
                 <Text
                     style={
                         was
-                            ? styles.zmanTypeNameTextWas
+                            ? english
+                                ? styles.zmanTypeNameTextWasEng
+                                : styles.zmanTypeNameTextWas
+                            : english
+                            ? styles.zmanTypeNameTextEng
                             : styles.zmanTypeNameText
                     }>
-                    {`${zt.time && zt.isTomorrow && zt.time.hour > 2 ? 'מחר ' : ''}בשעה: `}
+                    {`${
+                        zt.time && zt.isTomorrow && zt.time.hour > 2
+                            ? english
+                                ? ' Tomorrow'
+                                : 'מחר '
+                            : ''
+                    } ${english ? 'at' : 'בשעה'}: `}
                     <Text
                         style={
                             isWithin10
                                 ? styles.within10ZmanTimeText
                                 : styles.zmanTimeText
                         }>
-                        {Utils.getTimeString(zt.time, true)}
+                        {Utils.getTimeString(zt.time, location.Israel)}
                     </Text>
                 </Text>
             </View>
@@ -105,25 +118,38 @@ export default class Main extends PureComponent {
     }
 
     render() {
-        const styles = getStyle(this.props.settings.theme, 'main');
+        const { english, location } = this.props.settings,
+            styles = getStyle(this.props.settings.theme, 'main'),
+            itemHeight =
+                Math.trunc(
+                    100 /
+                        Math.min(
+                            Number(this.props.settings.numberOfItemsToShow),
+                            Number(this.props.zmanTimes.length)
+                        )
+                ) - 2;
         return (
             <View style={styles.container}>
                 <Text style={styles.dateText}>
-                    {this.props.jdate.toStringHeb()}
+                    {english
+                        ? this.props.jdate.toString()
+                        : this.props.jdate.toStringHeb()}
+                </Text>
+                <Text style={styles.sDateText}>
+                    {english
+                        ? Utils.toStringDate(this.props.sdate, true)
+                        : Utils.toShortStringDate(
+                              this.props.sdate,
+                              location.Israel
+                          )}
                 </Text>
                 {this.getNotificationsView(styles)}
-                <Text style={styles.timeNowText}>השעה עכשיו:</Text>
-                <Text style={styles.timeText1}>
-                    {Utils.getTimeString(this.props.nowTime, true)}
+                <Text style={english ? styles.timeText1Eng : styles.timeText1}>
+                    {Utils.getTimeString(this.props.nowTime, location.Israel)}
                 </Text>
-                <ScrollView
-                    style={styles.scrollView}
-                    contentContainerStyle={{
-                        flex:
-                            this.props.settings.numberOfItemsToShow > 3 ? 0 : 1,
-                    }}>
+                <ScrollView style={styles.scrollView}>
                     {this.props.zmanTimes.map((zt, i) =>
-                        this.displaySingleZman(zt, i, styles)
+                        this.displaySingleZman(zt, i, styles, itemHeight)
                     )}
                 </ScrollView>
             </View>
