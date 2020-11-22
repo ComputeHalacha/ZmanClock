@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 export default {
     appStyles: StyleSheet.create({
@@ -188,13 +188,13 @@ export default {
             fontWeight: 'bold',
             margin: 15,
         },
-        selectMultipleStyle: { backgroundColor: '#333333' },
-        selectMultipleRowStyle: { backgroundColor: '#333333', flex: 1 },
-        selectMultipleCheckboxStyle: { backgroundColor: '#333333' },
-        selectMultipleSelectedCheckboxStyle: { backgroundColor: '#888888' },
-        selectMultipleSelectedRowStyle: { backgroundColor: '#222322' },
-        selectMultipleLabelStyle: { color: '#777777' },
-        selectMultipleSelectedLabelStyle: { color: '#eeeeee' },
+        selectMultipleStyle: {backgroundColor: '#333333'},
+        selectMultipleRowStyle: {backgroundColor: '#333333', flex: 1},
+        selectMultipleCheckboxStyle: {backgroundColor: '#333333'},
+        selectMultipleSelectedCheckboxStyle: {backgroundColor: '#888888'},
+        selectMultipleSelectedRowStyle: {backgroundColor: '#222322'},
+        selectMultipleLabelStyle: {color: '#777777'},
+        selectMultipleSelectedLabelStyle: {color: '#eeeeee'},
         checkbox: {
             margin: 5,
             minWidth: 50,
@@ -234,27 +234,48 @@ export default {
             flex: 1,
             borderRadius: 5,
             backgroundColor: '#333333',
-            width: '90%',
-            marginLeft: 10,
-            marginRight: 10,
+            width: '97%',
+            justifyContent: 'center',
             padding: 5,
+            margin: 5,
         },
         labelCheckbox: {
             color: '#777777',
             margin: 5,
         },
+        zmanTypesView: {
+            flex: 1,
+            flexDirection: 'row',
+            backgroundColor: '#252525',
+            justifyContent: 'space-between',
+            alignContent: 'center',
+            alignItems: 'center',
+            padding: 5,
+            marginBottom: 5,
+        },
+        labelZmanType: {
+            color: '#667',
+            fontWeight: 'bold',
+        },
+        showTag: {color: '#575', fontSize: 10},
+        noShowTag: {color: '#755', fontSize: 10},
         setTimeView: {
             flexDirection: 'row',
             padding: 2,
             backgroundColor: '#555555',
             borderRadius: 5,
         },
-        settingsButtons: {
-            margin: 10,
+        settingsButtonsOutside: {
+            width: '100%'
+        },
+        settingsButton: {
             flexDirection: 'row',
+            backgroundColor: '#252525',
+            borderRadius: 5,
+            width: '70%',
+            padding: 7,
+            margin: 5,
             justifyContent: 'space-around',
-            flex: 1,
-            width: '100%',
         },
     }),
     customZmanimStyles: StyleSheet.create({

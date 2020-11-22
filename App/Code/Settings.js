@@ -1,8 +1,8 @@
 import Location from './JCal/Location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { findLocation } from './Locations';
-import { log, warn, error, setDefault, isNumber } from './GeneralUtils';
-import { getZmanType } from './ZmanTypes';
+import {findLocation} from './Locations';
+import {log, warn, error, setDefault, isNumber} from './GeneralUtils';
+import {getZmanType} from './ZmanTypes';
 
 export default class Settings {
     /**
@@ -28,16 +28,27 @@ export default class Settings {
         showGaonShir,
         theme,
         showDafYomi,
-        english
+        english,
     ) {
         /**
          * @property {[{id:Number, offset: ?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }]} zmanimToShow List of which zmanim to show
          */
         this.zmanimToShow = zmanimToShow || [
-            getZmanType(1), //alos90
+            getZmanType(0), //chatzosNight
+            getZmanType(2), //alos72
+            getZmanType(3), //talisTefillin
             getZmanType(5), //netzMishor
+            getZmanType(6), //szksMga
+            getZmanType(7), //szksGra
+            getZmanType(8), //sztMga
+            getZmanType(9), //sztGra
+            getZmanType(10), //chatzosDay
+            getZmanType(11), //minGed
+            getZmanType(12), //minKet
+            getZmanType(13), //plag
             getZmanType(15), //shkiaElevation
             getZmanType(17), //tzais50
+            getZmanType(18), //tzais72
             getZmanType(21), //candleLighting
         ];
         /**
@@ -50,7 +61,7 @@ export default class Settings {
         /**
          * @property {Location} location
          */
-        this.location = location || findLocation('ירושלים');
+        this.location = location || findLocation('Lakewood NJ');
         /**
          * @property {boolean} showNotifications Show shul notifications?
          */
@@ -58,15 +69,15 @@ export default class Settings {
         /**
          * @property {number} numberOfItemsToShow Number of zmanim to show on the main screen
          */
-        this.numberOfItemsToShow = setDefault(numberOfItemsToShow, 3);
+        this.numberOfItemsToShow = setDefault(numberOfItemsToShow, 5);
         /**
          * @property {number} minToShowPassedZman Number of minutes to continue showing zmanim that have passed
          */
-        this.minToShowPassedZman = setDefault(minToShowPassedZman, 2);
+        this.minToShowPassedZman = setDefault(minToShowPassedZman, 15);
         /**
          * @property {boolean} [showGaonShir] Show the Shir Shel Yom of the Gr"a?
          */
-        this.showGaonShir = setDefault(showGaonShir, true);
+        this.showGaonShir = setDefault(showGaonShir, false);
         /**
          * @property {string} [theme] name of the style theme
          */
@@ -78,7 +89,7 @@ export default class Settings {
         /**
          * @property {boolean} [english] Should the language be English?
          */
-        this.english = !!english;
+        this.english = setDefault(english, true);
     }
     clone() {
         return new Settings(
@@ -91,7 +102,7 @@ export default class Settings {
             this.showGaonShir,
             this.theme,
             this.showDafYomi,
-            this.english
+            this.english,
         );
     }
     /**
@@ -123,7 +134,10 @@ export default class Settings {
             ],
             (errors) =>
                 errors &&
-                error('Error during AsyncStorage.multiSet for settings', errors)
+                error(
+                    'Error during AsyncStorage.multiSet for settings',
+                    errors,
+                ),
         );
         log('Saved settings', this);
     }
@@ -145,13 +159,13 @@ export default class Settings {
                 } else {
                     warn(
                         'Invalid or empty zmanimToShow in storage data variable: ' +
-                            zts
+                            zts,
                     );
                 }
             } catch (e) {
                 error(
                     'Failed to load zmanimToShow array from storage data:',
-                    e
+                    e,
                 );
             }
         }
@@ -165,20 +179,20 @@ export default class Settings {
                 } else {
                     warn(
                         'Invalid or empty customZmanim in storage data variable: ' +
-                            cz
+                            cz,
                     );
                 }
             } catch (e) {
                 error(
                     'Failed to load customZmanim array from storage data:',
-                    e
+                    e,
                 );
             }
         }
         if (allKeys.includes('LOCATION_NAME')) {
             try {
                 const locationName = await AsyncStorage.getItem(
-                        'LOCATION_NAME'
+                        'LOCATION_NAME',
                     ),
                     i = findLocation(locationName);
                 if (i && i.Latitude) {
@@ -187,7 +201,7 @@ export default class Settings {
                 } else {
                     warn(
                         'Invalid or empty location in storage data variable: ' +
-                            locationName
+                            locationName,
                     );
                 }
             } catch (e) {
@@ -203,7 +217,7 @@ export default class Settings {
                 } else {
                     warn(
                         'Invalid showNotifications in storage data variable: ' +
-                            sn
+                            sn,
                     );
                 }
             } catch (e) {
@@ -213,7 +227,7 @@ export default class Settings {
         if (allKeys.includes('NUMBER_OF_ITEMS_TO_SHOW')) {
             try {
                 const ni = await AsyncStorage.getItem(
-                        'NUMBER_OF_ITEMS_TO_SHOW'
+                        'NUMBER_OF_ITEMS_TO_SHOW',
                     ),
                     i = JSON.parse(ni);
                 if (isNumber(i)) {
@@ -222,13 +236,13 @@ export default class Settings {
                 } else {
                     warn(
                         'Invalid numberOfItemsToShow in storage data variable: ' +
-                            ni
+                            ni,
                     );
                 }
             } catch (e) {
                 error(
                     'Failed to load numberOfItemsToShow from storage data:',
-                    e
+                    e,
                 );
             }
         }
@@ -242,13 +256,13 @@ export default class Settings {
                 } else {
                     warn(
                         'Invalid minToShowPassedZman in storage data variable: ' +
-                            mpz
+                            mpz,
                     );
                 }
             } catch (e) {
                 error(
                     'Failed to load minToShowPassedZman from storage data:',
-                    e
+                    e,
                 );
             }
         }
@@ -260,7 +274,7 @@ export default class Settings {
                     log('showGaonShir from storage data', sn);
                 } else {
                     warn(
-                        'Invalid showGaonShir in storage data variable: ' + sn
+                        'Invalid showGaonShir in storage data variable: ' + sn,
                     );
                 }
             } catch (e) {
@@ -276,7 +290,7 @@ export default class Settings {
                 } else {
                     warn(
                         'Invalid or missing theme in storage data variable: ' +
-                            tn
+                            tn,
                     );
                 }
             } catch (e) {
