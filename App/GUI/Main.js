@@ -147,7 +147,7 @@ export default class Main extends PureComponent {
                 <Text style={english ? styles.timeText1Eng : styles.timeText1}>
                     {Utils.getTimeString(this.props.nowTime, location.Israel)}
                 </Text>
-                <ScrollView style={styles.scrollView}>
+                <ScrollView style={styles.scrollView} useNativeDriver='true'>
                     {this.props.zmanTimes.map((zt, i) =>
                         this.displaySingleZman(zt, i, styles, itemHeight)
                     )}

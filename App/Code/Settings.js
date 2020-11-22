@@ -1,5 +1,5 @@
 import Location from './JCal/Location';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { findLocation } from './Locations';
 import { log, warn, error, setDefault, isNumber } from './GeneralUtils';
 import { getZmanType } from './ZmanTypes';
@@ -82,8 +82,8 @@ export default class Settings {
     }
     clone() {
         return new Settings(
-            this.zmanimToShow,
-            this.customZmanim,
+            [...this.zmanimToShow],
+            [...this.customZmanim],
             this.location,
             this.showNotifications,
             this.numberOfItemsToShow,

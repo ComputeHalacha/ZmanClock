@@ -1,5 +1,5 @@
 /* eslint-disable react-perf/jsx-no-new-object-as-prop */
-import React, { PureComponent } from "react";
+import React, {PureComponent} from 'react';
 import {
     Image,
     Picker,
@@ -7,13 +7,13 @@ import {
     Text,
     TouchableHighlight,
     View,
-} from "react-native";
-import CheckBox from "react-native-check-box";
-import AppUtils from "../Code/AppUtils";
-import { range } from "../Code/GeneralUtils";
-import Utils from "../Code/JCal/Utils";
-import { ZmanTypes } from "../Code/ZmanTypes";
-import getStyle from "./Styles/Styles";
+} from 'react-native';
+import CheckBox from 'react-native-check-box';
+import AppUtils from '../Code/AppUtils';
+import {range} from '../Code/GeneralUtils';
+import Utils from '../Code/JCal/Utils';
+import {ZmanTypes} from '../Code/ZmanTypes';
+import getStyle from './Styles/Styles';
 
 export default class CustomZmanim extends PureComponent {
     constructor(props) {
@@ -35,22 +35,24 @@ export default class CustomZmanim extends PureComponent {
             } = this.props.settings,
             fullZmanTypeList = [...ZmanTypes],
             customZmanimList = this.props.settings.CustomZmanim,
-            styles = getStyle(theme, "customZmanim");
+            styles = getStyle(theme, 'customZmanim');
 
         return (
             <View style={styles.outContainer}>
                 <View style={styles.container}>
                     <Text style={styles.header}>
-                    {english ? 'Other Zmanim' : 'זמנים אחרים'}
+                        {english ? 'Other Zmanim' : 'זמנים אחרים'}
                     </Text>
-                    <ScrollView contentContainerStyle={styles.inContainer}>
+                    <ScrollView
+                        contentContainerStyle={styles.inContainer}
+                        useNativeDriver="true">
                         <View style={styles.scrollView}>
                             {customZmanimList.map((cz, index) => (
                                 <View key={index}>{cz.desc}</View>
                             ))}
                         </View>
                         <Text style={styles.label}>
-                            {english ? "General Settings" : "העדפות כלליות"}
+                            {english ? 'General Settings' : 'העדפות כלליות'}
                         </Text>
                         <View style={styles.checkboxView}>
                             <CheckBox
@@ -85,7 +87,7 @@ export default class CustomZmanim extends PureComponent {
                                 ))}
                             </Picker>
                             <Text style={styles.labelCheckbox}>
-                                מקסימום פרטים להציג במסך:{" "}
+                                מקסימום פרטים להציג במסך:{' '}
                             </Text>
                         </View>
                         <View style={styles.numBoxView}>
@@ -107,12 +109,12 @@ export default class CustomZmanim extends PureComponent {
                                 ))}
                             </Picker>
                             <Text style={styles.labelCheckbox}>
-                                מספר דקות להציג זמנים שעברו:{" "}
+                                מספר דקות להציג זמנים שעברו:{' '}
                             </Text>
                         </View>
                         <Text style={styles.label}>עריכת שעה</Text>
                         <Text>
-                            השעה עכשיו:{" "}
+                            השעה עכשיו:{' '}
                             {Utils.getTimeString(this.props.nowTime, true)}
                         </Text>
                     </ScrollView>
@@ -121,7 +123,7 @@ export default class CustomZmanim extends PureComponent {
                         onPress={() => this.props.close()}
                         onLongPress={() =>
                             AppUtils.changeSystemHomeSettings(
-                                this.props.settings
+                                this.props.settings,
                             )
                         }>
                         סגור X

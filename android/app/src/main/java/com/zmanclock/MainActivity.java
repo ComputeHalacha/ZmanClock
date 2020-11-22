@@ -68,7 +68,7 @@ public class MainActivity extends ReactActivity {
           myDevicePolicyManager.setLockTaskPackages(mDPM, packages);
           startLockTask();
       } else {
-          Toast.makeText(getApplicationContext(),"Not owner", Toast.LENGTH_LONG).show();
+          Toast.makeText(getApplicationContext(),"Starting ZmanClock", Toast.LENGTH_LONG).show();
       }
 
         KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);

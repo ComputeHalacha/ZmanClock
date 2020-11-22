@@ -1,14 +1,13 @@
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import {
     StatusBar,
     DrawerLayoutAndroid,
     Text,
     View,
-    ToolbarAndroid,
     Dimensions,
 } from 'react-native';
-//import ToolbarAndroid from '@react-native-community/toolbar-android';
-import KeepAwake from 'react-native-keep-awake';
+import ToolbarAndroid from '@react-native-community/toolbar-android';
+import KeepAwake from '@sayem314/react-native-keep-awake';
 import NavigationBarAndroid from './Code/NavigationBar';
 import jDate from './Code/JCal/jDate';
 import Utils from './Code/JCal/Utils';
@@ -18,7 +17,7 @@ import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './Code/AppUtils';
 import getNotifications from './Code/Notifications';
 import Settings from './Code/Settings';
-import { log } from './Code/GeneralUtils';
+import {log} from './Code/GeneralUtils';
 import getStyle from './GUI/Styles/Styles';
 
 const screenWidth = Math.round(Dimensions.get('window').width);
@@ -68,7 +67,7 @@ export default class App extends PureComponent {
                 jdate,
                 nowTime,
                 settings,
-                sunset
+                sunset,
             ),
             styles = getStyle('dark', 'app');
         this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate, location);
@@ -89,7 +88,7 @@ export default class App extends PureComponent {
         //Cause a notifications refresh
         this.needsNotificationsRefresh = settings.showNotifications;
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
-        this.setState({ settings, styles, sd: null });
+        this.setState({settings, styles, sd: null});
     }
     /**
      * @param {Date} sd
@@ -106,7 +105,7 @@ export default class App extends PureComponent {
                 (zt) =>
                     !zt.isTomorrow &&
                     Utils.totalMinutes(nowTime) - Utils.totalMinutes(zt.time) >=
-                        this.state.settings.minToShowPassedZman
+                        this.state.settings.minToShowPassedZman,
             )
         ) {
             return true;
@@ -115,18 +114,18 @@ export default class App extends PureComponent {
         }
     }
     setNotifications() {
-        const { settings } = this.state;
+        const {settings} = this.state;
         if (settings.showNotifications) {
             if (this.needsNotificationsRefresh || this.isPastShulZman()) {
-                const { jdate, sd, nowTime } = this.state,
+                const {jdate, sd, nowTime} = this.state,
                     notifications = getNotifications(
                         jdate,
                         sd,
                         nowTime,
-                        settings
+                        settings,
                     );
                 this.needsNotificationsRefresh = false;
-                this.setState({ notifications });
+                this.setState({notifications});
                 log('Refreshing notifications: ', jdate, sd, nowTime);
             }
         } else if (
@@ -134,12 +133,12 @@ export default class App extends PureComponent {
             this.state.notifications.length
         ) {
             //If setting is off, hide all notifications
-            this.setState({ notifications: [] });
+            this.setState({notifications: []});
         }
     }
     isPastShulZman() {
-        const { nowTime } = this.state,
-            { chatzosHayom, chatzosHalayla, alos, shkia } = this.shulZmanim;
+        const {nowTime} = this.state,
+            {chatzosHayom, chatzosHalayla, alos, shkia} = this.shulZmanim;
 
         //Notifications need refreshing by chatzos, alos and shkia
         if (shkia && Utils.isTimeAfter(shkia, nowTime)) {
@@ -188,14 +187,14 @@ export default class App extends PureComponent {
             nowTime = Utils.timeFromDate(sd);
         if (!this.needsZmanRefresh(sd, nowTime)) {
             log('Refreshing just times');
-            let { jdate, sunset } = this.state;
+            let {jdate, sunset} = this.state;
             if (
                 Utils.isSameSdate(jdate.getDate(), sd) &&
                 Utils.isTimeAfter(sunset, nowTime)
             ) {
                 jdate = jdate.addDays(1);
             }
-            this.setState({ sd, nowTime, jdate });
+            this.setState({sd, nowTime, jdate});
         } else {
             log('Refreshing all zmanim');
             const sunset = Zmanim.getSunTimes(sd, this.state.settings.location)
@@ -209,9 +208,9 @@ export default class App extends PureComponent {
                     jdate,
                     nowTime,
                     this.state.settings,
-                    sunset
+                    sunset,
                 );
-            this.setState({ zmanTimes, sd, nowTime, sunset, jdate });
+            this.setState({zmanTimes, sd, nowTime, sunset, jdate});
             this.shulZmanim = AppUtils.getBasicShulZmanim(sd, jdate, location);
         }
         this.setNotifications();
@@ -241,7 +240,7 @@ export default class App extends PureComponent {
         settings.save();
         this.needsNotificationsRefresh = settings.showNotifications;
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
-        this.setState({ settings, sd: null });
+        this.setState({settings, sd: null});
     }
     render() {
         const {
@@ -253,7 +252,7 @@ export default class App extends PureComponent {
             zmanTimes,
             notifications,
         } = this.state;
-        const { english } = settings;
+        const {english} = settings;
         return (
             <DrawerLayoutAndroid
                 drawerWidth={parseInt(screenWidth * 0.9)}
@@ -265,11 +264,7 @@ export default class App extends PureComponent {
                         changeSettings={this.changeSettings}
                         settings={settings}
                         nowTime={nowTime}
-                        drawerPosition={
-                            english
-                                ? DrawerLayoutAndroid.positions.Left
-                                : DrawerLayoutAndroid.positions.Right
-                        }
+                        drawerPosition={english ? 'left' : 'right'}
                     />
                 )}
                 ref={(drawer) => (this.drawer = drawer)}>

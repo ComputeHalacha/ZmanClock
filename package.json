@@ -1,27 +1,32 @@
 {
     "name": "ZmanClock",
-    "version": "1.6.1",
+    "version": "1.6.3",
     "private": true,
     "scripts": {
-        "start": "node node_modules/react-native/local-cli/cli.js start"
+        "android": "react-native run-android",
+        "release-android": "react-native run-android --variant=release",
+        "ios": "react-native run-ios",
+        "start": "react-native start"
     },
     "dependencies": {
-        "react": "16.8.3",
-        "react-native": "0.59.5",
+        "@react-native-async-storage/async-storage": "^1.13.2",
+        "@react-native-community/picker": "^1.8.1",
+        "@react-native-community/toolbar-android": "0.1.0-rc.2",
+        "@sayem314/react-native-keep-awake": "^1.0.4",
+        "react": "16.13.1",
+        "react-native": "0.63.3",
         "react-native-check-box": "^2.1.7",
-        "react-native-keep-awake": "^4.0.0",
         "react-native-select-multiple": "^1.2.0",
         "react-native-switch-toggle": "^1.1.2"
     },
     "devDependencies": {
-        "@babel/core": "^7.4.3",
-        "@babel/runtime": "^7.4.3",
-        "metro-react-native-babel-preset": "^0.53.1",
-        "react-test-renderer": "16.8.3",
-        "eslint": "^4.19.1",
-        "eslint-plugin-react": "^7.8.2",
-        "eslint-plugin-react-native": "^3.2.1",
-        "eslint-plugin-react-perf": "^2.0.8",
-        "babel-eslint": "^8.2.3"
+        "@babel/core": "^7.8.4",
+        "@babel/runtime": "^7.8.4",
+        "@react-native-community/eslint-config": "^1.1.0",
+        "babel-jest": "^25.1.0",
+        "eslint": "^6.5.1",
+        "jest": "^25.1.0",
+        "metro-react-native-babel-preset": "^0.59.0",
+        "react-test-renderer": "16.13.1"
     }
 }
