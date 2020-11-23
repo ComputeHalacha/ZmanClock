@@ -7,6 +7,7 @@ import {
     TouchableHighlight,
     View,
     BackHandler,
+    I18nManager,
 } from 'react-native';
 import CheckBox from 'react-native-check-box';
 import SwitchToggle from 'react-native-switch-toggle';
@@ -193,6 +194,15 @@ export default class SettingsDrawer extends PureComponent {
                                                     : 'אל תציג'}
                                             </Text>
                                             <SwitchToggle
+                                                style={{
+                                                    transform: [
+                                                        {
+                                                            scaleX: I18nManager.isRTL
+                                                                ? -1
+                                                                : 1,
+                                                        },
+                                                    ],
+                                                }}
                                                 switchOn={showZmanType}
                                                 onPress={() =>
                                                     this.toggleZmanType(zt)
@@ -308,6 +318,11 @@ export default class SettingsDrawer extends PureComponent {
                                 {english ? 'Light Theme' : 'רקע בהיר'}
                             </Text>
                             <SwitchToggle
+                                style={{
+                                    transform: [
+                                        {scaleX: I18nManager.isRTL ? -1 : 1},
+                                    ],
+                                }}
                                 switchOn={this.state.theme === 'dark'}
                                 onPress={() =>
                                     this.onChangeSettings({theme: otherTheme})
