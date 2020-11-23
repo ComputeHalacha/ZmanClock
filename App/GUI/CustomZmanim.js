@@ -8,7 +8,7 @@ import {
     TouchableHighlight,
     View,
 } from 'react-native';
-import CheckBox from 'react-native-check-box';
+import {Checkbox} from 'dooboo-ui';
 import AppUtils from '../Code/AppUtils';
 import {range} from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
@@ -55,17 +55,18 @@ export default class CustomZmanim extends PureComponent {
                             {english ? 'General Settings' : 'העדפות כלליות'}
                         </Text>
                         <View style={styles.checkboxView}>
-                            <CheckBox
-                                isChecked={Boolean(showNotifications)}
-                                onClick={() =>
+                            <Checkbox
+                                checked={Boolean(showNotifications)}
+                                onChange={() =>
                                     this.onChangeSettings({
                                         showNotifications: !showNotifications,
                                     })
                                 }
-                                style={styles.checkbox}
+                                customStyle={styles.checkbox}
+                                label=' הצג מידע יומית'
                             />
                             <Text style={styles.labelCheckbox}>
-                                הצג מידע יומית
+                               
                             </Text>
                         </View>
                         <View style={styles.numBoxView}>

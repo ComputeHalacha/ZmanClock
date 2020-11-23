@@ -13,11 +13,11 @@
         "@react-native-community/picker": "^1.8.1",
         "@react-native-community/toolbar-android": "0.1.0-rc.2",
         "@sayem314/react-native-keep-awake": "^1.0.4",
+        "dooboo-ui": "0.0.25",
         "react": "16.13.1",
         "react-native": "0.63.3",
-        "react-native-check-box": "^2.1.7",
-        "react-native-select-multiple": "^1.2.0",
-        "react-native-switch-toggle": "^1.1.2"
+        "react-native-svg": "^12.1.0",
+        "styled-components": "^5.2.1"
     },
     "devDependencies": {
         "@babel/core": "^7.8.4",
