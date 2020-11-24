@@ -193,6 +193,7 @@ export default class SettingsDrawer extends PureComponent {
                                             </Text>
                                             <ToggleSwitch
                                                 isOn={showZmanType}
+                                                size="large"
                                                 onColor="#377696"
                                                 offColor="#444"
                                                 onToggle={() =>
@@ -310,6 +311,7 @@ export default class SettingsDrawer extends PureComponent {
                                 isOn={this.state.theme === 'dark'}
                                 onColor="#345"
                                 offColor="#89a"
+                                size="large"
                                 onToggle={(isOn) =>
                                     this.onChangeSettings({theme: otherTheme})
                                 }
