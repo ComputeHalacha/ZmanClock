@@ -17,7 +17,7 @@ import SettingsDrawer from './GUI/SettingsDrawer';
 import AppUtils from './Code/AppUtils';
 import getNotifications from './Code/Notifications';
 import Settings from './Code/Settings';
-import {log} from './Code/GeneralUtils';
+import {log, onChangeLanguage} from './Code/GeneralUtils';
 import getStyle from './GUI/Styles/Styles';
 
 const screenWidth = Math.round(Dimensions.get('window').width);
@@ -85,6 +85,8 @@ export default class App extends PureComponent {
     async getStorageData() {
         const settings = await Settings.getSettings(),
             styles = getStyle(settings.theme, 'app');
+        //Make sure screen direction is correct
+        onChangeLanguage(settings.english);
         //Cause a notifications refresh
         this.needsNotificationsRefresh = settings.showNotifications;
         //Setting the state sd to null causes a full refresh on the next iteration of the timer.
@@ -264,7 +266,6 @@ export default class App extends PureComponent {
                         changeSettings={this.changeSettings}
                         settings={settings}
                         nowTime={nowTime}
-                        drawerPosition={english ? 'left' : 'right'}
                     />
                 )}
                 ref={(drawer) => (this.drawer = drawer)}>

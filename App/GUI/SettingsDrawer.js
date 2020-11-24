@@ -6,13 +6,13 @@ import {
     Text,
     TouchableHighlight,
     View,
-    BackHandler
+    BackHandler,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import ToggleSwitch from 'toggle-switch-react-native';
 import {Picker} from '@react-native-community/picker';
 import AppUtils from '../Code/AppUtils';
-import {range, setDefault} from '../Code/GeneralUtils';
+import {range, setDefault, onChangeLanguage} from '../Code/GeneralUtils';
 import Utils from '../Code/JCal/Utils';
 import {Locations} from '../Code/Locations';
 import {openSystemTimeSettings} from '../Code/SystemTime';
@@ -131,12 +131,13 @@ export default class SettingsDrawer extends PureComponent {
                             </Text>
                             <ToggleSwitch
                                 isOn={english}
-                                onColor='#555'
-                                offColor='#555'
-                                size='large'
-                                onToggle={(isOn) =>
-                                    this.onChangeSettings({english: isOn})
-                                }
+                                onColor="#555"
+                                offColor="#555"
+                                size="large"
+                                onToggle={(isOn) => {
+                                    this.onChangeSettings({english: isOn});
+                                    onChangeLanguage(isOn);
+                                }}
                             />
                             <Text style={styles.labelCheckbox}>
                                 {english ? '  English' : '  אנגלית'}
@@ -192,8 +193,8 @@ export default class SettingsDrawer extends PureComponent {
                                             </Text>
                                             <ToggleSwitch
                                                 isOn={showZmanType}
-                                                onColor='#377696'
-                                                offColor='#444'
+                                                onColor="#377696"
+                                                offColor="#444"
                                                 onToggle={() =>
                                                     this.toggleZmanType(zt)
                                                 }
@@ -307,8 +308,8 @@ export default class SettingsDrawer extends PureComponent {
                             </Text>
                             <ToggleSwitch
                                 isOn={this.state.theme === 'dark'}
-                                onColor='#345'
-                                offColor='#89a'
+                                onColor="#345"
+                                offColor="#89a"
                                 onToggle={(isOn) =>
                                     this.onChangeSettings({theme: otherTheme})
                                 }
