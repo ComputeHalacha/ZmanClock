@@ -66,7 +66,7 @@ export default class CustomZmanim extends PureComponent {
                                 label=' הצג מידע יומית'
                             />
                             <Text style={styles.labelCheckbox}>
-                               
+
                             </Text>
                         </View>
                         <View style={styles.numBoxView}>

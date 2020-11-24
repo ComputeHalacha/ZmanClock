@@ -6,10 +6,10 @@ import {
     Text,
     TouchableHighlight,
     View,
-    BackHandler,
-    I18nManager,
+    BackHandler
 } from 'react-native';
-import {SwitchToggle, Checkbox} from 'dooboo-ui';
+import CheckBox from '@react-native-community/checkbox';
+import ToggleSwitch from 'toggle-switch-react-native';
 import {Picker} from '@react-native-community/picker';
 import AppUtils from '../Code/AppUtils';
 import {range, setDefault} from '../Code/GeneralUtils';
@@ -121,28 +121,25 @@ export default class SettingsDrawer extends PureComponent {
                     } ${version}${
                         global.HermesInternal ? ' Hermes' : ''
                     }`}</Text>
-                    <ScrollView
-                        contentContainerStyle={styles.inContainer}
-                        useNativeDriver="true">
+                    <ScrollView contentContainerStyle={styles.inContainer}>
                         <Text style={styles.label}>
                             {english ? 'Choose app language' : 'בחר שפה'}
                         </Text>
                         <View style={styles.checkboxView}>
                             <Text style={styles.labelCheckbox}>
-                                {english ? 'Hebrew' : 'עברית'}
+                                {english ? 'Hebrew  ' : 'עברית  '}
                             </Text>
-                            <SwitchToggle
-                                type={0}
-                                RTL={I18nManager.isRTL}
-                                switchOn={english}
-                                onPress={() =>
-                                    this.onChangeSettings({
-                                        english: !english,
-                                    })
+                            <ToggleSwitch
+                                isOn={english}
+                                onColor='#555'
+                                offColor='#555'
+                                size='large'
+                                onToggle={(isOn) =>
+                                    this.onChangeSettings({english: isOn})
                                 }
                             />
                             <Text style={styles.labelCheckbox}>
-                                {english ? 'English' : 'אנגלית'}
+                                {english ? '  English' : '  אנגלית'}
                             </Text>
                         </View>
                         <Text style={styles.label}>
@@ -193,11 +190,11 @@ export default class SettingsDrawer extends PureComponent {
                                                     ? 'Not showing'
                                                     : 'אל תציג'}
                                             </Text>
-
-                                            <SwitchToggle
-                                                RTL={I18nManager.isRTL}
-                                                switchOn={showZmanType}
-                                                onPress={() =>
+                                            <ToggleSwitch
+                                                isOn={showZmanType}
+                                                onColor='#377696'
+                                                offColor='#444'
+                                                onToggle={() =>
                                                     this.toggleZmanType(zt)
                                                 }
                                             />
@@ -210,20 +207,19 @@ export default class SettingsDrawer extends PureComponent {
                             {english ? 'General Settings' : 'העדפות כלליות'}
                         </Text>
                         <View style={styles.checkboxView}>
-                            <Checkbox
-                                label={
-                                    english
-                                        ? 'Show daily information'
-                                        : 'הצג מידע יומית'
-                                }
-                                checked={Boolean(showNotifications)}
-                                onChange={() =>
+                            <CheckBox
+                                value={Boolean(showNotifications)}
+                                onValueChange={(checked) =>
                                     this.onChangeSettings({
-                                        showNotifications: !showNotifications,
+                                        showNotifications: checked,
                                     })
                                 }
-                                customStyle={styles.checkbox}
                             />
+                            <Text style={styles.labelCheckbox}>
+                                {english
+                                    ? 'Show daily information'
+                                    : 'הצג מידע יומית'}
+                            </Text>
                         </View>
                         <View style={styles.numBoxView}>
                             <Text style={styles.labelCheckbox}>
@@ -274,53 +270,51 @@ export default class SettingsDrawer extends PureComponent {
                             </Picker>
                         </View>
                         <View style={styles.checkboxView}>
-                            <Checkbox
-                                label={
-                                    english
-                                        ? 'Show the Shir Shel Yom of the Gr"a'
-                                        : 'הצג שיר של יום של הגר"א'
-                                }
-                                checked={Boolean(showGaonShir)}
-                                onChange={() =>
+                            <CheckBox
+                                value={Boolean(showGaonShir)}
+                                onValueChange={(checked) =>
                                     this.onChangeSettings({
-                                        showGaonShir: !showGaonShir,
+                                        showGaonShir: checked,
                                     })
                                 }
                                 customStyle={styles.checkbox}
                             />
+                            <Text style={styles.labelCheckbox}>
+                                {english
+                                    ? 'Show the Shir Shel Yom of the Gr"a'
+                                    : 'הצג שיר של יום של הגר"א'}
+                            </Text>
                         </View>
                         <View style={styles.checkboxView}>
-                            <Checkbox
-                                checked={Boolean(showDafYomi)}
-                                onChange={() =>
+                            <CheckBox
+                                value={Boolean(showDafYomi)}
+                                onValueChange={(checked) =>
                                     this.onChangeSettings({
-                                        showDafYomi: !showDafYomi,
+                                        showDafYomi: checked,
                                     })
                                 }
-                                customStyle={styles.checkbox}
-                                label={
-                                    english ? 'Show Daf Yomi' : 'הצג דף היומי'
-                                }
                             />
-                            <Text style={styles.labelCheckbox}></Text>
+                            <Text style={styles.labelCheckbox}>
+                                {english ? 'Show Daf Yomi' : 'הצג דף היומי'}
+                            </Text>
                         </View>
                         <Text style={styles.label}>
                             {english ? 'Choose app color theme' : 'בחר צבע רקע'}
                         </Text>
                         <View style={styles.checkboxView}>
                             <Text style={styles.labelCheckbox}>
-                                {english ? 'Light Theme' : 'רקע בהיר'}
+                                {english ? 'Light Theme  ' : 'רקע בהיר  '}
                             </Text>
-                            <SwitchToggle
-                                type={0}
-                                RTL={I18nManager.isRTL}
-                                switchOn={this.state.theme === 'dark'}
-                                onPress={() =>
+                            <ToggleSwitch
+                                isOn={this.state.theme === 'dark'}
+                                onColor='#345'
+                                offColor='#89a'
+                                onToggle={(isOn) =>
                                     this.onChangeSettings({theme: otherTheme})
                                 }
                             />
                             <Text style={styles.labelCheckbox}>
-                                {english ? 'Dark Theme' : 'רקע כהה'}
+                                {english ? '  Dark Theme' : '  רקע כהה'}
                             </Text>
                         </View>
                         <Text style={styles.label}>
