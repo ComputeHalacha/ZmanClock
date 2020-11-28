@@ -41,7 +41,7 @@ export default class Location {
         this.Longitude = longitude;
         this.UTCOffset = utcOffset || 0;
         this.Elevation = elevation || 0;
-        this.CandleLighting = Location.getCandles(this);
+        this.CandleLighting = candleLighting || Location.getCandles(this);
         this.locationId = locationId;
     }
 
@@ -69,8 +69,8 @@ export default class Location {
             return 18;
         }
         else {
-            const special = [{ names: ['jerusalem', 'yerush', 'petach', 'petah', 'petak', 'beit shemesh'], min: 40 },
-            { names: ['haifa', 'chaifa', 'be\'er sheva', 'beersheba'], min: 22 }],
+            const special = [{ names: ['jerusalem', 'yerush', 'petach', 'petah', 'petak', 'beit shemesh', 'ירושלים', 'פתח תקוה', 'בית שמש'], min: 40 },
+            { names: ['haifa', 'chaifa', 'be\'er sheva', 'beersheba', 'חיפה', 'באר שבע'], min: 22 }],
                 loclc = location.Name.toLowerCase(),
                 city = special.find(sp => {
                     return sp.names.find(spi => {

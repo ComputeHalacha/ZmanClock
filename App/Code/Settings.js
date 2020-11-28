@@ -194,9 +194,9 @@ export default class Settings {
                 const locationName = await AsyncStorage.getItem(
                         'LOCATION_NAME',
                     ),
-                    i = findLocation(locationName);
-                if (i && i.Latitude) {
-                    settings.location = i;
+                    location = findLocation(locationName);
+                if (location && location.Latitude) {
+                    settings.location = location;
                     log('location from storage data', locationName);
                 } else {
                     warn(
