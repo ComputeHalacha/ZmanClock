@@ -5,6 +5,7 @@ import {
     Text,
     View,
     Dimensions,
+    Image,
 } from 'react-native';
 import ToolbarAndroid from '@react-native-community/toolbar-android';
 import KeepAwake from '@sayem314/react-native-keep-awake';
@@ -275,9 +276,21 @@ export default class App extends PureComponent {
                     style={styles.toolbarAndroid}
                     onTouchStart={() => this.toggleDrawer()}>
                     <View style={styles.headerView}>
-                        <Text style={styles.headerTextName}>
-                            {settings.location.Name}
-                        </Text>
+                        <View style={styles.headerMenuView}>
+                            <Image
+                                style={styles.headerMenuImage}
+                                source={{
+                                    uri:
+                                        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAASCAYAAAB8fn/4AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAACLSURBVChTY0AHjAkJCUuAtDGEy3CZCUhEA7EGFIeCBFAASOAsEH+H4ksgAXMgFodiIxYgUQvEMEMvgQTqgJgRzGVg8AFpgXHAACTwCMIEg+cgAUMg1oRiXZAZvkBsAMQgcAUkMBeImcFcBoZ/IC0wDggwgQQ+Qthg8BWkxQKIVcBcBoZ7UBonYGAAAJzkEvHwp+d7AAAAAElFTkSuQmCC',
+                                }}
+                            />
+                        </View>
+                        <View style={styles.headerTextView}>
+                            <Text style={styles.headerTextName}>
+                                {settings.location.Name}
+                            </Text>
+                        </View>
+                        <View style={styles.headerOppositeView}></View>
                     </View>
                 </ToolbarAndroid>
                 <Main

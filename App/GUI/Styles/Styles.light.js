@@ -6,14 +6,21 @@ export default {
             flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'space-between',
             backgroundColor: '#FFFFFF',
         },
-        headerTextName: {
-            flex: 1,
+        headerMenuView: {flex: 1},
+        headerMenuImage: {
+            width: 4,
+            height: 16,
+        },
+        headerTextView: {flex: 9},
+         headerTextName: {
             textAlign: 'center',
             fontSize: 13,
             color: '#AAAA88',
         },
+        headerOppositeView: {flex: 2},
         toolbarAndroid: {
             height: 40,
             backgroundColor: '#FFFFFF',
