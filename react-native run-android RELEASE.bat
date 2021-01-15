@@ -16,6 +16,9 @@ ECHO "8. If on large device, in settings - set to large font size"
 @REM Compile and install the release version of the app on the device **********************************************************************
 @REM The apk can be found at \android\app\build\outputs\apk\release\app-release.apk
 npm run release-android
+@REM OR ...
+cd android & ./gradlew assembleRelease
+adb install ./app/build/outputs/apk/release/app-release.apk
 ECHO "The app has been installed on the device"
 PAUSE
 
