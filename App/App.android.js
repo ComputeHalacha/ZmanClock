@@ -290,7 +290,10 @@ export default class App extends PureComponent {
                                 {settings.location.Name}
                             </Text>
                         </View>
-                        <View style={styles.headerOppositeView}></View>
+                        <View
+                            style={
+                                english ? styles.headerOppositeView : null
+                            }></View>
                     </View>
                 </ToolbarAndroid>
                 <Main

@@ -347,7 +347,7 @@ export default class SettingsDrawer extends PureComponent {
                                 </View>
                             </TouchableHighlight>
                         </View>
-
+                        {/*
                         <TouchableHighlight
                             style={styles.settingsButtonsOutside}
                             onPress={() => this.openAddCustomZmanim()}>
@@ -364,6 +364,7 @@ export default class SettingsDrawer extends PureComponent {
                                 />
                             </View>
                         </TouchableHighlight>
+                                */}
                         <TouchableHighlight
                             style={styles.settingsButtonsOutside}
                             onPress={() => this.resetSettings()}>

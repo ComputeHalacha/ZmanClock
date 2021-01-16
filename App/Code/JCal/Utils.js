@@ -1,7 +1,7 @@
 import Zmanim from './Zmanim';
 import jDate from './jDate';
 import Location from './Location';
-import { log } from './../GeneralUtils';
+import {log} from './../GeneralUtils';
 
 export default class Utils {
     static jMonthsEng = [
@@ -103,7 +103,7 @@ export default class Utils {
             retval = '';
 
         if (n >= 1000) {
-            retval += Utils.jsd[Utils.toInt((n - (n % 1000)) / 1000) - 1] + '\'';
+            retval += Utils.jsd[Utils.toInt((n - (n % 1000)) / 1000) - 1] + "'";
             n = n % 1000;
         }
 
@@ -130,7 +130,7 @@ export default class Utils {
             }
         }
         if (number > 999 && number % 1000 < 10) {
-            retval = '\'' + retval;
+            retval = "'" + retval;
         } else if (retval.length > 1) {
             retval = retval.slice(0, -1) + '"' + retval[retval.length - 1];
         }
@@ -167,10 +167,14 @@ export default class Utils {
      */
     static toShortStringDate(date, monthFirst) {
         if (!date) return;
+        const dayNum = date.getDate(),
+            monthNum = date.getMonth() + 1;
         return (
             (monthFirst
-                ? `${date.getMonth()}/${date.getDate()}`
-                : `${date.getDate()}/${date.getMonth()}`) +
+                ? `${monthNum}/${dayNum}`
+                : `${dayNum < 10 ? '0' : ''}${dayNum}/${
+                      monthNum < 10 ? '0' : ''
+                  }${monthNum}`) +
             '/' +
             date.getFullYear().toString()
         );
@@ -533,7 +537,7 @@ export default class Utils {
             jan = new Date(date.getFullYear(), 0, 1),
             jul = new Date(date.getFullYear(), 6, 1);
         return -Utils.toInt(
-            Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset()) / 60
+            Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset()) / 60,
         );
     }
 

@@ -140,7 +140,7 @@ export default class Main extends PureComponent {
                         ? Utils.toStringDate(this.props.sdate, true)
                         : Utils.toShortStringDate(
                               this.props.sdate,
-                              location.Israel
+                              !location.Israel
                           )}
                 </Text>
                 {this.getNotificationsView(styles)}
