@@ -2,25 +2,35 @@ import {StyleSheet} from 'react-native';
 
 export default {
     appStyles: StyleSheet.create({
-        headerView: {
+        headerViewContainer: {
             flex: 1,
             flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
             backgroundColor: '#000000',
         },
-        headerMenuView: {flex: 1},
+        headerMenuImageView: {
+            width: 45,
+            height: 16,
+            flex: 0,
+            flexDirection: 'row',
+            justifyContent: 'center',
+        },
         headerMenuImage: {
             width: 4,
             height: 16,
         },
-        headerTextView: {flex: 9},
+        headerViewItem_LTR: {
+            flex: 1,
+            paddingRight: 70,
+        },
+        headerViewItem_RTL: {
+            flex: 1,
+            paddingRight: 25,
+        },
         headerTextName: {
             textAlign: 'center',
             fontSize: 13,
             color: '#555577',
         },
-        headerOppositeView: {flex: 2},
         toolbarAndroid: {
             height: 40,
             backgroundColor: '#000000',

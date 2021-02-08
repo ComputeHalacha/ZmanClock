@@ -144,7 +144,7 @@ function getShabbosNotifications(
     } else if (month === 5 && day > 2 && day < 10) {
         notifications.push(english ? 'Shabbos Chazon' : 'שבת חזון');
     } else if (
-        (month === (isLeapYear ? 12 : 11) && day > 23 && day < 30) ||
+        (month === (isLeapYear ? 12 : 11) && day > 24) ||
         (month === (isLeapYear ? 13 : 12) && day === 1)
     ) {
         notifications.push(english ? 'Parshas Shkalim' : 'פרשת שקלים');

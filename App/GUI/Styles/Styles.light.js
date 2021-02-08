@@ -1,21 +1,32 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 export default {
     appStyles: StyleSheet.create({
-        headerView: {
+        headerViewContainer: {
             flex: 1,
             flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#FFF',
         },
-        headerMenuView: {flex: 1},
+        headerMenuImageView: {
+            width: 45,
+            height: 16,
+            flex: 0,
+            flexDirection: 'row',
+            justifyContent: 'center',
+        },
         headerMenuImage: {
             width: 4,
             height: 16,
         },
-        headerTextView: {flex: 9},
-         headerTextName: {
+        headerViewItem_LTR: {
+            flex: 1,
+            paddingRight: 70,
+        },
+        headerViewItem_RTL: {
+            flex: 1,
+            paddingRight: 25,
+        },
+        headerTextName: {
             textAlign: 'center',
             fontSize: 13,
             color: '#AAAA88',
@@ -184,13 +195,13 @@ export default {
             fontWeight: 'bold',
             margin: 10,
         },
-        selectMultipleStyle: { backgroundColor: '#CCCCCC' },
-        selectMultipleRowStyle: { backgroundColor: '#CCCCCC', flex: 1 },
-        selectMultipleCheckboxStyle: { backgroundColor: '#CCCCCC' },
-        selectMultipleSelectedCheckboxStyle: { backgroundColor: '#777777' },
-        selectMultipleSelectedRowStyle: { backgroundColor: '#DDDCDD' },
-        selectMultipleLabelStyle: { color: '#888888' },
-        selectMultipleSelectedLabelStyle: { color: '#111111' },
+        selectMultipleStyle: {backgroundColor: '#CCCCCC'},
+        selectMultipleRowStyle: {backgroundColor: '#CCCCCC', flex: 1},
+        selectMultipleCheckboxStyle: {backgroundColor: '#CCCCCC'},
+        selectMultipleSelectedCheckboxStyle: {backgroundColor: '#777777'},
+        selectMultipleSelectedRowStyle: {backgroundColor: '#DDDCDD'},
+        selectMultipleLabelStyle: {color: '#888888'},
+        selectMultipleSelectedLabelStyle: {color: '#111111'},
         checkbox: {
             margin: 5,
             minWidth: 50,

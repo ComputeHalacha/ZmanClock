@@ -275,8 +275,8 @@ export default class App extends PureComponent {
                 <ToolbarAndroid
                     style={styles.toolbarAndroid}
                     onTouchStart={() => this.toggleDrawer()}>
-                    <View style={styles.headerView}>
-                        <View style={styles.headerMenuView}>
+                    <View style={styles.headerViewContainer}>
+                        <View style={styles.headerMenuImageView}>
                             <Image
                                 style={styles.headerMenuImage}
                                 source={{
@@ -285,15 +285,16 @@ export default class App extends PureComponent {
                                 }}
                             />
                         </View>
-                        <View style={styles.headerTextView}>
+                        <View
+                            style={
+                                english
+                                    ? styles.headerViewItem_LTR
+                                    : styles.headerViewItem_RTL
+                            }>
                             <Text style={styles.headerTextName}>
                                 {settings.location.Name}
                             </Text>
                         </View>
-                        <View
-                            style={
-                                english ? styles.headerOppositeView : null
-                            }></View>
                     </View>
                 </ToolbarAndroid>
                 <Main
