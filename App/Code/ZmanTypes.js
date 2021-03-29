@@ -131,6 +131,18 @@ export const ZmanTypes = [
         eng: 'Candle lighting time',
         heb: 'זמן הדלקת נרות',
     },
+    {
+        id: 22,
+        desc: 'סוף זמן אכילת חמץ',
+        eng: 'Stop eating Chometz',
+        heb: 'סוף זמן אכילת חמץ',
+    },
+    {
+        id: 23,
+        desc: 'סוף זמן ביעור חמץ',
+        eng: 'Destroy Chometz',
+        heb: 'סוף זמן ביעור חמץ',
+    },
 ];
 
 /**
@@ -139,5 +151,5 @@ export const ZmanTypes = [
  * @returns {{id:number, desc: String, eng: String, heb: String }}
  */
 export function getZmanType(id) {
-    return ZmanTypes.find(zt => zt.id === id);
+    return ZmanTypes.find((zt) => zt.id === id);
 }

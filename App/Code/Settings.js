@@ -50,6 +50,8 @@ export default class Settings {
             getZmanType(17), //tzais50
             getZmanType(18), //tzais72
             getZmanType(21), //candleLighting
+            getZmanType(22), //Sof Zman eating Chometz
+            getZmanType(23), //Sof Zman burn Chometz
         ];
         /**
          * @property {[{id:Number, offset: Number, whichDaysFlags: Number, desc: String, eng: String, heb: String }]} customZmanim List of added zmanim

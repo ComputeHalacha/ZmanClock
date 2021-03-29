@@ -1,10 +1,9 @@
-import { isString, isNumber, has, isValidDate } from '../GeneralUtils';
+import {isString, isNumber, has, isValidDate} from '../GeneralUtils';
 import Utils from './Utils.js';
 import Sedra from './Sedra.js';
 import PirkeiAvos from './PirkeiAvos.js';
 import Zmanim from './Zmanim.js';
 import DafYomi from './Dafyomi';
-import { getSpecialDays, getMajorHoliday } from './SpecialDays';
 
 /** Keeps a "repository" of years that have had their elapsed days previously calculated. Format: { year:5776, elapsed:2109283 } */
 const _yearCache = [],
@@ -70,9 +69,11 @@ export default class jDate {
             if (isValidDate(d)) {
                 this.fromAbs(jDate.absSd(d));
             } else {
-                throw 'jDate constructor: The given string "' +
+                throw (
+                    'jDate constructor: The given string "' +
                     arg +
-                    '" cannot be parsed into a Date';
+                    '" cannot be parsed into a Date'
+                );
             }
         } else if (isNumber(arg)) {
             //if no other arguments were supplied, we assume that the supplied number is an absolute date
@@ -221,7 +222,7 @@ export default class jDate {
      * jDate.toJDate(5777, 6, 29).diffMonths(jDate.toJDate(5778, 7, 1)) will return 1 even though they are a day apart.
      *
      * If the given date is before this one, the number will be negative.
-     * @param {jDate} jd 
+     * @param {jDate} jd
      * */
     diffMonths(jd) {
         let month = jd.Month,
@@ -333,18 +334,6 @@ export default class jDate {
             dayOfOmer = first.diffDays(this);
         }
         return dayOfOmer;
-    }
-
-    /**Gets an array[string] of holidays, fasts and any other special specifications for the current Jewish date.*/
-    specialDays(israel, hebrew) {
-        return getSpecialDays(this, israel, hebrew);
-    }
-
-    /**
-     * Gets a string with the name of a major holidays or fast
-     */
-    majorHoliday(israel, hebrew) {
-        return getMajorHoliday(this, israel, hebrew);
     }
 
     /**
@@ -540,7 +529,7 @@ export default class jDate {
         // Calculate the day by subtraction.
         day = absDay - jDate.absJd(year, month, 1) + 1;
 
-        return { year, month, day };
+        return {year, month, day};
     }
     /**
      * Gets the absolute date of the given javascript Date object.
@@ -634,7 +623,7 @@ export default class jDate {
     static tDays(year) {
         /*As this function is called many times, often on the same year for all types of calculations,
         we save a list of years with their elapsed values.*/
-        const cached = _yearCache.find(y => y.year === year);
+        const cached = _yearCache.find((y) => y.year === year);
         //If this year was already calculated and cached, then we return the cached value.
         if (cached) {
             return cached.elapsed;
@@ -642,8 +631,8 @@ export default class jDate {
 
         const months = Utils.toInt(
                 235 * Utils.toInt((year - 1) / 19) + // Leap months this cycle
-                12 * ((year - 1) % 19) + // Regular months in this cycle.
-                    (7 * ((year - 1) % 19) + 1) / 19
+                    12 * ((year - 1) % 19) + // Regular months in this cycle.
+                    (7 * ((year - 1) % 19) + 1) / 19,
             ), // Months in complete cycles so far.
             parts = 204 + 793 * (months % 1080),
             hours =
@@ -680,7 +669,7 @@ export default class jDate {
         }
 
         //Add this year to the cache to save on calculations later on
-        _yearCache.push({ year: year, elapsed: altDay });
+        _yearCache.push({year: year, elapsed: altDay});
 
         return altDay;
     }

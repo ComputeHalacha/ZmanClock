@@ -4,7 +4,7 @@ import Location from './JCal/Location';
 import Settings from './Settings';
 import NavigationBarAndroid from './NavigationBar';
 import jDate from './JCal/jDate';
-import { ZmanTypes } from './ZmanTypes';
+import {ZmanTypes} from './ZmanTypes';
 
 export const DaysOfWeek = Object.freeze({
     SUNDAY: 0,
@@ -46,22 +46,24 @@ export default class AppUtils {
             location = settings.location,
             tomorrowJd = jdate.addDays(1),
             tomorrowSd = Utils.addDaysToSdate(sdate, 1),
-            /*  Candle lighting is not shown after sunset. 
-                This solves the issue of Candle lighting showing as having "passed 20 minutes ago" 
-                Thursday evening after sunset - which shows as hasCandleLighting = true 
-                as it is already Friday... */                
-            zmanTimes = AppUtils.getZmanTimes(                
-                zmanTypes.filter(zt => zt.id !== 21 || Utils.isTimeAfter(time, sunset)),
+            /*  Candle lighting is not shown after sunset.
+                This solves the issue of Candle lighting showing as having "passed 20 minutes ago"
+                Thursday evening after sunset - which shows as hasCandleLighting = true
+                as it is already Friday... */
+            zmanTimes = AppUtils.getZmanTimes(
+                zmanTypes.filter(
+                    (zt) => zt.id !== 21 || Utils.isTimeAfter(time, sunset),
+                ),
                 sdate,
                 jdate,
-                location
+                location,
             ),
             tomorrowTimes = AppUtils.getZmanTimes(
                 //Candle lighting tomorrow is never shown...
-                zmanTypes.filter(zt => zt.id !== 21), 
+                zmanTypes.filter((zt) => zt.id !== 21),
                 tomorrowSd,
                 tomorrowJd,
-                location
+                location,
             );
 
         for (let zt of zmanTimes) {
@@ -72,7 +74,9 @@ export default class AppUtils {
                 diff.sign < 1 &&
                 Utils.totalMinutes(diff) >= settings.minToShowPassedZman
             ) {
-                const tom = tomorrowTimes.find(t => t.zmanType === zt.zmanType);
+                const tom = tomorrowTimes.find(
+                    (t) => t.zmanType === zt.zmanType,
+                );
                 if (tom && tom.time) {
                     oTime = tom.time;
                     isTomorrow = true;
@@ -87,7 +91,7 @@ export default class AppUtils {
         return correctedTimes.sort(
             (a, b) =>
                 (a.isTomorrow ? 1 : -1) - (b.isTomorrow ? 1 : -1) ||
-                Utils.totalSeconds(a.time) - Utils.totalSeconds(b.time)
+                Utils.totalSeconds(a.time) - Utils.totalSeconds(b.time),
         );
     }
 
@@ -101,9 +105,9 @@ export default class AppUtils {
      */
     static getZmanTimes(zmanTypes, date, jdate, location) {
         const mem = AppUtils.zmanTimesCache.find(
-                z =>
+                (z) =>
                     Utils.isSameSdate(z.date, date) &&
-                    z.location.Name === location.Name
+                    z.location.Name === location.Name,
             ),
             zmanTimes = [],
             whichDay = AppUtils.getWhichDays(date, jdate, location);
@@ -215,7 +219,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             mishorNeg90,
-                            Math.floor(shaaZmanisMga * 3) + offset
+                            Math.floor(shaaZmanisMga * 3) + offset,
                         ),
                     });
                     break;
@@ -224,7 +228,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             sunriseMishor,
-                            Math.floor(shaaZmanis * 3) + offset
+                            Math.floor(shaaZmanis * 3) + offset,
                         ),
                     });
                     break;
@@ -233,7 +237,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             mishorNeg90,
-                            Math.floor(shaaZmanisMga * 4) + offset
+                            Math.floor(shaaZmanisMga * 4) + offset,
                         ),
                     });
                     break;
@@ -242,7 +246,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             sunriseMishor,
-                            Math.floor(shaaZmanis * 4) + offset
+                            Math.floor(shaaZmanis * 4) + offset,
                         ),
                     });
                     break;
@@ -259,7 +263,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             chatzos,
-                            shaaZmanis * 0.5 + offset
+                            shaaZmanis * 0.5 + offset,
                         ),
                     });
                     break;
@@ -268,7 +272,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             sunriseMishor,
-                            shaaZmanis * 9.5 + offset
+                            shaaZmanis * 9.5 + offset,
                         ),
                     });
                     break;
@@ -277,7 +281,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             sunriseMishor,
-                            shaaZmanis * 10.75 + offset
+                            shaaZmanis * 10.75 + offset,
                         ),
                     });
                     break;
@@ -320,7 +324,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             sunset,
-                            shaaZmanis * 1.2 + offset
+                            shaaZmanis * 1.2 + offset,
                         ),
                     });
                     break;
@@ -329,7 +333,7 @@ export default class AppUtils {
                         zmanType,
                         time: Utils.addMinutes(
                             sunset,
-                            shaaZmanisMga * 1.2 + offset
+                            shaaZmanisMga * 1.2 + offset,
                         ),
                     });
                     break;
@@ -340,9 +344,36 @@ export default class AppUtils {
                             time: Utils.addMinutes(
                                 Zmanim.getCandleLightingFromSunset(
                                     sunset,
-                                    location
+                                    location,
                                 ),
-                                offset
+                                offset,
+                            ),
+                        });
+                    }
+                    break;
+                case 22: //Sof Zman Achilas Chometz
+                    if (jdate.Month === 1 && jdate.Day === 14) {
+                        zmanTimes.push({
+                            zmanType,
+                            time: Utils.addMinutes(
+                                sunrise,
+                                -90 + offset + shaaZmanisMga * 4,
+                            ),
+                        });
+                    }
+                    break;
+                case 23: //Sof Zman Biur Chometz
+                    if (
+                        jdate.Month === 1 &&
+                        (jdate.Day === 14 ||
+                            (jdate.DayOfWeek === DaysOfWeek.FRIDAY &&
+                                jdate.Day === 13))
+                    ) {
+                        zmanTimes.push({
+                            zmanType,
+                            time: Utils.addMinutes(
+                                sunrise,
+                                -90 + offset + shaaZmanisMga * 5,
                             ),
                         });
                     }
@@ -389,14 +420,14 @@ export default class AppUtils {
     static getBasicShulZmanim(sdate, jdate, location) {
         const zmanim = AppUtils.getZmanTimes(
             [
-                { id: 10 }, //Chatzos hayom
-                { id: 2 }, //alos90
-                { id: 15 }, //shkiaElevation,
-                { id: 21 }, //candleLighting,
+                {id: 10}, //Chatzos hayom
+                {id: 2}, //alos90
+                {id: 15}, //shkiaElevation,
+                {id: 21}, //candleLighting,
             ],
             sdate,
             jdate,
-            location
+            location,
         );
         return {
             chatzosHayom: zmanim[0].time,
