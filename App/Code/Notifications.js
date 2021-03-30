@@ -19,7 +19,7 @@ let showEnglish = false,
  * @param {Settings} settings
  */
 export default function getNotifications(jdate, sdate, time, settings) {
-    notifications = [];
+    notifications.length = 0;
     const month = jdate.Month,
         day = jdate.Day,
         dow = jdate.DayOfWeek,

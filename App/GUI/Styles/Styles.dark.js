@@ -72,6 +72,7 @@ export default {
             paddingLeft: 8,
             marginBottom: 3,
             borderRadius: 6,
+            textAlign: 'center',
         },
         singleZman: {
             backgroundColor: '#111111',

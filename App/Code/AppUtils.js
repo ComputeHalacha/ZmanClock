@@ -482,6 +482,6 @@ export default class AppUtils {
      * @param {Settings} settings
      */
     static AllZmanTypes(settings) {
-        return [...ZmanTypes].concat(settings.customZmanim);
+        return [...ZmanTypes]/*.concat(settings.customZmanim)*/;
     }
 }
