@@ -133,10 +133,11 @@ export default class App extends PureComponent {
             }
         } else if (
             this.state.notifications &&
-            this.state.notifications.length
+            (this.state.notifications.dayNotes.length ||
+                this.state.notifications.tefillahNotes.length)
         ) {
             //If setting is off, hide all notifications
-            this.setState({notifications: []});
+            this.setState({notifications: null});
         }
     }
     isPastShulZman() {

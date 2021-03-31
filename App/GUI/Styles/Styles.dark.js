@@ -51,22 +51,42 @@ export default {
             height: '100%',
             flex: 1,
         },
-        notificationsView: {
+        dayNotesView: {
             marginTop: 10,
-            marginBottom: 10,
             width: '100%',
         },
-        notificationsInnerView: {
+        dayNotesInnerView: {
             justifyContent: 'space-around',
             flexDirection: 'row',
             flexWrap: 'wrap',
             width: '100%',
         },
-        notificationsText: {
-            color: '#889999',
+        dayNotesText: {
+            color: '#7777AA',
             fontWeight: 'bold',
-            fontSize: 13,
+            fontSize: 14,
             lineHeight: 27,
+            paddingRight: 8,
+            paddingLeft: 8,
+            marginBottom: 3,
+            borderRadius: 6,
+            textAlign: 'center',
+        },
+        tefillahNotesView: {
+            marginTop: 10,
+            marginBottom: 10,
+            width: '100%',
+        },
+        tefillahNotesInnerView: {
+            justifyContent: 'space-around',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            width: '100%',
+        },
+        tefillahNotesText: {
+            color: '#889999',
+            fontSize: 12,
+            lineHeight: 24,
             backgroundColor: '#111124',
             paddingRight: 8,
             paddingLeft: 8,

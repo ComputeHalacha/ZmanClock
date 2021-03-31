@@ -5,7 +5,8 @@ import Molad from './JCal/Molad';
 import PirkeiAvos from './JCal/PirkeiAvos';
 import AppUtils, {DaysOfWeek} from './AppUtils';
 
-const notifications = [];
+const dayNotes = [];
+const tefillahNotes = [];
 let showEnglish = false,
     dayInfo,
     showGaonShirShelYom = true,
@@ -19,7 +20,8 @@ let showEnglish = false,
  * @param {Settings} settings
  */
 export default function getNotifications(jdate, sdate, time, settings) {
-    notifications.length = 0;
+    dayNotes.length = 0;
+    tefillahNotes.length = 0;
     const month = jdate.Month,
         day = jdate.Day,
         dow = jdate.DayOfWeek,
@@ -79,9 +81,9 @@ export default function getNotifications(jdate, sdate, time, settings) {
 
     if (dayInfo.noTachnun && isDaytime && !isYomTov) {
         if (dow !== DaysOfWeek.SHABBOS) {
-            addNotification('No Tachnun', 'א"א תחנון');
+            addTefillahNote('No Tachnun', 'א"א תחנון');
         } else if (isAfternoon) {
-            addNotification('No Tzidkascha', 'א"א צדקתך');
+            addTefillahNote('No Tzidkascha', 'א"א צדקתך');
         } else if (
             !(
                 (month === 1 && day > 21) ||
@@ -89,11 +91,11 @@ export default function getNotifications(jdate, sdate, time, settings) {
                 (month === 3 && day < 6)
             )
         ) {
-            addNotification('No Av Harachamim', 'א"א אב הרחמים');
+            addTefillahNote('No Av Harachamim', 'א"א אב הרחמים');
         }
     }
     if (showDafYomi) {
-        addNotification(jdate.getDafYomi(), jdate.getDafyomiHeb());
+        addDayNote(jdate.getDafYomi(), jdate.getDafyomiHeb());
     }
 
     //If it is after the earliest Nacht during Sefiras Ha'omer
@@ -103,12 +105,15 @@ export default function getNotifications(jdate, sdate, time, settings) {
     ) {
         const dayOfSefirah = jdate.getDayOfOmer();
         if (dayOfSefirah > 0) {
-            addNotification(Utils.getOmerNusach(dayOfSefirah, 'ashkenaz'));
+            addTefillahNote(Utils.getOmerNusach(dayOfSefirah, 'ashkenaz'));
         }
     }
 
     //return only unique values
-    return [...new Set(notifications)];
+    return {
+        dayNotes: [...new Set(dayNotes)],
+        tefillahNotes: [...new Set(tefillahNotes)],
+    };
 }
 
 function getShabbosNotifications() {
@@ -123,30 +128,30 @@ function getShabbosNotifications() {
         isAfternoon,
     } = dayInfo;
     if (month === 1 && day > 7 && day < 15) {
-        addNotification('Shabbos Hagadol', 'שבת הגדול');
+        addDayNote('Shabbos Hagadol', 'שבת הגדול');
     } else if (month === 7 && day > 2 && day < 10) {
-        addNotification('Shabbos Shuva', 'שבת שובה');
+        addDayNote('Shabbos Shuva', 'שבת שובה');
     } else if (month === 5 && day > 2 && day < 10) {
-        addNotification('Shabbos Chazon', 'שבת חזון');
+        addDayNote('Shabbos Chazon', 'שבת חזון');
     } else if (
         (month === (isLeapYear ? 12 : 11) && day > 24) ||
         (month === (isLeapYear ? 13 : 12) && day === 1)
     ) {
-        addNotification('Parshas Shkalim', 'פרשת שקלים');
+        addDayNote('Parshas Shkalim', 'פרשת שקלים');
     } else if (month === (isLeapYear ? 13 : 12) && day > 7 && day < 14) {
-        addNotification('Parshas Zachor', 'פרשת זכור');
+        addDayNote('Parshas Zachor', 'פרשת זכור');
     } else if (month === (isLeapYear ? 13 : 12) && day > 16 && day < 24) {
-        addNotification('Parshas Parah', 'פרשת פרה');
+        addDayNote('Parshas Parah', 'פרשת פרה');
     } else if (
         (month === (isLeapYear ? 13 : 12) && day > 23 && day < 30) ||
         (month === 1 && day === 1)
     ) {
-        addNotification('Parshas Hachodesh', 'פרשת החודש');
+        addDayNote('Parshas Hachodesh', 'פרשת החודש');
     }
     if (isMorning && !isYomTov) {
         const sedra = jdate.getSedra(israel);
         if (sedra.sedras.length > 0) {
-            addNotification(
+            addTefillahNote(
                 'Kriyas Hatorah Parshas' + sedra.toString(),
                 'קה"ת פרשת ' + sedra.toStringHeb(),
             );
@@ -154,40 +159,40 @@ function getShabbosNotifications() {
         //All months but Tishrei have Shabbos Mevarchim on the Shabbos before Rosh Chodesh
         if (month !== 6 && day > 22 && day < 30) {
             const nextMonth = jdate.addMonths(1);
-            addNotification(
+            addTefillahNote(
                 'The molad will be ' +
                     Molad.getString(nextMonth.Year, nextMonth.Month),
                 'המולד יהיה ב' +
                     Molad.getStringHeb(nextMonth.Year, nextMonth.Month),
             );
-            addNotification('Bircas Hachodesh', 'מברכים החודש');
+            addTefillahNote('Bircas Hachodesh', 'מברכים החודש');
             if (month !== 1 && month !== 2) {
-                addNotification('No Av Harachamim', 'א"א אב הרחמים');
+                addTefillahNote('No Av Harachamim', 'א"א אב הרחמים');
             }
         }
     }
     //Rosh Chodesh
     if (month !== 7 && (day === 1 || day === 30)) {
-        addNotification('Rosh Chodesh', 'ראש חודש');
-        addNotification('Ya`aleh Viyavo', 'יעלה ויבא');
+        addDayNote('Rosh Chodesh', 'ראש חודש');
+        addTefillahNote('Ya`aleh Viyavo', 'יעלה ויבא');
         if (showGaonShirShelYom && isDaytime) {
-            addNotification('Barchi Nafshi', 'שיר של יום - קי"ד - ברכי נפשי');
+            addTefillahNote('Barchi Nafshi', 'שיר של יום - קי"ד - ברכי נפשי');
         }
         //Rosh Chodesh Teves is during Chanuka
         if (isDaytime && month !== 10 && !(month === 9 && day === 30)) {
-            addNotification('Chatzi Hallel', 'חצי הלל');
+            addTefillahNote('Chatzi Hallel', 'חצי הלל');
         }
-        addNotification('No Av Harachamim', 'א"א אב הרחמים');
+        addTefillahNote('No Av Harachamim', 'א"א אב הרחמים');
     } else if (isYomTov) {
-        addNotification('No Av Harachamim', 'א"א אב הרחמים');
+        addTefillahNote('No Av Harachamim', 'א"א אב הרחמים');
         if (showGaonShirShelYom && isDaytime) {
-            addNotification('שיר של יום - מזמור שיר ליום השבת');
+            addTefillahNote('שיר של יום - מזמור שיר ליום השבת');
         }
     }
     //Kriyas Hatora - Shabbos by mincha - besides for Yom Kippur
     if (isAfternoon && !(month === 7 && day === 10)) {
         const sedra = jdate.addDays(1).getSedra(israel);
-        addNotification(
+        addTefillahNote(
             'Kriyas Hatorah Mincha Parshas ' + sedra.sedras[0].eng,
             'קה"ת במנחה פרשת ' + sedra.sedras[0].heb,
         );
@@ -199,7 +204,7 @@ function getShabbosNotifications() {
     ) {
         const prakim = PirkeiAvos.getPrakim(jdate, israel);
         if (prakim.length > 0) {
-            addNotification(
+            addDayNote(
                 'Pirkei Avos - ' +
                     prakim.map((s) => `Perek ${Utils.toJNum(s)}`).join(' and '),
                 'פרקי אבות - ' +
@@ -226,7 +231,7 @@ function getWeekDayNotifications() {
     //מוצאי שבת
     if (isNightTime && dow === DaysOfWeek.SUNDAY) {
         //הבדלה בתפילה for מוצאי שבת
-        addNotification(
+        addTefillahNote(
             (month === 1 && day === 15) || (month === 3 && day === 6)
                 ? 'ותודיעינו'
                 : 'אתה חוננתנו',
@@ -238,7 +243,7 @@ function getWeekDayNotifications() {
             (month === 1 && day > 8 && day < 15) ||
             (month === 3 && day < 6)
         ) {
-            addNotification('No Vihi Noam', 'א"א ויהי נועם');
+            addTefillahNote('No Vihi Noam', 'א"א ויהי נועם');
         }
     }
     //אתה חוננתנו for מוצאי יו"ט
@@ -248,7 +253,7 @@ function getWeekDayNotifications() {
             (month === 3 && day === 7) ||
             (month === 7 && [3, 11, 16, 23].includes(day)))
     ) {
-        addNotification('Ata Chonantanu', 'אתה חוננתנו');
+        addTefillahNote('Ata Chonantanu', 'אתה חוננתנו');
     }
     //Kriyas hatorah for monday and thursday
     //when it's not chol hamoed, chanuka, purim, a fast day or rosh chodesh
@@ -260,7 +265,7 @@ function getWeekDayNotifications() {
     ) {
         const sedra = jdate.getSedra(israel);
         if (sedra.sedras.length > 0) {
-            addNotification(
+            addTefillahNote(
                 'Kriyas Hatorah Parshas ' + sedra.toString(),
                 'קה"ת פרשת ' + sedra.toStringHeb(),
             );
@@ -269,14 +274,14 @@ function getWeekDayNotifications() {
     //Rosh Chodesh
     if ((month !== 7 && day === 1) || day === 30) {
         dayInfo.noTachnun = true;
-        addNotification('Rosh Chodesh', 'ראש חודש');
-        addNotification('Ya`aleh Viyavo', 'יעלה ויבא');
+        addDayNote('Rosh Chodesh', 'ראש חודש');
+        addTefillahNote('Ya`aleh Viyavo', 'יעלה ויבא');
         if (showGaonShirShelYom && isDaytime) {
-            addNotification('Barchi Nafshi', 'שיר של יום - קי"ד - ברכי נפשי');
+            addTefillahNote('Barchi Nafshi', 'שיר של יום - קי"ד - ברכי נפשי');
         }
         //Rosh Chodesh Teves is during Chanuka
         if (isDaytime && month !== 10 && !(month === 9 && day === 30)) {
-            addNotification('Chatzi Hallel', 'חצי הלל');
+            addTefillahNote('Chatzi Hallel', 'חצי הלל');
             if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                 noLaminatzeach();
             }
@@ -289,10 +294,10 @@ function getWeekDayNotifications() {
             (dow === DaysOfWeek.THURSDAY && day === 28)) &&
         isAfternoon
     ) {
-        addNotification('Yom Kippur Kattan', 'יו"כ קטן');
+        addTefillahNote('Yom Kippur Kattan', 'יו"כ קטן');
     }
     if (jdate.hasEiruvTavshilin(israel)) {
-        addNotification('Eruv Tavshilin', 'עירוב תבשילין');
+        addDayNote('Eruv Tavshilin', 'עירוב תבשילין');
     }
 }
 
@@ -314,61 +319,61 @@ function getAroundTheYearNotifications() {
         case 1: //Nissan
             dayInfo.noTachnun = true;
             if (day > 15) {
-                addNotification('Morid Hatal', 'מוריד הטל');
+                addTefillahNote('Morid Hatal', 'מוריד הטל');
             }
             if (dow !== DaysOfWeek.SHABBOS && day > 15 && day !== 21) {
-                addNotification('Vesain Bracha', 'ותן ברכה');
+                addTefillahNote('Vesain Bracha', 'ותן ברכה');
             }
             if (
                 isMorning &&
                 dow !== DaysOfWeek.SHABBOS &&
                 [14, 16, 17, 18, 19, 20].includes(day)
             ) {
-                addNotification('No Mizmor Lesodah', 'א"א מזמור לתודה');
+                addTefillahNote('No Mizmor Lesodah', 'א"א מזמור לתודה');
                 if (dow !== DaysOfWeek.SHABBOS) {
-                    addNotification('No Leminatzeach', 'א"א למנצח');
+                    noLaminatzeach();
                 }
             }
             if (day === 15) {
-                addNotification('First Day of Pesach', 'יו"ט ראשון של פסח');
-                addNotification('Full Hallel', 'הלל השלם');
+                addDayNote('First Day of Pesach', 'יו"ט ראשון של פסח');
+                addTefillahNote('Full Hallel', 'הלל השלם');
                 if (isAfternoon) {
-                    addNotification('Morid Hatal', 'מוריד הטל');
+                    addTefillahNote('Morid Hatal', 'מוריד הטל');
                 }
                 if (
                     showGaonShirShelYom &&
                     isDaytime &&
                     dow !== DaysOfWeek.SHABBOS
                 ) {
-                    addNotification('שיר של יום - קי"ד - בצאת ישראל');
+                    addTefillahNote('שיר של יום - קי"ד - בצאת ישראל');
                 }
             } else if (day === 16 && !israel) {
-                addNotification('Second Day of Pesach', 'יו"ט שני של פסח');
-                addNotification('Full Hallel', 'הלל השלם');
-                addNotification('Morid Hatal', 'מוריד הטל');
+                addDayNote('Second Day of Pesach', 'יו"ט שני של פסח');
+                addTefillahNote('Full Hallel', 'הלל השלם');
+                addTefillahNote('Morid Hatal', 'מוריד הטל');
                 if (
                     showGaonShirShelYom &&
                     isDaytime &&
                     dow !== DaysOfWeek.SHABBOS
                 ) {
-                    addNotification('שיר של יום - קי"ד - בצאת ישראל');
+                    addTefillahNote('שיר של יום - קי"ד - בצאת ישראל');
                 }
             } else if ([16, 17, 18, 19, 20, 21].includes(day)) {
                 if (day === 21) {
-                    addNotification('Shvi`i Shel Pesach', 'שביעי של פםח');
+                    addDayNote('Shvi`i Shel Pesach', 'שביעי של פםח');
                     if (isDaytime) {
                         if (israel) {
-                            addNotification('Yizkor', 'יזכור');
+                            addTefillahNote('Yizkor', 'יזכור');
                         }
                         if (showGaonShirShelYom && dow !== DaysOfWeek.SHABBOS) {
-                            addNotification(
+                            addTefillahNote(
                                 'שיר של יום - י"ח - למנצח לעבד ה\'',
                             );
                         }
                     }
                 } else {
-                    addNotification('Chol Ha`moed Pesach', 'פסח - חול המועד');
-                    addNotification('Ya`aleh Viyavo', 'יעלה ויבא');
+                    addDayNote('Chol Ha`moed Pesach', 'פסח - חול המועד');
+                    addTefillahNote('Ya`aleh Viyavo', 'יעלה ויבא');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS)
                         noLaminatzeach();
                     if (
@@ -379,22 +384,22 @@ function getAroundTheYearNotifications() {
                         switch (day) {
                             case 16:
                                 if (dow === DaysOfWeek.SUNDAY) {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - קי"ד - בצאת ישראל',
                                     );
                                 } else {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - ע"ח - משכיל לאסף',
                                     );
                                 }
                                 break;
                             case 17:
                                 if (dow === DaysOfWeek.MONDAY) {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - ע"ח - משכיל לאסף',
                                     );
                                 } else {
-                                    addNotification(
+                                    addTefillahNote(
                                         "שיר של יום - פ' - למנצח אל שושנים",
                                     );
                                 }
@@ -404,33 +409,33 @@ function getAroundTheYearNotifications() {
                                     dow === DaysOfWeek.TUESDAY ||
                                     dow === DaysOfWeek.SUNDAY
                                 ) {
-                                    addNotification(
+                                    addTefillahNote(
                                         "שיר של יום - פ' - למנצח אל שושנים",
                                     );
                                 } else {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - ק"ה - הודו לה\'',
                                     );
                                 }
                                 break;
                             case 19:
                                 if (dow === DaysOfWeek.THURSDAY) {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - קל"ה - הללוי-ה הללו את שם',
                                     );
                                 } else {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - ק"ה - הודו לה\'',
                                     );
                                 }
                                 break;
                             case 20:
                                 if (dow === DaysOfWeek.FRIDAY) {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - ס"ו - למנצח שיר מזמור',
                                     );
                                 } else {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - קל"ה - הללוי-ה הללו את שם',
                                     );
                                 }
@@ -438,16 +443,16 @@ function getAroundTheYearNotifications() {
                         }
                     }
                 }
-                if (isDaytime) addNotification('Half Hallel', 'חצי הלל');
+                if (isDaytime) addTefillahNote('Half Hallel', 'חצי הלל');
             }
             if (day === 22) {
                 if (israel) {
-                    addNotification('Isru Chag', 'איסרו חג');
+                    addDayNote('Isru Chag', 'איסרו חג');
                 } else {
-                    addNotification('Acharon Shel Pesach', 'אחרון של פסח');
+                    addDayNote('Acharon Shel Pesach', 'אחרון של פסח');
                     if (isDaytime) {
-                        addNotification('Yizkor', 'יזכור');
-                        addNotification('Half Hallel', 'חצי הלל');
+                        addTefillahNote('Yizkor', 'יזכור');
+                        addTefillahNote('Half Hallel', 'חצי הלל');
                     }
                 }
                 if (dow !== DaysOfWeek.SHABBOS && isMorning) {
@@ -458,14 +463,14 @@ function getAroundTheYearNotifications() {
                 ([15, 16, 17, 18, 19, 20, 21].includes(day) ||
                     (!israel && day === 22))
             ) {
-                addNotification('Shir Hashirim', 'מגילת שיר השירים');
+                addTefillahNote('Shir Hashirim', 'מגילת שיר השירים');
             }
             break;
         case 2: //Iyar
             if (day <= 15) {
-                addNotification('Morid Hatal', 'מוריד הטל');
+                addTefillahNote('Morid Hatal', 'מוריד הטל');
                 if (dow !== DaysOfWeek.SHABBOS) {
-                    addNotification('V`sain Bracha', 'ותן ברכה');
+                    addTefillahNote('V`sain Bracha', 'ותן ברכה');
                 }
             }
             //Pesach Sheini and Lag Ba'Omer
@@ -477,7 +482,7 @@ function getAroundTheYearNotifications() {
             ) {
                 dayInfo.noTachnun = true;
                 if (day === 14) {
-                    addNotification('Pesach Sheini', 'פסח שני');
+                    addDayNote('Pesach Sheini', 'פסח שני');
                 }
             }
             //Baha"b
@@ -490,8 +495,8 @@ function getAroundTheYearNotifications() {
                         day < 18 &&
                         day !== 14))
             ) {
-                addNotification('Ba`hab', 'סליחות בה"ב');
-                addNotification('Avinu Malkeinu', 'אבינו מלכנו');
+                addTefillahNote('Ba`hab', 'סליחות בה"ב');
+                addTefillahNote('Avinu Malkeinu', 'אבינו מלכנו');
             }
             break;
         case 3: //Sivan
@@ -499,24 +504,24 @@ function getAroundTheYearNotifications() {
                 dayInfo.noTachnun = true;
             }
             if (day === 6 && isMorning) {
-                addNotification('Shavuos', 'יום טוב של שבועות');
-                addNotification('Full Hallel', 'הלל השלם');
-                addNotification('Megilas Rus', 'מגילת רות');
-                addNotification('Akdamus', 'אקדמות');
-                if (israel) addNotification('Yizkor', 'יזכור');
+                addDayNote('Shavuos', 'יום טוב של שבועות');
+                addTefillahNote('Full Hallel', 'הלל השלם');
+                addTefillahNote('Megilas Rus', 'מגילת רות');
+                addTefillahNote('Akdamus', 'אקדמות');
+                if (israel) addTefillahNote('Yizkor', 'יזכור');
                 if (showGaonShir) {
-                    addNotification('שיר של יום - י"ט - ..השמים מספרים..');
+                    addTefillahNote('שיר של יום - י"ט - ..השמים מספרים..');
                 }
             } else if (day === 7) {
                 if (israel) {
-                    addNotification('Issru Chag', 'איסרו חג');
+                    addDayNote('Issru Chag', 'איסרו חג');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                         noLaminatzeach();
                     }
                 } else {
-                    addNotification('Shavuos Second Day', 'יום טוב של שבועות');
-                    addNotification('Full Hallel', 'הלל השלם');
-                    addNotification('Yizkor', 'יזכור');
+                    addDayNote('Shavuos Second Day', 'יום טוב של שבועות');
+                    addTefillahNote('Full Hallel', 'הלל השלם');
+                    addTefillahNote('Yizkor', 'יזכור');
                 }
             }
             break;
@@ -527,12 +532,12 @@ function getAroundTheYearNotifications() {
                     (day === 18 && dow === DaysOfWeek.SUNDAY))
             ) {
                 if (isDaytime) {
-                    addNotification('Shiva Asar B`Tamuz', 'י"ז בתמוז');
-                    addNotification('Avinu Malkeinu', 'אבינו מלכנו');
-                    addNotification('Aneinu', 'עננו');
+                    addDayNote('Shiva Asar B`Tamuz', 'י"ז בתמוז');
+                    addTefillahNote('Avinu Malkeinu', 'אבינו מלכנו');
+                    addTefillahNote('Aneinu', 'עננו');
                 }
                 if (isMorning) {
-                    addNotification('Selichos', 'סליחות');
+                    addTefillahNote('Selichos', 'סליחות');
                 }
             }
             break;
@@ -543,29 +548,29 @@ function getAroundTheYearNotifications() {
                 (day === 9 && dow !== DaysOfWeek.SHABBOS) ||
                 (day === 10 && dow === DaysOfWeek.SUNDAY)
             ) {
-                addNotification('Tish B`Av', 'תשעה באב');
+                addDayNote('Tish B`Av', 'תשעה באב');
                 if (isDaytime) {
-                    addNotification('Kinos', 'קינות');
-                    addNotification('Aneinu', 'עננו');
+                    addTefillahNote('Kinos', 'קינות');
+                    addTefillahNote('Aneinu', 'עננו');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                         noLaminatzeach();
                     }
                 } else {
-                    addNotification('Megilas Eicha', 'מגילת איכה');
+                    addTefillahNote('Megilas Eicha', 'מגילת איכה');
                     if (isNightTime && dow === DaysOfWeek.SUNDAY) {
-                        addNotification('No Vihi Noam', 'א"א ויהי נועם');
+                        addTefillahNote('No Vihi Noam', 'א"א ויהי נועם');
                     }
                 }
                 dayInfo.noTachnun = true;
             } else if (isAfternoon && day === 14) {
                 dayInfo.noTachnun = true;
             } else if (day === 15) {
-                addNotification('Tu B`Av', 'ט"ו באב');
+                addDayNote('Tu B`Av', 'ט"ו באב');
                 dayInfo.noTachnun = true;
             }
             break;
         case 6: //Ellul
-            addNotification('L`Dovid Hashem Ori', 'לדוד ה');
+            addTefillahNote('L`Dovid Hashem Ori', 'לדוד ה');
             if (
                 day > 20 &&
                 dow !== DaysOfWeek.SHABBOS &&
@@ -588,7 +593,7 @@ function getAroundTheYearNotifications() {
                     }
                 }
                 if (startedSelichos) {
-                    addNotification('Selichos', 'סליחות');
+                    addTefillahNote('Selichos', 'סליחות');
                 }
             }
             if (day === 29) {
@@ -597,138 +602,129 @@ function getAroundTheYearNotifications() {
             break;
         case 7: //Tishrei
             if (day < 11) {
-                addNotification('Hamelech Hakadosh', 'המלך הקדוש');
+                addTefillahNote('Hamelech Hakadosh', 'המלך הקדוש');
                 if (dow !== DaysOfWeek.SHABBOS && day !== 9) {
-                    addNotification('Avinu Malkeinu', 'אבינו מלכנו');
+                    addTefillahNote('Avinu Malkeinu', 'אבינו מלכנו');
                 }
             }
             //Days of Rosh Hashana, Tzom Gedaliah and Yom Kippur are dealt with individually below.
             if (day > 4 && day < 10 && dow !== DaysOfWeek.SHABBOS) {
-                addNotification('Selichos', 'סליחות');
-                addNotification('Hamelech Hamishpat', 'המלך המשפט');
+                addTefillahNote('Selichos', 'סליחות');
+                addTefillahNote('Hamelech Hamishpat', 'המלך המשפט');
             }
             if (dow === DaysOfWeek.SHABBOS && day > 2 && day < 10) {
-                addNotification('Shabbos Shuva', 'שבת שובה');
+                addDayNote('Shabbos Shuva', 'שבת שובה');
             }
             if (day >= 10) {
                 dayInfo.noTachnun = true;
             }
             switch (day) {
                 case 1:
-                    addNotification('Rosh Hashana', 'ראש השנה');
+                    addDayNote('Rosh Hashana', 'ראש השנה');
                     if (dow !== DaysOfWeek.SHABBOS && isDaytime) {
-                        addNotification('Tekias Shofar', 'תקיעת שופר');
+                        addTefillahNote('Tekias Shofar', 'תקיעת שופר');
                         if (showGaonShir) {
-                            addNotification(
+                            addTefillahNote(
                                 'שיר של יום - פ"א - למנצח על הגתית',
                             );
                         }
                         if (isAfternoon) {
-                            addNotification('Tashlich', 'תשליך');
+                            addDayNote('Tashlich', 'תשליך');
                         }
                     }
                     break;
                 case 2:
-                    addNotification('Rosh Hashana', 'ראש השנה');
+                    addDayNote('Rosh Hashana', 'ראש השנה');
                     if (isDaytime) {
-                        addNotification('Tekias Shofar', 'תקיעת שופר');
+                        addTefillahNote('Tekias Shofar', 'תקיעת שופר');
                         if (showGaonShirShelYom) {
-                            addNotification(
+                            addTefillahNote(
                                 'שיר של יום - פ"א - למנצח על הגתית',
                             );
                         }
                         if (dow === DaysOfWeek.SUNDAY && isAfternoon) {
-                            addNotification('Tashlich', 'תשליך');
+                            addDayNote('Tashlich', 'תשליך');
                         }
                     }
                     break;
                 case 3:
                     if (dow !== DaysOfWeek.SHABBOS) {
                         if (isDaytime) {
-                            addNotification(
-                                'Fast of Tzom Gedalya',
-                                'צום גדליה',
-                            );
-                            addNotification('Aneinu', 'עננו');
+                            addDayNote('Fast of Tzom Gedalya', 'צום גדליה');
+                            addTefillahNote('Aneinu', 'עננו');
                         }
                         if (isAfterChatzosHalayla || isMorning) {
-                            addNotification('Selichos', 'סליחות');
+                            addTefillahNote('Selichos', 'סליחות');
                         }
-                        addNotification('Hamelech Hamishpat', 'המלך המשפט');
+                        addTefillahNote('Hamelech Hamishpat', 'המלך המשפט');
                     }
                     break;
                 case 4:
                     if (dow === DaysOfWeek.SUNDAY) {
                         if (isDaytime) {
-                            addNotification(
-                                'Fast of Tzom Gedalya',
-                                'צום גדליה',
-                            );
-                            addNotification('Aneinu', 'עננו');
+                            addDayNote('Fast of Tzom Gedalya', 'צום גדליה');
+                            addTefillahNote('Aneinu', 'עננו');
                         }
                         if (isAfterChatzosHalayla || isMorning) {
-                            addNotification('Selichos', 'סליחות');
+                            addTefillahNote('Selichos', 'סליחות');
                         }
-                        addNotification('Hamelech Hamishpat', 'המלך המשפט');
+                        addTefillahNote('Hamelech Hamishpat', 'המלך המשפט');
                     } else if (dow !== DaysOfWeek.SHABBOS) {
-                        addNotification('Hamelech Hamishpat', 'המלך המשפט');
+                        addTefillahNote('Hamelech Hamishpat', 'המלך המשפט');
                         if (isAfterChatzosHalayla || isMorning) {
-                            addNotification('Selichos', 'סליחות');
+                            addTefillahNote('Selichos', 'סליחות');
                         }
                     }
                     break;
                 case 9:
-                    addNotification('Erev Yom Kippur', 'ערב יום כיפור');
+                    addDayNote('Erev Yom Kippur', 'ערב יום כיפור');
                     if (isMorning) {
-                        addNotification('No Mizmor L`Sodah', 'א"א מזמור לתודה');
+                        addTefillahNote('No Mizmor L`Sodah', 'א"א מזמור לתודה');
                         if (dow !== DaysOfWeek.SHABBOS) {
                             noLaminatzeach();
                         }
                         if (dow === DaysOfWeek.FRIDAY) {
-                            addNotification('Avinu Malkeinu', 'אבינו מלכנו');
+                            addTefillahNote('Avinu Malkeinu', 'אבינו מלכנו');
                         }
                     } else if (isAfternoon) {
-                        addNotification('Vidduy', 'ודוי בעמידה');
+                        addTefillahNote('Vidduy', 'ודוי בעמידה');
                     }
                     if (isDaytime && dow !== DaysOfWeek.FRIDAY) {
-                        addNotification('No Avinu Malkeinu', 'א"א אבינו מלכנו');
+                        addTefillahNote('No Avinu Malkeinu', 'א"א אבינו מלכנו');
                     }
                     dayInfo.noTachnun = true;
                     break;
                 case 10:
-                    addNotification('Yom Kippur', 'יום הכיפורים');
-                    addNotification("לפני ה' תטהרו");
+                    addDayNote('Yom Kippur', 'יום הכיפורים');
+                    addDayNote("לפני ה' תטהרו");
                     if (isDaytime) {
-                        addNotification('Yizkor', 'יזכור');
+                        addTefillahNote('Yizkor', 'יזכור');
                         if (showGaonShirShelYom && dow !== DaysOfWeek.SHABBOS) {
-                            addNotification('שיר של יום - ל"ב - לדוד משכיל');
+                            addTefillahNote('שיר של יום - ל"ב - לדוד משכיל');
                         }
                     }
                     if (isAfternoon) {
                         //only Yom Kippur has its own Kriyas Hatorah
-                        addNotification('קה"ת במנחה סוף פרשת אח"מ');
+                        addTefillahNote('קה"ת במנחה סוף פרשת אח"מ');
                     }
                     break;
                 case 15:
-                    addNotification(
-                        'First day of Sukkos',
-                        'יו"ט ראשון של סוכות',
-                    );
+                    addDayNote('First day of Sukkos', 'יו"ט ראשון של סוכות');
                     if (isDaytime) {
-                        addNotification('Full Hallel', 'הלל השלם');
+                        addTefillahNote('Full Hallel', 'הלל השלם');
                         if (dow !== DaysOfWeek.SHABBOS) {
-                            addNotification(
+                            addTefillahNote(
                                 'Hoshanos - למען אמתך',
                                 'הושענות - למען אמתך',
                             );
-                            addNotification('Kah Keli', 'קה קלי');
+                            addTefillahNote('Kah Keli', 'קה קלי');
                             if (showGaonShirShelYom) {
-                                addNotification(
+                                addTefillahNote(
                                     'שיר של יום - ע"ו - למנצח בנגינות מזמור',
                                 );
                             }
                         } else {
-                            addNotification(
+                            addTefillahNote(
                                 'Hoshanos - אום נצורה',
                                 'הושענות - אום נצורה',
                             );
@@ -741,22 +737,19 @@ function getAroundTheYearNotifications() {
                 case 19:
                 case 20:
                     if (day === 16 && !israel) {
-                        addNotification(
+                        addDayNote(
                             'Second day of Sukkos',
                             'סוכות - יום טוב שני',
                         );
                     } else if (!israel) {
-                        addNotification(
-                            'Chol Hamoed Sukkos',
-                            'סוכות - חול המועד',
-                        );
-                        addNotification('Ya`aleh V`yavo', 'יעלה ויבא');
+                        addDayNote('Chol Hamoed Sukkos', 'סוכות - חול המועד');
+                        addTefillahNote('Ya`aleh V`yavo', 'יעלה ויבא');
                     }
                     if (isDaytime) {
-                        addNotification('Full Hallel', 'הלל השלם');
+                        addTefillahNote('Full Hallel', 'הלל השלם');
                         switch (day) {
                             case 16:
-                                addNotification(
+                                addTefillahNote(
                                     'הושענות - ' +
                                         (dow === DaysOfWeek.SUNDAY
                                             ? 'למען אמתך'
@@ -766,13 +759,13 @@ function getAroundTheYearNotifications() {
                                     showGaonShirShelYom &&
                                     dow !== DaysOfWeek.SHABBOS
                                 ) {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - כ"ט - ..הבו לה\' בני אלים',
                                     );
                                 }
                                 break;
                             case 17:
-                                addNotification(
+                                addTefillahNote(
                                     (showEnglish ? 'Hoshanos' : 'הושענות') +
                                         ' - ' +
                                         (dow === DaysOfWeek.SHABBOS
@@ -783,42 +776,42 @@ function getAroundTheYearNotifications() {
                                     showGaonShirShelYom &&
                                     dow !== DaysOfWeek.SHABBOS
                                 ) {
-                                    addNotification(
+                                    addTefillahNote(
                                         "שיר של יום - נ' - מזמור לאסף",
                                     );
                                 }
                                 break;
                             case 18:
                                 if (dow === DaysOfWeek.SUNDAY) {
-                                    addNotification('Hoshanos', 'הושענות');
+                                    addTefillahNote('Hoshanos', 'הושענות');
                                     if (
                                         showGaonShirShelYom &&
                                         dow !== DaysOfWeek.SHABBOS
                                     ) {
-                                        addNotification(
+                                        addTefillahNote(
                                             "שיר של יום - נ' - מזמור לאסף",
                                         );
                                     }
                                 } else {
                                     if (dow === DaysOfWeek.TUESDAY) {
-                                        addNotification('Hoshanos', 'הושענות');
+                                        addTefillahNote('Hoshanos', 'הושענות');
                                     } else if (dow === DaysOfWeek.THURSDAY) {
-                                        addNotification('Hoshanos', 'הושענות');
+                                        addTefillahNote('Hoshanos', 'הושענות');
                                     } else if (dow === DaysOfWeek.FRIDAY) {
-                                        addNotification('Hoshanos', 'הושענות');
+                                        addTefillahNote('Hoshanos', 'הושענות');
                                     }
                                     if (
                                         showGaonShirShelYom &&
                                         dow !== DaysOfWeek.SHABBOS
                                     ) {
-                                        addNotification(
+                                        addTefillahNote(
                                             'שיר של יום - צ"ד - ..מי יקום לי..',
                                         );
                                     }
                                 }
                                 break;
                             case 19:
-                                addNotification(
+                                addTefillahNote(
                                     (showEnglish ? 'Hoshanos' : 'הושענות') +
                                         ' - ' +
                                         (dow === DaysOfWeek.SHABBOS
@@ -830,18 +823,18 @@ function getAroundTheYearNotifications() {
                                     dow !== DaysOfWeek.SHABBOS
                                 ) {
                                     if (dow === DaysOfWeek.MONDAY) {
-                                        addNotification(
+                                        addTefillahNote(
                                             'שיר של יום - צ"ד - ..מי יקום לי..',
                                         );
                                     } else {
-                                        addNotification(
+                                        addTefillahNote(
                                             'שיר של יום - צ"ד - א-ל נקמות.. ישרי לב',
                                         );
                                     }
                                 }
                                 break;
                             case 20:
-                                addNotification(
+                                addTefillahNote(
                                     (showEnglish ? 'Hoshanos' : 'הושענות') +
                                         ' - ' +
                                         (dow === DaysOfWeek.SHABBOS
@@ -853,11 +846,11 @@ function getAroundTheYearNotifications() {
                                     dow !== DaysOfWeek.SHABBOS
                                 ) {
                                     if (dow === DaysOfWeek.THURSDAY) {
-                                        addNotification(
+                                        addTefillahNote(
                                             'שיר של יום - פ"א - למנצח על הגתית',
                                         );
                                     } else {
-                                        addNotification(
+                                        addTefillahNote(
                                             'שיר של יום - צ"ד - א-ל נקמות.. ישרי לב',
                                         );
                                     }
@@ -867,20 +860,20 @@ function getAroundTheYearNotifications() {
                     }
                     break;
                 case 21:
-                    addNotification('Hoshana Raba', 'הושעה רבה');
-                    addNotification('Ya`aleh V`yavo', 'יעלה ויבא');
+                    addDayNote('Hoshana Raba', 'הושעה רבה');
+                    addTefillahNote('Ya`aleh V`yavo', 'יעלה ויבא');
                     if (isNightTime) {
-                        addNotification('Mishneh Torah', 'משנה תורה');
+                        addTefillahNote('Mishneh Torah', 'משנה תורה');
                     } else {
-                        addNotification('Hoshanos', 'הושענות');
-                        addNotification('Full Hallel', 'הלל השלם');
+                        addTefillahNote('Hoshanos', 'הושענות');
+                        addTefillahNote('Full Hallel', 'הלל השלם');
                         if (showGaonShirShelYom) {
                             if (dow === DaysOfWeek.FRIDAY) {
-                                addNotification(
+                                addTefillahNote(
                                     'שיר של יום - פ"ב - מזמור לאסף',
                                 );
                             } else {
-                                addNotification(
+                                addTefillahNote(
                                     'שיר של יום - פ"א - למנצח על הגתית',
                                 );
                             }
@@ -888,18 +881,18 @@ function getAroundTheYearNotifications() {
                     }
                     break;
                 case 22:
-                    addNotification('Shmini Atzeres', 'שמיני עצרת');
+                    addDayNote('Shmini Atzeres', 'שמיני עצרת');
                     if (israel) {
-                        addNotification('Simchas Torah', 'שמחת תורה');
-                        addNotification('Hakafos', 'הקפות');
+                        addDayNote('Simchas Torah', 'שמחת תורה');
+                        addTefillahNote('Hakafos', 'הקפות');
                     }
                     if (isDaytime) {
-                        addNotification('Full Hallel', 'הלל השלם');
-                        addNotification('Yizkor', 'יזכור');
-                        addNotification('Tefilas Geshem', 'תפילת גשם');
-                        addNotification('משיב הרוח ומוריד הגשם');
+                        addTefillahNote('Full Hallel', 'הלל השלם');
+                        addTefillahNote('Yizkor', 'יזכור');
+                        addTefillahNote('Tefilas Geshem', 'תפילת גשם');
+                        addTefillahNote('משיב הרוח ומוריד הגשם');
                         if (showGaonShirShelYom && dow !== DaysOfWeek.SHABBOS) {
-                            addNotification(
+                            addTefillahNote(
                                 'שיר של יום - י"ב - למנצח על השמינית',
                             );
                         }
@@ -908,13 +901,13 @@ function getAroundTheYearNotifications() {
             }
             if (day === 23) {
                 if (!israel) {
-                    addNotification('Simchas Torah', 'שמחת תורה');
-                    addNotification('Hakafos', 'הקפות');
-                    addNotification('Full Hallel', 'הלל השלם');
+                    addDayNote('Simchas Torah', 'שמחת תורה');
+                    addTefillahNote('Hakafos', 'הקפות');
+                    addTefillahNote('Full Hallel', 'הלל השלם');
                 } else {
-                    addNotification('Issru Chag', 'איסרו חג');
+                    addDayNote('Issru Chag', 'איסרו חג');
                     if (isNightTime) {
-                        addNotification('א גוטען ווינטער', 'חורף טוב');
+                        addDayNote('א גוטען ווינטער', 'חורף טוב');
                     } else if (dow !== DaysOfWeek.SHABBOS && isMorning) {
                         noLaminatzeach();
                     }
@@ -923,12 +916,12 @@ function getAroundTheYearNotifications() {
                 dow === DaysOfWeek.SHABBOS &&
                 [15, 17, 18, 19, 20].includes(day)
             ) {
-                addNotification('Megilas Koheles', 'מגילת קהלת');
+                addTefillahNote('Megilas Koheles', 'מגילת קהלת');
             }
             if (day < 22) {
-                addNotification('L`Dovid Hashem Ori', 'לדוד ה');
+                addTefillahNote('L`Dovid Hashem Ori', 'לדוד ה');
             } else if (day > 22) {
-                addNotification(
+                addTefillahNote(
                     'Mashiv Haruach U`Morid Hageshem',
                     'משיב הרוח ומוריד הגשם',
                 );
@@ -941,22 +934,22 @@ function getAroundTheYearNotifications() {
                     (dow === DaysOfWeek.THURSDAY && day > 6 && day < 14) ||
                     (dow === DaysOfWeek.MONDAY && day > 10 && day < 18))
             ) {
-                addNotification('Ba`Hab', 'סליחות בה"ב');
-                addNotification('Avinu Malkeinu', 'אבינו מלכנו');
+                addTefillahNote('Ba`Hab', 'סליחות בה"ב');
+                addTefillahNote('Avinu Malkeinu', 'אבינו מלכנו');
             }
             if (day <= 22) {
-                addNotification(
+                addTefillahNote(
                     'Mashiv Haruach U`Morid Hageshem',
                     'משיב הרוח ומוריד הגשם',
                 );
             }
             if (day >= 7 && dow !== DaysOfWeek.SHABBOS) {
-                addNotification('V`sain Tal U`matar', 'ותן טל ומטר');
+                addTefillahNote('V`sain Tal U`matar', 'ותן טל ומטר');
             }
             break;
         case 9: //Kislev
             if (day <= 7 && dow !== DaysOfWeek.SHABBOS) {
-                addNotification('V`sain Tal U`matar', 'ותן טל ומטר');
+                addTefillahNote('V`sain Tal U`matar', 'ותן טל ומטר');
             } else if (
                 day === 24 &&
                 dow !== DaysOfWeek.SHABBOS &&
@@ -965,10 +958,10 @@ function getAroundTheYearNotifications() {
                 dayInfo.noTachnun = true;
             } else if (day >= 25) {
                 dayInfo.noTachnun = true;
-                addNotification('Chanukah', 'חנוכה');
-                addNotification('Al Hanissim', 'על הניסים');
+                addDayNote('Chanukah', 'חנוכה');
+                addTefillahNote('Al Hanissim', 'על הניסים');
                 if (isDaytime) {
-                    addNotification('Full Hallel', 'הלל השלם');
+                    addTefillahNote('Full Hallel', 'הלל השלם');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS)
                         noLaminatzeach();
                     if (
@@ -976,7 +969,7 @@ function getAroundTheYearNotifications() {
                         day !== 30 &&
                         dow !== DaysOfWeek.SHABBOS
                     ) {
-                        addNotification(
+                        addTefillahNote(
                             "שיר של יום - ל' - מזמור שיר חנוכת הבית",
                         );
                     }
@@ -986,33 +979,33 @@ function getAroundTheYearNotifications() {
         case 10: //Teves
             if (day <= (jDate.isShortKislev(jdate.Year) ? 3 : 2)) {
                 dayInfo.noTachnun = true;
-                addNotification('Chanukah', 'חנוכה');
-                addNotification('Al Hanissim', 'על הניסים');
+                addDayNote('Chanukah', 'חנוכה');
+                addTefillahNote('Al Hanissim', 'על הניסים');
                 if (isDaytime) {
-                    addNotification('Full Hallel', 'הלל השלם');
+                    addTefillahNote('Full Hallel', 'הלל השלם');
                     if (isMorning && dow !== DaysOfWeek.SHABBOS) {
                         noLaminatzeach();
                         if (day !== 1 && showGaonShirShelYom) {
-                            addNotification(
+                            addTefillahNote(
                                 "שיר של יום - ל' - מזמור שיר חנוכת הבית",
                             );
                         }
                     }
                 }
             } else if (day === 10 && isDaytime) {
-                addNotification('Fast of Asara B`Teves', 'עשרה בטבת');
+                addDayNote('Fast of Asara B`Teves', 'עשרה בטבת');
                 if (isMorning) {
-                    addNotification('Selichos', 'סליחות');
+                    addTefillahNote('Selichos', 'סליחות');
                 }
-                addNotification('Avinu Malkeinu', 'אבינו מלכנו');
-                addNotification('Aneinu', 'עננו');
+                addTefillahNote('Avinu Malkeinu', 'אבינו מלכנו');
+                addTefillahNote('Aneinu', 'עננו');
             }
             break;
         case 11: //Shvat
             if (day === 14 && isAfternoon) dayInfo.noTachnun = true;
             if (day === 15) {
                 dayInfo.noTachnun = true;
-                addNotification('Tu B`Shvat', 'ט"ו בשבט');
+                addDayNote('Tu B`Shvat', 'ט"ו בשבט');
             }
             break;
         case 12:
@@ -1023,7 +1016,7 @@ function getAroundTheYearNotifications() {
                     ((day === 13 && isAfternoon) || [14, 15].includes(day)) &&
                     isDaytime
                 ) {
-                    addNotification(
+                    addDayNote(
                         day === 14
                             ? showEnglish
                                 ? 'Purim Katan'
@@ -1045,11 +1038,11 @@ function getAroundTheYearNotifications() {
                         (day === 13 && dow !== DaysOfWeek.SHABBOS))
                 ) {
                     if (isMorning) {
-                        addNotification('Fast of Ta`anis Esther', 'תענית אסתר');
-                        addNotification('Selichos', 'סליחות');
+                        addDayNote('Fast of Ta`anis Esther', 'תענית אסתר');
+                        addTefillahNote('Selichos', 'סליחות');
                     }
-                    addNotification('Avinu Malkeinu', 'אבינו מלכנו');
-                    addNotification('Aneinu', 'עננו');
+                    addTefillahNote('Avinu Malkeinu', 'אבינו מלכנו');
+                    addTefillahNote('Aneinu', 'עננו');
                 } else {
                     //Only ירושלים says על הניסים on ט"ו
                     const isYerushalayim = location.Name === 'ירושלים';
@@ -1060,24 +1053,24 @@ function getAroundTheYearNotifications() {
                         }
                         //On a Purim Meshulash in Yerushalayim, מגילת אסתר is on י"ד
                         if (!isYerushalayim || dow === DaysOfWeek.FRIDAY) {
-                            addNotification('Megilas Esther', 'מגילת אסתר');
+                            addDayNote('Megilas Esther', 'מגילת אסתר');
                             if (!isYerushalayim) {
-                                addNotification('Purim', 'פורים');
-                                addNotification('Al Hanissim', 'על הניסים');
+                                addDayNote('Purim', 'פורים');
+                                addTefillahNote('Al Hanissim', 'על הניסים');
                                 if (showGaonShirShelYom) {
-                                    addNotification(
+                                    addTefillahNote(
                                         'שיר של יום - כ"ב - למנצח על אילת השחר',
                                     );
                                 }
                             } else {
                                 //On a Purim Meshulash in Yerushalayim, מתנות לאביונים is on י"ד
-                                addNotification(
+                                addDayNote(
                                     'Matanos LeEvyonim',
                                     'מתנות לאביונים',
                                 );
                             }
                         } else {
-                            addNotification('Purim D`Prazim', 'פורים דפרזים');
+                            addDayNote('Purim D`Prazim', 'פורים דפרזים');
                         }
                     } else if (day === 15) {
                         dayInfo.noTachnun = true;
@@ -1085,17 +1078,17 @@ function getAroundTheYearNotifications() {
                             noLaminatzeach();
                         }
                         if (isYerushalayim) {
-                            addNotification('Purim', 'פורים');
-                            addNotification('Al Hanissim', 'על הניסים');
+                            addDayNote('Purim', 'פורים');
+                            addTefillahNote('Al Hanissim', 'על הניסים');
                             if (dow !== DaysOfWeek.SHABBOS) {
-                                addNotification('Megilas Esther', 'מגילת אסתר');
+                                addDayNote('Megilas Esther', 'מגילת אסתר');
                             }
                             if (
                                 showGaonShirShelYom &&
                                 isDaytime &&
                                 dow !== DaysOfWeek.SHABBOS
                             ) {
-                                addNotification(
+                                addTefillahNote(
                                     'שיר של יום - כ"ב - למנצח על אילת השחר',
                                 );
                             }
@@ -1112,22 +1105,19 @@ function getAroundTheYearNotifications() {
                                 'לוד',
                             ].includes(location.Name)
                         ) {
-                            addNotification('Purim D`Mukafin', 'פורים דמוקפין');
+                            addDayNote('Purim D`Mukafin', 'פורים דמוקפין');
                             if (dow !== DaysOfWeek.SHABBOS) {
-                                addNotification(
-                                    '(Megilas Esther)',
-                                    '(מגילת אסתר)',
-                                );
+                                addDayNote('(Megilas Esther)', '(מגילת אסתר)');
                             }
                         } else {
-                            addNotification('Shushan Purim', 'שושן פורים');
+                            addDayNote('Shushan Purim', 'שושן פורים');
                         }
                     } else if (
                         day === 16 &&
                         isYerushalayim &&
                         dow === DaysOfWeek.SUNDAY
                     ) {
-                        addNotification(
+                        addDayNote(
                             'Purim Seuda and Mishloach Manos',
                             'סעודת פורים ומשלוח מנות',
                         );
@@ -1139,13 +1129,20 @@ function getAroundTheYearNotifications() {
 }
 
 function noLaminatzeach() {
-    addNotification('No Laminatzeach', 'א"א למנצח');
+    addTefillahNote('No Laminatzeach', 'א"א למנצח');
 }
 
-function addNotification(englishOrDefaultText, hebrewText) {
+function addDayNote(englishOrDefaultText, hebrewText) {
     const note = showEnglish || !hebrewText ? englishOrDefaultText : hebrewText;
-    if (!notifications.includes(note)) {
-        notifications.push(note);
+    if (!dayNotes.includes(note)) {
+        dayNotes.push(note);
+    }
+}
+
+function addTefillahNote(englishOrDefaultText, hebrewText) {
+    const note = showEnglish || !hebrewText ? englishOrDefaultText : hebrewText;
+    if (!tefillahNotes.includes(note)) {
+        tefillahNotes.push(note);
     }
 }
 

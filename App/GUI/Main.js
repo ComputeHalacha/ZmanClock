@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import { Text, View, ScrollView } from 'react-native';
+import React, {PureComponent} from 'react';
+import {Text, View, ScrollView} from 'react-native';
 import Utils from '../Code/JCal/Utils';
 import getStyle from './Styles/Styles';
 
@@ -7,15 +7,16 @@ export default class Main extends PureComponent {
     constructor(props) {
         super(props);
         this.displaySingleZman = this.displaySingleZman.bind(this);
-        this.getNotificationsView = this.getNotificationsView.bind(this);
+        this.getDayNotesView = this.getDayNotesView.bind(this);
+        this.getTefillahNotesView = this.getTefillahNotesView.bind(this);
     }
     displaySingleZman(zt, index, styles, itemHeight) {
-        const { english, numberOfItemsToShow, location } = this.props.settings;
+        const {english, numberOfItemsToShow, location} = this.props.settings;
         if (index >= numberOfItemsToShow) return null;
         const timeDiff = Utils.timeDiff(
                 this.props.nowTime,
                 zt.time,
-                !zt.isTomorrow
+                !zt.isTomorrow,
             ),
             was = timeDiff.sign === -1,
             minutes = Utils.totalMinutes(timeDiff),
@@ -31,13 +32,13 @@ export default class Main extends PureComponent {
         return (
             <View
                 key={index}
-                style={[styles.singleZman, { height: `${itemHeight}%` }]}>
+                style={[styles.singleZman, {height: `${itemHeight}%`}]}>
                 <Text
                     style={[
                         english
                             ? styles.timeRemainingLabelEng
                             : styles.timeRemainingLabel,
-                        { color: was ? '#550' : '#99f' },
+                        {color: was ? '#550' : '#99f'},
                     ]}>
                     <Text
                         style={
@@ -56,7 +57,7 @@ export default class Main extends PureComponent {
                         english
                             ? styles.timeRemainingTextEng
                             : styles.timeRemainingText,
-                        { color: timeRemainingColor },
+                        {color: timeRemainingColor},
                     ]}>
                     {english
                         ? Utils.getTimeIntervalTextString(timeDiff)
@@ -91,42 +92,76 @@ export default class Main extends PureComponent {
             </View>
         );
     }
-    getNotificationsView(styles) {
+    getDayNotesView(styles) {
+        if (!(this.props.notifications && this.props.notifications.dayNotes)) {
+            return null;
+        }
         const notifications = this.props.notifications,
+            dayNotes = notifications.dayNotes,
             innerViews = [];
-        if (notifications && notifications.length) {
-            for (let i = 0; i < Math.ceil(notifications.length / 3); i++) {
+        if (dayNotes && dayNotes.length) {
+            for (let i = 0; i < Math.ceil(dayNotes.length / 3); i++) {
                 let texts = [];
                 for (let index = 0; index < 3; index++) {
-                    const note = notifications[i * 3 + index];
+                    const note = dayNotes[i * 3 + index];
                     if (note) {
                         texts.push(
-                            <Text key={index} style={styles.notificationsText}>
+                            <Text key={index} style={styles.dayNotesText}>
                                 {note}
-                            </Text>
+                            </Text>,
                         );
                     }
                 }
                 innerViews.push(
-                    <View key={i} style={styles.notificationsInnerView}>
+                    <View key={i} style={styles.dayNotesInnerView}>
                         {texts}
-                    </View>
+                    </View>,
                 );
             }
         }
-        return <View style={styles.notificationsView}>{innerViews}</View>;
+        return <View style={styles.dayNotesView}>{innerViews}</View>;
+    }
+
+    getTefillahNotesView(styles) {
+        if (!(this.props.notifications && this.props.notifications.tefillahNotes)) {
+            return null;
+        }
+        const notifications = this.props.notifications,
+            tefillahNotes = notifications.tefillahNotes,
+            innerViews = [];
+        if (tefillahNotes && tefillahNotes.length) {
+            for (let i = 0; i < Math.ceil(tefillahNotes.length / 3); i++) {
+                let texts = [];
+                for (let index = 0; index < 3; index++) {
+                    const note = tefillahNotes[i * 3 + index];
+                    if (note) {
+                        texts.push(
+                            <Text key={index} style={styles.tefillahNotesText}>
+                                {note}
+                            </Text>,
+                        );
+                    }
+                }
+                innerViews.push(
+                    <View key={i} style={styles.dayNotesInnerView}>
+                        {texts}
+                    </View>,
+                );
+            }
+        }
+        return <View style={styles.dayNotesView}>{innerViews}</View>;
     }
 
     render() {
-        const { english, location } = this.props.settings,
+        const {english, location} = this.props.settings,
             styles = getStyle(this.props.settings.theme, 'main'),
             itemHeight =
                 Math.trunc(
                     100 /
                         Math.min(
                             Number(this.props.settings.numberOfItemsToShow),
-                            Number(this.props.zmanTimes.length)
-                        )
+                            Number(this.props.zmanTimes.length),
+                        ),
                 ) - 2;
         return (
             <View style={styles.container}>
@@ -140,16 +175,17 @@ export default class Main extends PureComponent {
                         ? Utils.toStringDate(this.props.sdate, true)
                         : Utils.toShortStringDate(
                               this.props.sdate,
-                              !location.Israel
+                              !location.Israel,
                           )}
                 </Text>
-                {this.getNotificationsView(styles)}
+                {this.getDayNotesView(styles)}
+                {this.getTefillahNotesView(styles)}
                 <Text style={english ? styles.timeText1Eng : styles.timeText1}>
                     {Utils.getTimeString(this.props.nowTime, location.Israel)}
                 </Text>
-                <ScrollView style={styles.scrollView} useNativeDriver='true'>
+                <ScrollView style={styles.scrollView} useNativeDriver="true">
                     {this.props.zmanTimes.map((zt, i) =>
-                        this.displaySingleZman(zt, i, styles, itemHeight)
+                        this.displaySingleZman(zt, i, styles, itemHeight),
                     )}
                 </ScrollView>
             </View>
