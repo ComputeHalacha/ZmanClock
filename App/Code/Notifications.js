@@ -266,8 +266,8 @@ function getWeekDayNotifications() {
         const sedra = jdate.getSedra(israel);
         if (sedra.sedras.length > 0) {
             addTefillahNote(
-                'Kriyas Hatorah Parshas ' + sedra.toString(),
-                'קה"ת פרשת ' + sedra.toStringHeb(),
+                'Kriyas Hatorah Parshas ' + sedra.sedras[0].eng,
+                'קה"ת פרשת ' + sedra.sedras[0].heb,
             );
         }
     }
