@@ -509,7 +509,7 @@ function getAroundTheYearNotifications() {
                 addTefillahNote('Megilas Rus', 'מגילת רות');
                 addTefillahNote('Akdamus', 'אקדמות');
                 if (israel) addTefillahNote('Yizkor', 'יזכור');
-                if (showGaonShir) {
+                if (showGaonShirShelYom) {
                     addTefillahNote('שיר של יום - י"ט - ..השמים מספרים..');
                 }
             } else if (day === 7) {
@@ -623,7 +623,7 @@ function getAroundTheYearNotifications() {
                     addDayNote('Rosh Hashana', 'ראש השנה');
                     if (dow !== DaysOfWeek.SHABBOS && isDaytime) {
                         addTefillahNote('Tekias Shofar', 'תקיעת שופר');
-                        if (showGaonShir) {
+                        if (showGaonShirShelYom) {
                             addTefillahNote(
                                 'שיר של יום - פ"א - למנצח על הגתית',
                             );
