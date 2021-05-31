@@ -152,8 +152,8 @@ function getShabbosNotifications() {
         const sedra = jdate.getSedra(israel);
         if (sedra.sedras.length > 0) {
             addTefillahNote(
-                'Kriyas Hatorah Parshas' + sedra.toString(),
-                'קה"ת פרשת ' + sedra.toStringHeb(),
+                `Kriyas Hatorah Parshas ${sedra.toString()}`,
+                `קה"ת פרשת ${sedra.toStringHeb()}`,
             );
         }
         //All months but Tishrei have Shabbos Mevarchim on the Shabbos before Rosh Chodesh
@@ -266,8 +266,8 @@ function getWeekDayNotifications() {
         const sedra = jdate.getSedra(israel);
         if (sedra.sedras.length > 0) {
             addTefillahNote(
-                'Kriyas Hatorah Parshas ' + sedra.sedras[0].eng,
-                'קה"ת פרשת ' + sedra.sedras[0].heb,
+                `Kriyas Hatorah Parshas ${sedra.sedras[0].eng}`,
+                `קה"ת פרשת ${sedra.sedras[0].heb}`,
             );
         }
     }
