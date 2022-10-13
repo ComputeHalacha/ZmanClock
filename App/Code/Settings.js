@@ -2,7 +2,7 @@ import Location from './JCal/Location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {findLocation} from './Locations';
 import {log, warn, error, setDefault, isNumber} from './GeneralUtils';
-import {getZmanType} from './ZmanTypes';
+import {ZmanTypeIds, getZmanType} from './ZmanTypes';
 
 export default class Settings {
     /**
@@ -34,24 +34,24 @@ export default class Settings {
          * @property {[{id:Number, offset: ?Number, whichDaysFlags:?Number, desc: String, eng: String, heb: String }]} zmanimToShow List of which zmanim to show
          */
         this.zmanimToShow = zmanimToShow || [
-            getZmanType(0), //chatzosNight
-            getZmanType(2), //alos72
-            getZmanType(3), //talisTefillin
-            getZmanType(5), //netzMishor
-            getZmanType(6), //szksMga
-            getZmanType(7), //szksGra
-            getZmanType(8), //sztMga
-            getZmanType(9), //sztGra
-            getZmanType(10), //chatzosDay
-            getZmanType(11), //minGed
-            getZmanType(12), //minKet
-            getZmanType(13), //plag
-            getZmanType(15), //shkiaElevation
-            getZmanType(17), //tzais50
-            getZmanType(18), //tzais72
-            getZmanType(21), //candleLighting
-            getZmanType(22), //Sof Zman eating Chometz
-            getZmanType(23), //Sof Zman burn Chometz
+            getZmanType(ZmanTypeIds.ChatzosLayla), //chatzosNight
+            getZmanType(ZmanTypeIds.Alos72), //alos72
+            getZmanType(ZmanTypeIds.TalisTefillin), //talisTefillin
+            getZmanType(ZmanTypeIds.NetzMishor), //netzMishor
+            getZmanType(ZmanTypeIds.szksMga), //szksMga
+            getZmanType(ZmanTypeIds.szksGra), //szksGra
+            getZmanType(ZmanTypeIds.sztMga), //sztMga
+            getZmanType(ZmanTypeIds.sztGra), //sztGra
+            getZmanType(ZmanTypeIds.chatzosDay), //chatzosDay
+            getZmanType(ZmanTypeIds.minGed), //minGed
+            getZmanType(ZmanTypeIds.minKet), //minKet
+            getZmanType(ZmanTypeIds.plag), //plag
+            getZmanType(ZmanTypeIds.shkiaElevation), //shkiaElevation
+            getZmanType(ZmanTypeIds.tzais50), //tzais50
+            getZmanType(ZmanTypeIds.tzais72), //tzais72
+            getZmanType(ZmanTypeIds.candleLighting), //candleLighting
+            getZmanType(ZmanTypeIds.SofZmanEatingChometz), //Sof Zman eating Chometz
+            getZmanType(ZmanTypeIds.SofZmanBurnChometz), //Sof Zman burn Chometz
         ];
         /**
          * @property {[{id:Number, offset: Number, whichDaysFlags: Number, desc: String, eng: String, heb: String }]} customZmanim List of added zmanim
