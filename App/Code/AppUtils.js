@@ -4,7 +4,7 @@ import Location from './JCal/Location';
 import Settings from './Settings';
 import NavigationBarAndroid from './NavigationBar';
 import jDate from './JCal/jDate';
-import {ZmanTypes} from './ZmanTypes';
+import { ZmanTypes } from './ZmanTypes';
 
 export const DaysOfWeek = Object.freeze({
     SUNDAY: 0,
@@ -46,13 +46,13 @@ export default class AppUtils {
             location = settings.location,
             tomorrowJd = jdate.addDays(1),
             tomorrowSd = Utils.addDaysToSdate(sdate, 1),
-            /*  Candle lighting is not shown after sunset.
+            /*  Candle lighting and chometz times are not shown after sunset.
                 This solves the issue of Candle lighting showing as having "passed 20 minutes ago"
                 Thursday evening after sunset - which shows as hasCandleLighting = true
                 as it is already Friday... */
             zmanTimes = AppUtils.getZmanTimes(
                 zmanTypes.filter(
-                    (zt) => zt.id !== 21 || Utils.isTimeAfter(time, sunset),
+                    (zt) => ![21, 22, 23].includes(zt.id) || Utils.isTimeAfter(time, sunset),
                 ),
                 sdate,
                 jdate,
@@ -105,10 +105,10 @@ export default class AppUtils {
      */
     static getZmanTimes(zmanTypes, date, jdate, location) {
         const mem = AppUtils.zmanTimesCache.find(
-                (z) =>
-                    Utils.isSameSdate(z.date, date) &&
-                    z.location.Name === location.Name,
-            ),
+            (z) =>
+                Utils.isSameSdate(z.date, date) &&
+                z.location.Name === location.Name,
+        ),
             zmanTimes = [],
             whichDay = AppUtils.getWhichDays(date, jdate, location);
         let sunrise,
@@ -168,7 +168,7 @@ export default class AppUtils {
         for (let zmanType of zmanTypes) {
             const offset =
                 zmanType.offset &&
-                (!zmanType.whichDaysFlags || zmanType.whichDaysFlags & whichDay)
+                    (!zmanType.whichDaysFlags || zmanType.whichDaysFlags & whichDay)
                     ? zmanType.offset
                     : 0;
             switch (zmanType.id) {
@@ -352,7 +352,9 @@ export default class AppUtils {
                     }
                     break;
                 case 22: //Sof Zman Achilas Chometz
-                    if (jdate.Month === 1 && jdate.Day === 14) {
+                    if (jdate.Month === 1 &&
+                        jdate.Day === 14 &&
+                        Utils.isTimeAfter(sunrise, Utils.timeFromDate(date))) {
                         zmanTimes.push({
                             zmanType,
                             time: Utils.addMinutes(
@@ -367,7 +369,8 @@ export default class AppUtils {
                         jdate.Month === 1 &&
                         (jdate.Day === 14 ||
                             (jdate.DayOfWeek === DaysOfWeek.FRIDAY &&
-                                jdate.Day === 13))
+                                jdate.Day === 13)) &&
+                        Utils.isTimeAfter(sunrise, Utils.timeFromDate(date))
                     ) {
                         zmanTimes.push({
                             zmanType,
@@ -420,10 +423,10 @@ export default class AppUtils {
     static getBasicShulZmanim(sdate, jdate, location) {
         const zmanim = AppUtils.getZmanTimes(
             [
-                {id: 10}, //Chatzos hayom
-                {id: 2}, //alos90
-                {id: 15}, //shkiaElevation,
-                {id: 21}, //candleLighting,
+                { id: 10 }, //Chatzos hayom
+                { id: 2 }, //alos90
+                { id: 15 }, //shkiaElevation,
+                { id: 21 }, //candleLighting,
             ],
             sdate,
             jdate,
