@@ -370,20 +370,15 @@ export default class jDate {
                 break;
         }
         return false;
-    }
-
-    /**Is the current Jewish Date the day before a yomtov that contains a Friday?*/
-    hasEiruvTavshilin(israel) {
-        let dow = this.getDayOfWeek();
+    }   
+    
+       /**Is today Erev Yom Tov? (includes Erev second days of Sukkos and Pesach) */
+       isErevYomTov() {
         return (
-            //Eiruv Tavshilin is only on Wednesday or Thursday
-            [3, 4].includes(dow) &&
-            //today is Erev Yomtov
-            this.isErevYomTov() &&
-            //Thursday OR Wednesday when in Chu"l or Erev Rosh Hashana anywhere
-            (dow === 4 || (dow === 3 && (!israel || this.Month === 6))) &&
-            //No Eiruv Tavshilin on Erev yom kippur
-            this.Day !== 9
+            (this.Month === 1 && has(this.Day, 14, 20)) ||
+            (this.Month === 3 && this.Day === 5) ||
+            (this.Month === 6 && this.Day === 29) ||
+            (this.Month === 7 && has(this.Day, 9, 14, 21))
         );
     }
 
@@ -398,16 +393,21 @@ export default class jDate {
             return false;
         }
 
-        return isErevYomTov();
-    }
+        return this.isErevYomTov();
+    } 
 
-    /**Is today Erev Yom Tov? (includes Erev second days of Sukkos and Pesach) */
-    isErevYomTov() {
+    /**Is the current Jewish Date the day before a yomtov that contains a Friday?*/
+    hasEiruvTavshilin(israel) {
+        let dow = this.getDayOfWeek();
         return (
-            (this.Month === 1 && has(this.Day, 14, 20)) ||
-            (this.Month === 3 && this.Day === 5) ||
-            (this.Month === 6 && this.Day === 29) ||
-            (this.Month === 7 && has(this.Day, 9, 14, 21))
+            //Eiruv Tavshilin is only on Wednesday or Thursday
+            [3, 4].includes(dow) &&
+            //today is Erev Yomtov
+            this.isErevYomTov() &&
+            //Thursday OR Wednesday when in Chu"l or Erev Rosh Hashana anywhere
+            (dow === 4 || (dow === 3 && (!israel || this.Month === 6))) &&
+            //No Eiruv Tavshilin on Erev yom kippur
+            this.Day !== 9
         );
     }
 
