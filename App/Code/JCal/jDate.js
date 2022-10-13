@@ -375,17 +375,15 @@ export default class jDate {
     /**Is the current Jewish Date the day before a yomtov that contains a Friday?*/
     hasEiruvTavshilin(israel) {
         let dow = this.getDayOfWeek();
-        //No Eiruv Tavshilin ever on Sunday, Monday, Tuesday, Friday or Shabbos
         return (
-            !has(dow, 0, 1, 2, 5, 6) &&
-            //Erev Yomtov (we already ruled out Erev Shabbos)
-            this.hasCandleLighting() &&
-            //Not erev yom kippur
-            this.Day !== 9 &&
-            //Erev rosh hashana on Wednesday OR erev yomtov in Chu"l on wednesday or Thursday OR erev yomtov in Israel on Thursday
-            (this.Month === 6 ||
-                (!israel && has(dow, 3, 4)) ||
-                (israel && dow === 4))
+            //Eiruv Tavshilin is only on Wednesday or Thursday
+            [3, 4].includes(dow) &&
+            //today is Erev Yomtov
+            this.isErevYomTov() &&
+            //Thursday OR Wednesday when in Chu"l or Erev Rosh Hashana anywhere
+            (dow === 4 || (dow === 3 && (!israel || this.Month === 6))) &&
+            //No Eiruv Tavshilin on Erev yom kippur
+            this.Day !== 9
         );
     }
 
@@ -400,6 +398,11 @@ export default class jDate {
             return false;
         }
 
+        return isErevYomTov();
+    }
+
+    /**Is today Erev Yom Tov? (includes Erev second days of Sukkos and Pesach) */
+    isErevYomTov() {
         return (
             (this.Month === 1 && has(this.Day, 14, 20)) ||
             (this.Month === 3 && this.Day === 5) ||
@@ -623,7 +626,7 @@ export default class jDate {
     static tDays(year) {
         /*As this function is called many times, often on the same year for all types of calculations,
         we save a list of years with their elapsed values.*/
-        const cached = _yearCache.find((y) => y.year === year);
+        const cached = _yearCache.find(y => y.year === year);
         //If this year was already calculated and cached, then we return the cached value.
         if (cached) {
             return cached.elapsed;
