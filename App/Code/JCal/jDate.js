@@ -1,4 +1,4 @@
-import {isString, isNumber, has, isValidDate} from '../GeneralUtils';
+import { isString, isNumber, has, isValidDate } from '../GeneralUtils';
 import Utils from './Utils.js';
 import Sedra from './Sedra.js';
 import PirkeiAvos from './PirkeiAvos.js';
@@ -305,6 +305,7 @@ export default class jDate {
     monthName(showYear = true) {
         return (
             Utils.jMonthsEng[this.Month] +
+            (this.Month === 12 && jDate.isJdLeapY(this.Year) ? " Rishon" : "") +
             (showYear ? ' ' + this.Year.toString() : '')
         );
     }
@@ -317,6 +318,7 @@ export default class jDate {
             Utils.toJNum(this.Day) +
             ' ' +
             Utils.jMonthsHeb[this.Month] +
+            (this.Month === 12 && jDate.isJdLeapY(this.Year) ? " ראשון" : "") +
             ' ' +
             Utils.toJNum(this.Year % 1000)
         );
@@ -370,10 +372,10 @@ export default class jDate {
                 break;
         }
         return false;
-    }   
-    
-       /**Is today Erev Yom Tov? (includes Erev second days of Sukkos and Pesach) */
-       isErevYomTov() {
+    }
+
+    /**Is today Erev Yom Tov? (includes Erev second days of Sukkos and Pesach) */
+    isErevYomTov() {
         return (
             (this.Month === 1 && has(this.Day, 14, 20)) ||
             (this.Month === 3 && this.Day === 5) ||
@@ -394,7 +396,7 @@ export default class jDate {
         }
 
         return this.isErevYomTov();
-    } 
+    }
 
     /**Is the current Jewish Date the day before a yomtov that contains a Friday?*/
     hasEiruvTavshilin(israel) {
@@ -532,7 +534,7 @@ export default class jDate {
         // Calculate the day by subtraction.
         day = absDay - jDate.absJd(year, month, 1) + 1;
 
-        return {year, month, day};
+        return { year, month, day };
     }
     /**
      * Gets the absolute date of the given javascript Date object.
@@ -633,10 +635,10 @@ export default class jDate {
         }
 
         const months = Utils.toInt(
-                235 * Utils.toInt((year - 1) / 19) + // Leap months this cycle
-                    12 * ((year - 1) % 19) + // Regular months in this cycle.
-                    (7 * ((year - 1) % 19) + 1) / 19,
-            ), // Months in complete cycles so far.
+            235 * Utils.toInt((year - 1) / 19) + // Leap months this cycle
+            12 * ((year - 1) % 19) + // Regular months in this cycle.
+            (7 * ((year - 1) % 19) + 1) / 19,
+        ), // Months in complete cycles so far.
             parts = 204 + 793 * (months % 1080),
             hours =
                 5 +
@@ -672,7 +674,7 @@ export default class jDate {
         }
 
         //Add this year to the cache to save on calculations later on
-        _yearCache.push({year: year, elapsed: altDay});
+        _yearCache.push({ year: year, elapsed: altDay });
 
         return altDay;
     }
