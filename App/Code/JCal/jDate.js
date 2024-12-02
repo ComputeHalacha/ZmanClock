@@ -311,10 +311,9 @@ export default class jDate {
     }
 
     /**Returns the current Jewish date in the format: יום חמישי כ"א כסלו תשע"ו.*/
-    toStringHeb() {
+    toStringHeb(hideDayOfWeek) {
         return (
-            Utils.dowHeb[this.getDayOfWeek()] +
-            ' ' +
+            (!hideDayOfWeek ? DaysOfWeekHeb[this.getDayOfWeek()] + " " : "") +
             Utils.toJNum(this.Day) +
             ' ' +
             Utils.jMonthsHeb[this.Month] +

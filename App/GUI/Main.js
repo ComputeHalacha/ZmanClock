@@ -121,7 +121,6 @@ export default class Main extends PureComponent {
         }
         return <View style={styles.dayNotesView}>{innerViews}</View>;
     }
-
     getTefillahNotesView(styles) {
         if (!(this.props.notifications && this.props.notifications.tefillahNotes)) {
             return null;
